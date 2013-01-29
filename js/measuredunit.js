@@ -74,4 +74,4 @@
             $el.data('view', view);
         });
     };
-}(jQuery);
+}(window.jQuery);
