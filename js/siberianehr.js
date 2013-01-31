@@ -37,6 +37,20 @@ SiberianEHR.BindingView = Backbone.View.extend({
      */
     setupBindings: function () {
         this.rivets = rivets.bind(this.el, {model: this.model});
+    },
+
+    /**
+     * Blocks widget from user's editing
+     */
+    blockWidget: function(){
+        this.$el.block();
+    },
+
+    /**
+     * Unblock widget from user's editing
+     */
+    unblockWidget: function(){
+        this.$el.unblock();
     }
 });
 

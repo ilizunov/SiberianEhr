@@ -50,7 +50,8 @@
              */
             getValueConverter: function (property, fromUnit, toUnit){
                 throw new Error("Not implemented");
-            }
+            },
+            isBusy : false
         },
         initialize: function(options) {
             /* Convention: Uppercase server variables */
@@ -70,11 +71,15 @@
             // In case Unit is specified via model.set for the first time (not via initial settings)
             // this event should not be triggered
             if (previous.Unit === this.defaults.Unit) return;
-            var oldValue = this.get('Value'),
-                convertFunctionFactory = this.get('getValueConverter'),
-                convertFunction = convertFunctionFactory(this.get('PropertyName'), previous.Unit, this.get('Unit')),
-                newValue = convertFunction(oldValue);
+            var oldValue = this.get('Value');
+            // Blocking the widget during recalculating a value
+            this.set('isBusy', true );
+            var convertFunctionFactory = this.get('getValueConverter');
+            var convertFunction = convertFunctionFactory(this.get('PropertyName'), previous.Unit, this.get('Unit'));
+            var newValue = convertFunction(oldValue);
             this.set('Value', newValue);
+            // Unblocking the widget
+            this.set('isBusy', false);
         }
     });
 
@@ -156,7 +161,13 @@
                     el: $el,
                     model: model
                 });
-
+            model.on('change:isBusy',
+                function(){
+                    if (model.get('isBusy'))
+                        view.blockWidget();
+                    else
+                        view.unblockWidget();
+                }, view);
             view.render();
             // TODO: handle if data already exists
             $el.data('view', view);
