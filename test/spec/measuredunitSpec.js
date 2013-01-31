@@ -8,18 +8,41 @@ describe("Measured Unit widget", function () {
         var model;
 
         beforeEach(function () {
-            model = new SiberianEHR.MeasuredUnit();
+            model = new SiberianEHR.MeasuredUnit({
+                PropertyName : 'weight',
+                getValueConverter: function (property, fromUnit, toUnit){
+                    var conversionRuleNotFoundMsg = 'Conversion rule not found';
+                    switch(property){
+                        case 'weight':
+                            if (fromUnit === 'kg'  && toUnit === 't'){
+                                return function (value) {
+                                    return value / 1000;
+                                };
+                            }
+                            if (fromUnit === 't'  && toUnit === 'kg'){
+                                return function (value) {
+                                    return value * 1000;
+                                }
+                            }
+                            throw new Error(conversionRuleNotFoundMsg);
+                            break;
+                        default:
+                            throw new Error(conversionRuleNotFoundMsg);
+                            break;
+                    }
+                }
+            });
         });
 
         it("should convert from kg to tonns", function () {
-            model.set({Value: 1500, Unit: 'кг'});
-            model.set('Unit', 'т');
+            model.set({Value: 1500, Unit: 'kg'});
+            model.set('Unit', 't');
             expect(model.get('Value')).toEqual(1.5);
         });
 
         it("should convert from tonns to kg", function () {
-            model.set({Value: 1, Unit: 'т'});
-            model.set('Unit', 'кг');
+            model.set({Value: 1, Unit: 't'});
+            model.set('Unit', 'kg');
             expect(model.get('Value')).toEqual(1000);
         });
     });
@@ -30,14 +53,17 @@ describe("Measured Unit widget", function () {
             view = new SiberianEHR.MeasuredUnitView({
                 model: new SiberianEHR.MeasuredUnit({
                     Value: 30,
-                    Unit: 'кг'
+                    Unit: 'kg'
                 })
             })
         });
 
-        it('should have 2 rivets bindings', function(){
+        it('should have 5 rivets bindings', function(){
             view.render();
-            expect(view.rivets.bindings.length).toEqual(2);
+            // 1 & 2 - widget itself
+            // 3 - widget caption showing PropertyName
+            // 4 & 5 - labels indicating value with measure
+            expect(view.rivets.bindings.length).toEqual(5);
         });
 
         it('should set value to input', function(){
@@ -47,7 +73,7 @@ describe("Measured Unit widget", function () {
 
         it('should select Unit automatically', function(){
             view.render();
-            expect($('option[value=кг]', view.el)).toBeSelected();
+            expect($('option[value=kg]', view.el)).toBeSelected();
         });
 
     });

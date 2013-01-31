@@ -17,20 +17,60 @@
         '</div></div>';
 
     SiberianEHR.MeasuredUnit = Backbone.Model.extend({
+        defaults: {
+            PropertyName : '',              // Name of the measured property, e.g. "temperature"
+            Unit:  '',                      // Current measurement unit value
+            Value: undefined,               // Current value
+            /** Array of possible measurement units
+             *  Unit structure:
+             *  {
+             *      measure : "",           // measurement unit, e.g. "Celsius degrees" or "Fahrenheit degrees"
+             *      minValue: undefined,    // minimal value
+             *      maxValue: undefined,    // maximal value
+             *      assumedValue: undefined,// assumed value - the value set to the control if user has not touched it
+             *      //
+             *      // Precision, in terms of number of decimal places
+             *      // Value  0 implies integer value
+             *      // Value -1 implies no rounding, the value is stored as is
+             *      //
+             *      precision: -1
+             *  }*/
+            Units: null,
+            Required : true,                // specifies whether this value must be filled in
+            /**
+             * Measure unit converter function factory to be exposed in measuredUnit widget
+             *
+             * @param property  {string}    Measured property name. This is the first part of the key to find a rule
+             *                              of conversion.
+             *                              When called a real function we should pass this.get('propertyName')
+             * @param fromUnit  {string}    Current measure unit name. This is the second part of the key.
+             * @param toUnit    {string}    New measure unit name. This is the last part of key.
+             *
+             * @return {function} Value, measured in new units
+             */
+            getValueConverter: function (property, fromUnit, toUnit){
+                throw new Error("Not implemented");
+            }
+        },
         initialize: function(options) {
             /* Convention: Uppercase server variables */
-            this.set({
-                PropertyName : options.PropertyName,
-                Units: options.Units,
-                Value: options.Value,
-                Unit:  options.Unit,
-                getValueConverter : options.getValueConverter
-            });
+            if (typeof options === 'object'){
+                this.set({
+                    PropertyName : options.PropertyName || this.defaults.PropertyName,
+                    Units: options.Units || this.defaults.Units,
+                    Value: options.Value || this.defaults.Value,
+                    Unit:  options.Unit  || this.defaults.Unit,
+                    getValueConverter : options.getValueConverter
+                });
+            }
             this.on('change:Unit', this.unitChanged, this);
         },
         unitChanged: function() {
-            var previous = this.previousAttributes(),
-                oldValue = this.get('Value'),
+            var previous = this.previousAttributes();
+            // In case Unit is specified via model.set for the first time (not via initial settings)
+            // this event should not be triggered
+            if (previous.Unit === this.defaults.Unit) return;
+            var oldValue = this.get('Value'),
                 convertFunctionFactory = this.get('getValueConverter'),
                 convertFunction = convertFunctionFactory(this.get('PropertyName'), previous.Unit, this.get('Unit')),
                 newValue = convertFunction(oldValue);
@@ -89,7 +129,7 @@
                 var conversionRuleNotFoundMsg = 'Conversion rule not found';
                 switch(property){
                     case 'weight':
-                        if (fromUnit === 'kg' && toUnit === 't'){
+                        if (fromUnit === 'kg'  && toUnit === 't'){
                             return function (value) {
                                 return value / 1000;
                             };
