@@ -6,7 +6,7 @@
         '<label class="control-label" for="" data-text="model.PropertyName"></label>' +
         '<div class="controls">' +
             '<div class="input-append">' +
-                '<input data-value="model.Value" type="text" class="span1">' +
+                '<input data-value="model.Value" type="text" class="span1" name="QuantityValue">' +
                 '<select data-value="model.Unit" class="span1">' +
                     '<option value="kg">kg</option>' +
                     '<option value="t">t</option>' +
@@ -61,6 +61,7 @@
                     Units: options.Units || this.defaults.Units,
                     Value: options.Value || this.defaults.Value,
                     Unit:  options.Unit  || this.defaults.Unit,
+                    Required: options.Required || this.defaults.Required,
                     getValueConverter : options.getValueConverter
                 });
             }
@@ -84,7 +85,19 @@
     });
 
     SiberianEHR.MeasuredUnitView = SiberianEHR.BindingView.extend({
-        templateName: 'measured-unit'
+        templateName: 'measured-unit',
+        attachValidation: function (){
+            var rules = {};
+            if (this.model.get('Required') === true){
+                rules.QuantityValue = { required: true };
+            }
+            // TODO: handle the situation when field is empty, but we have specified assumed value
+            // attach validate rules to the form, not the $el itself
+            this.$el.parent().validate( {'rules': rules} );
+        },
+        validate: function(){
+            this.$el.parent().valid();
+        }
     });
 
 
@@ -161,6 +174,9 @@
                     el: $el,
                     model: model
                 });
+            /**
+             * Block UI while the model is busy
+             */
             model.on('change:isBusy',
                 function(){
                     if (model.get('isBusy'))
@@ -168,7 +184,12 @@
                     else
                         view.unblockWidget();
                 }, view);
+            /**
+             * On unit change doing re-validation
+             */
+            model.on('change:Unit', view.validate, view);
             view.render();
+            view.attachValidation();
             // TODO: handle if data already exists
             $el.data('view', view);
         });
