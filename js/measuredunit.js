@@ -6,7 +6,7 @@
         '<label class="control-label" for="" data-text="model.PropertyName"></label>' +
         '<div class="controls">' +
             '<div class="input-append">' +
-                '<input data-value="model.Value" type="text" class="span1" name="QuantityValue">' +
+                '<input data-value="model.Value" type="text" class="span1" name="Value">' +
                 '<select data-value="model.Unit" class="span1">' +
                     '<option value="kg">kg</option>' +
                     '<option value="t">t</option>' +
@@ -81,22 +81,35 @@
             this.set('Value', newValue);
             // Unblocking the widget
             this.set('isBusy', false);
+        },
+        validate: function(attrs, options) {
+            if (this.get('Required') === true) {
+                if (attrs.Value === '')
+                    return "Value should be selected";
+            }
+            if (typeof this.get('Units')[this.get('Unit')].minValue !== 'undefined'){
+                if (attrs.Value < this.get('Units')[this.get('Unit')].minValue)
+                    return "Value should be greater than "+this.get('Units')[this.get('Unit')].minValue + ' ' + this.get('Unit');
+            }
+            if (typeof this.get('Units')[this.get('Unit')].maxValue !== 'undefined'){
+                if (attrs.Value > this.get('Units')[this.get('Unit')].maxValue)
+                    return "Value should be less than "+this.get('Units')[this.get('Unit')].maxValue + ' ' + this.get('Unit');
+            }
         }
     });
 
     SiberianEHR.MeasuredUnitView = SiberianEHR.BindingView.extend({
         templateName: 'measured-unit',
-        attachValidation: function (){
-            var rules = {};
-            if (this.model.get('Required') === true){
-                rules.QuantityValue = { required: true };
-            }
-            // TODO: handle the situation when field is empty, but we have specified assumed value
-            // attach validate rules to the form, not the $el itself
-            this.$el.parent().validate( {'rules': rules} );
+        events: {
+            'blur input': 'updateModel'
         },
-        validate: function(){
-            this.$el.parent().valid();
+        updateModel: function(el){
+            var $el = $(el.target);
+            this.model.set($el.attr('name'), $el.val(), {validate: true});
+        },
+        invalid: function(model, error){
+            alert(error);
+            this.$el.find('input[name=Value]').focus();
         }
     });
 
@@ -119,17 +132,20 @@
              *      //
              *      precision: -1
              *  }*/
-            Units: [
-                {
-                    measure: 'kg',
+            Units: {
+                'kg' : {
                     assumedValue: 0,
-                    precision: 0            // integer number of kilograms
-                },{
-                    measure: 't',
+                    precision: 0,           // integer number of kilograms
+                    minValue: 0,
+                    maxValue: 10000
+                },
+                't' : {
                     assumedValue: 0,
-                    precision: 3            // 3 decimal points, integer value of kilograms
+                    precision: 3,           // 3 decimal points, integer value of kilograms
+                    minValue: 0,
+                    maxValue: 10
                 }
-            ],
+            },
             Unit: 't', // Current measurement unit value
             PropertyName : 'weight', // Name of the measured property, e.g. "temperature"
             /**
@@ -184,12 +200,8 @@
                     else
                         view.unblockWidget();
                 }, view);
-            /**
-             * On unit change doing re-validation
-             */
-            model.on('change:Unit', view.validate, view);
             view.render();
-            view.attachValidation();
+            model.on('invalid', view.invalid, view);
             // TODO: handle if data already exists
             $el.data('view', view);
         });
