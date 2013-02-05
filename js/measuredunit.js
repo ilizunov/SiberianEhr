@@ -1,20 +1,6 @@
 !function ($) {
 
     "use strict";
-    JST['measured-unit'] = '' +
-        '<div class="control-group">' +
-        '<label class="control-label" for="" data-text="model.PropertyName"></label>' +
-        '<div class="controls">' +
-            '<div class="input-append">' +
-                '<input data-value="model.Value" type="text" class="span1" name="Value">' +
-                '<select data-value="model.Unit" class="span1">' +
-                    '<option value="kg">kg</option>' +
-                    '<option value="t">t</option>' +
-                '</select>' +
-            '</div>' +
-            '<span class="label" data-text="model.Value"></span>' +
-            '<span class="label" data-text="model.Unit"></span>' +
-        '</div></div>';
 
     SiberianEHR.MeasuredUnit = Backbone.Model.extend({
         defaults: {
@@ -22,9 +8,8 @@
             Unit:  '',                      // Current measurement unit value
             Value: undefined,               // Current value
             /** Array of possible measurement units
-             *  Unit structure:
+             *  Unit structure - object. Key is measure
              *  {
-             *      measure : "",           // measurement unit, e.g. "Celsius degrees" or "Fahrenheit degrees"
              *      minValue: undefined,    // minimal value
              *      maxValue: undefined,    // maximal value
              *      assumedValue: undefined,// assumed value - the value set to the control if user has not touched it
@@ -36,7 +21,7 @@
              *      precision: -1
              *  }*/
             Units: null,
-            Required : true,                // specifies whether this value must be filled in
+            Required : false,                // specifies whether this value must be filled in
             /**
              * Measure unit converter function factory to be exposed in measuredUnit widget
              *
@@ -51,7 +36,15 @@
             getValueConverter: function (property, fromUnit, toUnit){
                 throw new Error("Not implemented");
             },
-            isBusy : false
+            /**
+             * Field indicates busy model state (e.g. server calculation or validation). When Model is busy it is
+             * supposed to be disabled for user's input
+             */
+            isBusy : false,
+            /**
+             * Field indicates the error model state
+             */
+            error: undefined
         },
         initialize: function(options) {
             /* Convention: Uppercase server variables */
@@ -65,6 +58,31 @@
                     getValueConverter : options.getValueConverter
                 });
             }
+
+            /**
+             * Creating the structure for selecting measurements, because rivets can only iterate arrays, not objects
+             */
+            var unit, unitsPattern = '';
+            for (unit in this.get('Units')){ // traversing through keys
+                unitsPattern += '<option value="'+unit+'">'+unit+'</option>';
+            }
+
+            JST['measured-unit'] = '' +
+                '<div class="control-group">' +
+                    '<label class="control-label" for="" data-text="model.PropertyName"></label>' +
+                    '<div class="controls">' +
+                        '<input data-value="model.Value" type="text" class="span1" name="Value" data-placeholder="model:getAssumedValue < model.Unit">' +
+                        '<span class="help-inline" data-text="model.error"></span>'+
+                        '<select data-value="model.Unit" class="span1">' +
+                            unitsPattern +
+                        '</select>' +
+                        '<div>' +
+                            '<span class="label" data-text="model.Value"></span>' +
+                            '<span class="label" data-text="model.Unit"></span>' +
+                        '</div>' +
+                    '</div>'+
+                '</div>';
+
             this.on('change:Unit', this.unitChanged, this);
         },
         unitChanged: function() {
@@ -73,6 +91,12 @@
             // this event should not be triggered
             if (previous.Unit === this.defaults.Unit) return;
             var oldValue = this.get('Value');
+            if (typeof oldValue === 'undefined')
+            {
+                this.set('error', 'You should specify a value to be converted');
+                this.set('unit', previous.Unit);
+                return;
+            }
             // Blocking the widget during recalculating a value
             this.set('isBusy', true );
             var convertFunctionFactory = this.get('getValueConverter');
@@ -83,45 +107,82 @@
             this.set('isBusy', false);
         },
         validate: function(attrs, options) {
+            this.set('error', undefined);
             if (this.get('Required') === true) {
-                if (attrs.Value === '')
-                    return "Value should be selected";
+                if (attrs.Value === ''){
+                    if (typeof this.get('Units')[this.get('Unit')].assumedValue !== 'undefined'){
+                        this.set('Value', this.get('Units')[this.get('Unit')].assumedValue);
+                        /**
+                         * Return something that is not empty. So validate  method triggers error and empty value
+                         * which was specified will not succeed to be set as model value
+                         */
+                        return false;
+                    }
+                    this.set('error', "Value should be selected");
+                    return this.get('error');
+                }
             }
             if (typeof this.get('Units')[this.get('Unit')].minValue !== 'undefined'){
-                if (attrs.Value < this.get('Units')[this.get('Unit')].minValue)
-                    return "Value should be greater than "+this.get('Units')[this.get('Unit')].minValue + ' ' + this.get('Unit');
+                if (attrs.Value < this.get('Units')[this.get('Unit')].minValue){
+                    this.set('error', 'Value should not be less than '+this.get('Units')[this.get('Unit')].minValue + ' ' + this.get('Unit'));
+                    return this.get('error');
+                }
             }
             if (typeof this.get('Units')[this.get('Unit')].maxValue !== 'undefined'){
                 if (attrs.Value > this.get('Units')[this.get('Unit')].maxValue)
-                    return "Value should be less than "+this.get('Units')[this.get('Unit')].maxValue + ' ' + this.get('Unit');
+                    this.set('error', 'Value should not be greater than '+this.get('Units')[this.get('Unit')].maxValue + ' ' + this.get('Unit'));
+                    return this.get('error');
             }
+        },
+        /**
+         * Gets assumed value for model's current unit measure
+         * @return {Number}
+         */
+        getAssumedValue: function(){
+            return this.get('Units')[this.get('Unit')].assumedValue;
         }
     });
 
     SiberianEHR.MeasuredUnitView = SiberianEHR.BindingView.extend({
         templateName: 'measured-unit',
+        initialize:function(){
+            /**
+             * Block UI while the model is busy
+             */
+            this.model.on('change:isBusy', this.blockWidgetIfModelIsBusy, this);
+            /**
+             * Adding responsibility of showing validation errors to view
+             */
+            this.model.on('invalid', this.invalid, this);
+        },
         events: {
             'blur input': 'updateModel'
         },
         updateModel: function(el){
             var $el = $(el.target);
+            this.$el.children('.control-group').removeClass('error');
             this.model.set($el.attr('name'), $el.val(), {validate: true});
         },
         invalid: function(model, error){
-            alert(error);
             this.$el.find('input[name=Value]').focus();
+            this.$el.children('.control-group').addClass('error');
+        },
+        blockWidgetIfModelIsBusy: function(){
+            if (this.model.get('isBusy'))
+                this.blockWidget();
+            else
+                this.unblockWidget();
         }
     });
 
 
     $.fn.measuredUnit = function (options) {
         var settings = _.extend(options || {}, {
-            Value: 1,                       // Current value
+            Value: 36.6,
             Required : true,                // specifies whether this value must be filled in
             /** Array of possible measurement units
-             *  Unit structure:
+             *  Unit structure - object. Key is measure
              *  {
-             *      measure : "",           // measurement unit, e.g. "Celsius degrees" or "Fahrenheit degrees"
              *      minValue: undefined,    // minimal value
              *      maxValue: undefined,    // maximal value
              *      assumedValue: undefined,// assumed value - the value set to the control if user has not touched it
@@ -133,21 +194,21 @@
              *      precision: -1
              *  }*/
             Units: {
-                'kg' : {
-                    assumedValue: 0,
-                    precision: 0,           // integer number of kilograms
-                    minValue: 0,
-                    maxValue: 10000
+                'C' : {
+                    assumedValue: 36.6,
+                    precision: 1,
+                    minValue: 35,
+                    maxValue: 42
                 },
-                't' : {
-                    assumedValue: 0,
+                'F' : {
+                    assumedValue: 97.88,
                     precision: 3,           // 3 decimal points, integer value of kilograms
-                    minValue: 0,
-                    maxValue: 10
+                    minValue: 95,
+                    maxValue: 107.6
                 }
             },
-            Unit: 't', // Current measurement unit value
-            PropertyName : 'weight', // Name of the measured property, e.g. "temperature"
+            Unit: 'C', // Current measurement unit value
+            PropertyName : 'Human\'s body temperature', // Name of the measured property, e.g. "temperature"
             /**
              * Sample measure unit converter to be exposed in measuredUnit widget
              *
@@ -162,15 +223,15 @@
             getValueConverter: function (property, fromUnit, toUnit){
                 var conversionRuleNotFoundMsg = 'Conversion rule not found';
                 switch(property){
-                    case 'weight':
-                        if (fromUnit === 'kg'  && toUnit === 't'){
+                    case 'Human\'s body temperature':
+                        if (fromUnit === 'C'  && toUnit === 'F'){
                             return function (value) {
-                                return value / 1000;
+                                return (value * 9 / 5 + 32);
                             };
                         }
-                        if (fromUnit === 't'  && toUnit === 'kg'){
+                        if (fromUnit === 'F'  && toUnit === 'C'){
                             return function (value) {
-                                return value * 1000;
+                                return ((value - 32) * 5 / 9);
                             }
                         }
                         throw new Error(conversionRuleNotFoundMsg);
@@ -190,18 +251,8 @@
                     el: $el,
                     model: model
                 });
-            /**
-             * Block UI while the model is busy
-             */
-            model.on('change:isBusy',
-                function(){
-                    if (model.get('isBusy'))
-                        view.blockWidget();
-                    else
-                        view.unblockWidget();
-                }, view);
+
             view.render();
-            model.on('invalid', view.invalid, view);
             // TODO: handle if data already exists
             $el.data('view', view);
         });

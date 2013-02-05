@@ -53,7 +53,10 @@ describe("Measured Unit widget", function () {
             view = new SiberianEHR.MeasuredUnitView({
                 model: new SiberianEHR.MeasuredUnit({
                     Value: 30,
-                    Unit: 'kg'
+                    Unit: 'kg',
+                    Units:{
+                        'kg' : {}
+                    }
                 })
             })
         });
@@ -63,7 +66,8 @@ describe("Measured Unit widget", function () {
             // 1 & 2 - widget itself
             // 3 - widget caption showing PropertyName
             // 4 & 5 - labels indicating value with measure
-            expect(view.rivets.bindings.length).toEqual(5);
+            // 6 & 7 - error state
+            expect(view.rivets.bindings.length).toEqual(7);
         });
 
         it('should set value to input', function(){
@@ -87,7 +91,7 @@ describe("Measured Unit widget", function () {
         });
 
         it('should set Value to 1 by default', function(){
-            expect($('input[type=text]', element)).toHaveValue('1');
+            expect($('input[type=text]', element)).toHaveValue('36.6');
         });
 
         it('should set data attribute to container', function(){

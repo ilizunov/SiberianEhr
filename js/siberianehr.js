@@ -73,3 +73,7 @@ rivets.configure({
         }
     }
 });
+
+rivets.binders.placeholder = function(el, value) {
+    el.placeholder = value
+};
