@@ -55,18 +55,23 @@
          * @return {Number}
          */
         getAssumedValue: function(){
-            if (typeof this.get('AssumedValue') === 'undefined')
+            var json = this.toJSON(),
+                assumedValue = json.AssumedValue;
+
+            if (typeof  assumedValue === 'undefined')
                 return null;
             //if current unit measure is the same as assumed unit measure
-            if (this.get('Unit') == this.get('AssumedValue').Unit)
-                return this.get('AssumedValue').Value;
-            var convertFunctionFactory = this.get('getValueConverter');
-            var convertFunction = convertFunctionFactory(this.get('PropertyName'),
-                this.get('AssumedValue').Unit, this.get('Unit'));
-            var newValue = convertFunction(this.get('AssumedValue').Value);
-            if (typeof this.get('Units')[this.get('Unit')].precision === 'number' &&
-                this.get('Units')[this.get('Unit')].precision >= 0)
-                newValue = newValue.toFixed(this.get('Units')[this.get('Unit')].precision);
+            if (json.Unit == assumedValue.Unit)
+                return assumedValue.Value;
+
+            var convertFunction = json.getValueConverter(
+                json.PropertyName, assumedValue.Unit, json.Unit);
+            var newValue = convertFunction(assumedValue.Value),
+                precision = json.Units[json.Unit].precision;
+
+            if (_.isNumber(precision) &&
+                precision >= 0)
+                newValue = newValue.toFixed(precision);
             return newValue;
         },
         /**
@@ -103,9 +108,8 @@
                 this.model.set('Value', this.model.getAssumedValue());
                 return;
             }
-            var precision = -1;
-            if (typeof this.model.get('Units')[this.model.get('Unit')].precision !== 'undefined')
-                precision = this.model.get('Units')[this.model.get('Unit')].precision;
+            var unit = this.model.get('Units')[this.model.get('Unit')];
+            var precision = unit.precision ? unit.precision : -1;
             if (precision >= 0)
                 this.model.set('Value', currentValue.toFixed(precision));
         },
