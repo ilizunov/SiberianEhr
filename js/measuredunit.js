@@ -108,8 +108,8 @@
                 this.model.set('Value', this.model.getAssumedValue());
                 return;
             }
-            var unit = this.model.get('Units')[this.model.get('Unit')];
-            var precision = unit.precision ? unit.precision : -1;
+            var seletedUnit = this.model.get('Units')[this.model.get('Unit')];
+            var precision = seletedUnit.precision ? seletedUnit.precision : -1;
             if (precision >= 0)
                 this.model.set('Value', currentValue.toFixed(precision));
         },
