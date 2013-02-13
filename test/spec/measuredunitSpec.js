@@ -11,7 +11,6 @@ describe("Measured Unit widget", function () {
             model = new SiberianEHR.MeasuredUnit({
                 PropertyName : 'weight',
                 getValueConverter: function (property, fromUnit, toUnit){
-                    var conversionRuleNotFoundMsg = 'Conversion rule not found';
                     switch(property){
                         case 'weight':
                             if (fromUnit === 'kg'  && toUnit === 't'){
@@ -24,11 +23,6 @@ describe("Measured Unit widget", function () {
                                     return value * 1000;
                                 }
                             }
-                            throw new Error(conversionRuleNotFoundMsg);
-                            break;
-                        default:
-                            throw new Error(conversionRuleNotFoundMsg);
-                            break;
                     }
                 },
                 Units:{
@@ -65,16 +59,6 @@ describe("Measured Unit widget", function () {
             })
         });
 
-        it('should have 7 rivets bindings', function(){
-            view.render();
-            /** 1 & 2 - input field & comboBox current value
-             * 3 - placeholder
-             * 4 & 5 - labels indicating value with measure
-             * 6 - error state (disabled comboBox)
-             * 7 - comboBox variety (units) */
-            expect(view.rivets.bindings.length).toEqual(7);
-        });
-
         it('should set value to input', function(){
             view.render();
             expect($('input[type=text]', view.el)).toHaveValue('30');
@@ -102,90 +86,100 @@ describe("Measured Unit widget", function () {
         });
     });
 
-    describe("plugin validation - required no assumed value", function(){
-        var view;
-        beforeEach(function(){
-            view = new SiberianEHR.MeasuredUnitView({
-                model: new SiberianEHR.MeasuredUnit({
-                    Value: 30,
-                    Unit: 'kg',
-                    Units:{
-                        'kg' : {}
-                    }
-                }),
-                Required: true
-            })
+    describe("model validation", function () {
+        var model, foo;
+        beforeEach(function () {
+            model = new SiberianEHR.MeasuredUnit({
+                Value: 10,
+                Unit: 'kg',
+                Required: true,
+                PropertyName: 'weight'
+            });
+            foo = {
+                invalid_handler : function(){
+                    return;
+                }
+            };
+            spyOn(foo, 'invalid_handler');
+            model.on('invalid', foo.invalid_handler, model);
         });
 
-        it('Should show error on passing empty value', function(){
-            view.render();
-            view.$el.find('input[name=Value]').val('');
-            view.validate();
-            expect(view.$el.find('.help-inline').text().length).toBeGreaterThan(1);
+        it("should show error on empty value, because assumed value not set", function () {
+            model.set({Value: ''});
+            expect(foo.invalid_handler).toHaveBeenCalled();
+        });
+
+        it("should pass AssumedValue if empty value is passed and Required=true", function(){
+            model.set({AssumedValue: {Unit: 'kg', Value: 50}});
+            model.set({Value: ''});
+            expect(model.get('Value')).toEqual(50);
+        });
+
+        it("should pass AssumedValue in different measure if selected", function(){
+            model.set({
+                AssumedValue: {Unit: 'kg', Value: 5000},
+                getValueConverter: function (property, fromUnit, toUnit){
+                    switch(property){
+                        case 'weight':
+                            if (fromUnit === 'kg'  && toUnit === 't'){
+                                return function (value) {
+                                    return value / 1000;
+                                };
+                            }
+                            if (fromUnit === 't'  && toUnit === 'kg'){
+                                return function (value) {
+                                    return value * 1000;
+                                }
+                            }
+                    }
+                },
+                Units:{ 'kg':{}, 't': {} }
+            });
+            model.set({Unit: 't'});
+            model.set({Value: ''});
+            expect(model.get('Value')).toEqual(5);
         });
     });
 
-    describe("plugin validation - required, there is assumed value", function(){
-        var view;
-        beforeEach(function(){
-            view = new SiberianEHR.MeasuredUnitView({
-                model: new SiberianEHR.MeasuredUnit({
-                        AssumedValue: { Value: 36.6, Unit: "C" },
-                        Value: 36.6,
-                        Required : true,
-                        Units: {
-                            'C' : {
-                                precision: 1,
-                                    minValue: 35,
-                                    maxValue: 42
-                            },
-                            'F' : {
-                                precision: 1,
-                                    minValue: 95,
-                                    maxValue: 107.6
+    describe("model value precision", function(){
+        var model;
+
+        beforeEach(function () {
+            model = new SiberianEHR.MeasuredUnit({
+                PropertyName : 'weight',
+                getValueConverter: function (property, fromUnit, toUnit){
+                    switch(property){
+                        case 'weight':
+                            if (fromUnit === 'kg'  && toUnit === 't'){
+                                return function (value) {
+                                    return value / 1000;
+                                };
                             }
-                        },
-                        Unit: 'C',
-                        PropertyName : 'temperature',
-                        getValueConverter: function (property, fromUnit, toUnit){
-                            var conversionRuleNotFoundMsg = 'Conversion rule not found';
-                            switch(property){
-                                case 'temperature':
-                                    if (fromUnit === 'C'  && toUnit === 'F'){
-                                        return function (value) {
-                                            return (value * 9 / 5 + 32);
-                                        };
-                                    }
-                                    if (fromUnit === 'F'  && toUnit === 'C'){
-                                        return function (value) {
-                                            return ((value - 32) * 5 / 9);
-                                        }
-                                    }
-                                    throw new Error(conversionRuleNotFoundMsg);
-                                    break;
-                                default:
-                                    throw new Error(conversionRuleNotFoundMsg);
-                                    break;
+                            if (fromUnit === 't'  && toUnit === 'kg'){
+                                return function (value) {
+                                    return value * 1000;
+                                }
                             }
-                        }
-                }),
-                Required:true
+                    }
+                },
+                Units:{
+                    'kg':{precision: 0},
+                    't':{precision: 2}
+                },
+                Value: 10,
+                Unit: 'kg'
             });
         });
 
-        it('Should set assumed value on passing empty value', function(){
-            view.render();
-            view.model.set('Value','');
-            view.validate(); // to explicitly view the difference
-            expect(view.model.get('Value')).toEqual('36.6');
+        it("should allow only integer number of kilograms. If set 5.5 should automatically correct to 5",function(){
+            model.set({Value:5.4});
+            expect(parseFloat(model.get('Value'))).toEqual(5);
         });
 
-        it('Should set assumed value in different measure on passing empty value, when measure value was changed', function(){
-            view.render();
-            view.model.set('Unit', 'F');
-            view.model.set('Value','');
-            view.validate();
-            expect(view.model.get('Value')).toEqual('97.9');
+        it("should recalculate precision at conversion 16.4kg => 0.02t",function(){
+            model.set({Value:16.4});
+            model.set({Unit:'t'});
+            expect(parseFloat(model.get('Value'))).toEqual(0.02);
         });
     });
 });
