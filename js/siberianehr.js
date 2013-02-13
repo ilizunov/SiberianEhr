@@ -54,6 +54,30 @@ SiberianEHR.BindingView = Backbone.View.extend({
     }
 });
 
+SiberianEHR.DateTimeFormatReader = function(){};
+SiberianEHR.DateTimeFormatReader.prototype.readDateFormat = function(dateTimeFormat){
+    var format = {
+        hasCentury: false,
+        hasYear: false,
+        hasMonth: false,
+        hasDay: false,
+        hasHour: false,
+        hasMinute: false,
+        hasSecond: false,
+        hasMillisecond: false,
+        hasTimeZone: false,
+        /**
+         * Compact form means 20050809T183142+0330
+         * Non-compact form means 2005-08-09T18:31:42+03:30
+         */
+        isCompactForm: false
+    };
+    if (dateTimeFormat == 'YYYY-MM'){
+        format.hasCentury = format.hasYear = format.hasMonth = true;
+    }
+    return format;
+};
+
 rivets.configure({
     adapter: {
         subscribe: function (obj, keypath, callback) {
