@@ -5,32 +5,25 @@
     SiberianEHR.DateTimePicker = Backbone.Model.extend({
         initialize: function(options) {
             var formatReader = new SiberianEHR.DateTimeFormatReader();
-            // overwrite format
-            options.format = formatReader.readDateFormat(options.format);
-            // parse date
-            options.date   = moment(options.datetime);
-            var settings = _.defaults(options, {
-                //TODO defaults
-            });
-            this.set({
-                format  : options.format,
-                date    : options.date,
-                Year    : options.date.year(),
-                Month   : options.date.month()
-                //TODO initialization
-            });
-            // Set months array for rivets
-            //FIXME - does not work
-            var bb = moment().lang();
-            var aa = _.each(bb.months, function(value, key, list){
-                return {
-                    monthNumber: key,
-                    monthName: value
-                };
-            });
-            this.set(
+            var settings = {},
+                date = moment(options.datetime);
+            _.extend(settings, formatReader.readDateFormat(options.format),
                 {
-                    ri_MonthsArray: aa
+                    date : date
+                },
+                {
+                    Year    : date.year(),
+                    Month   : date.month()
+                });
+            this.set(settings);
+            // Set months array for rivets
+            this.set({
+                    ri_MonthsArray: _.map(moment().lang()._months, function(element, index, list){
+                        return {
+                            monthNumber: index,
+                            monthName: element
+                        };
+                    })
                 });
             //TODO onchange binding to preValidate
         },
