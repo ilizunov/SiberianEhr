@@ -536,27 +536,36 @@
         }
         this.iterated = [];
         if (collection) {
-          _results = [];
-          for (_k = 0, _len2 = collection.length; _k < _len2; _k++) {
-            item = collection[_k];
-            data = {};
-            _ref2 = this.view.models;
-            for (n in _ref2) {
-              m = _ref2[n];
-              data[n] = m;
-            }
-            data[this.args[0]] = item;
-            itemEl = el.cloneNode(true);
-            if (this.iterated.length > 0) {
-              previous = this.iterated[this.iterated.length - 1].els[0];
-            } else {
-              previous = this.marker;
-            }
-            this.marker.parentNode.insertBefore(itemEl, (_ref3 = previous.nextSibling) != null ? _ref3 : null);
-            _results.push(this.iterated.push(rivets.bind(itemEl, data)));
+              for (_k = 0, _len2 = collection.length; _k < _len2; _k++) {
+                  item = collection[_k];
+                  data = {};
+                  _ref2 = this.view.models;
+                  for (n in _ref2) {
+                      m = _ref2[n];
+                      data[n] = m;
+                  }
+                  data[this.args[0]] = item;
+                  itemEl = el.cloneNode(true);
+                  if (this.iterated.length > 0) {
+                      previous = this.iterated[this.iterated.length - 1].els[0];
+                  } else {
+                      previous = this.marker;
+                  }
+                  this.marker.parentNode.insertBefore(itemEl, (_ref3 = previous.nextSibling) != null ? _ref3 : null);
+                  this.iterated.push(rivets.bind(itemEl, data));
+              }
+              if ((_ref4 = this.marker.parentNode.type) === 'select-one' || _ref4 === 'select-multiple') {
+                  _ref5 = this.view.bindings;
+                  _results = [];
+                  for (_l = 0, _len3 = _ref5.length; _l < _len3; _l++) {
+                      binding = _ref5[_l];
+                      if (binding.el === this.marker.parentNode) {
+                          _results.push(binding.sync());
+                      }
+                  }
+                  return _results;
+              }
           }
-          return _results;
-        }
       }
     },
     "class-*": function(el, value) {

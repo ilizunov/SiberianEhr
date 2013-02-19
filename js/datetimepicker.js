@@ -13,19 +13,45 @@
                 },
                 {
                     Year    : date.year(),
-                    Month   : date.month()
+                    Month   : date.month(),
+                    Day     : date.date()
                 });
-            this.set(settings);
             // Set months array for rivets
+            this.set(settings);
             this.set({
-                    ri_MonthsArray: _.map(moment().lang()._months, function(element, index, list){
-                        return {
-                            monthNumber: index,
-                            monthName: element
-                        };
-                    })
-                });
-            //TODO onchange binding to preValidate
+                ri_MonthsArray: _.map(moment().lang()._months, function(element, index, list){
+                    return {
+                        monthNumber: index,
+                        monthName: element
+                    };
+                })
+            });
+            // Set years array for rivets
+            this.set({
+                ri_YearsArray:_.map(_.range(settings.Year-5, settings.Year+5), function(element, index, list){
+                    return {
+                        yearName: element
+                    };
+                })
+            });
+            /**
+             * Recalculate number of days
+             */
+            this.recalculateDays();
+            //and also bind this recalculation on changing month or year
+            this.on('change:Year change:Month', this.recalculateDays, this);
+            this.on('change:Year change:Month change:Day', this.preValidate, this);
+        },
+        /**
+         * When year or month is changed, we have to recalculate the number of days in current month
+         */
+        recalculateDays: function(){
+            var json = this.toJSON();
+            this.set({
+                ri_DaysArray: _.map(_.range(1,moment([json.Year, json.Month]).daysInMonth()+1), function(element, index, list){
+                    return {DayNumber: element};
+                })
+            });
         },
         preValidate: function(){
             //TODO pre-validation
@@ -48,6 +74,12 @@
 
     SiberianEHR.DateTimePickerView = SiberianEHR.BindingView.extend({
         templateName: 'datetime-picker',
+        events:{
+            "click #monthPickerPartControl #add":          "addMonth",
+            "click #monthPickerPartControl #remove":       "removeMonth",
+            "click #dayPickerPartControl #add":            "addDay",
+            "click #dayPickerPartControl #remove":         "removeDay"
+        },
         initialize:function(options){
             this.model.on('change:isBusy',  this.blockWidgetIfModelIsBusy, this); // Block UI while the model is busy
             this.model.on('change:isError', this.clearError, this);
@@ -59,8 +91,6 @@
         clearError: function(){
             if (this.model.get('isError')) return; // if isError state is true - do nothing
             //TODO hide error state
-            //this.$el.find('.help-inline').text('');// clear error text
-            //this.$el.children('.control-group').removeClass('error');
         },
         /**
          * Show validation error
@@ -69,8 +99,35 @@
          */
         showError: function(model, error){
             //TODO show error
-            //this.$el.find('.help-inline').text(error);
-            //this.$el.children('.control-group').addClass('error');
+        },
+        /**
+         * When clicked on adding a month
+         */
+        addMonth: function(){
+            this.model.set({
+                hasMonth: true
+            });
+        },
+        /**
+         * When clicked on removing a month
+         */
+        removeMonth: function(){
+            this.model.set({
+                hasMonth:false,
+                hasDay:false
+            });
+        },
+        /**
+         * When clicked on adding a day
+         */
+        addDay: function(){
+            this.model.set({hasDay: true});
+        },
+        /**
+         * When clicked on removing a day
+         */
+        removeDay: function(){
+            this.model.set({hasDay: false});
         }
     });
 

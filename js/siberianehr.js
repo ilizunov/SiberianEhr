@@ -75,6 +75,9 @@ SiberianEHR.DateTimeFormatReader.prototype.readDateFormat = function(dateTimeFor
     if (dateTimeFormat == 'YYYY-MM'){
         format.hasCentury = format.hasYear = format.hasMonth = true;
     }
+    if (dateTimeFormat == 'YYYY-MM-DD'){
+        format.hasCentury = format.hasYear = format.hasMonth = format.hasDay = true;
+    }
     return format;
 };
 
