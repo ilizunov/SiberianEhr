@@ -8,7 +8,7 @@ describe("Measured Unit widget", function () {
         var model;
 
         beforeEach(function () {
-            model = new SiberianEHR.MeasuredUnit({
+            model = new SiberianEHR.MeasuredUnit.Model({
                 PropertyName : 'weight',
                 getValueConverter: function (property, fromUnit, toUnit){
                     switch(property){
@@ -45,13 +45,30 @@ describe("Measured Unit widget", function () {
         });
     });
 
+    describe('data model serialization-deserialization',function(){
+        var model;
+        beforeEach(function(){
+            model = SiberianEHR.MeasuredUnit.deserialize({Value: 5, Unit: 'kg'});
+        });
+        it('should create a model with specified values', function(){
+            expect(model.get('Value')).toEqual(5);
+        });
+        it('should deserialize model with current value',function(){
+            model.set({Value: 6});
+            expect(model.get('Value')).toEqual(SiberianEHR.MeasuredUnit.serialize(model).Value);
+            expect(model.get('Unit')).toEqual(SiberianEHR.MeasuredUnit.serialize(model).Unit);
+        });
+    });
+
     describe("rendering", function(){
         var view;
         beforeEach(function(){
-            view = new SiberianEHR.MeasuredUnitView({
-                model: new SiberianEHR.MeasuredUnit({
-                    Value: 30,
-                    Unit: 'kg',
+            view = new SiberianEHR.MeasuredUnit.View({
+                model: new SiberianEHR.MeasuredUnit.Model({
+                    DefaultValue: {
+                        Value: 30,
+                        Unit: 'kg'
+                    },
                     Units:{
                         'kg' : {}
                     }
@@ -77,7 +94,10 @@ describe("Measured Unit widget", function () {
 
         beforeEach(function(){
             widget = $(element).measuredUnit({
-                Value: 1
+                DefaultValue: {
+                    Value: 1,
+                    Unit: 'unit'
+                }
             });
         });
 
@@ -89,9 +109,11 @@ describe("Measured Unit widget", function () {
     describe("model validation", function () {
         var model, foo;
         beforeEach(function () {
-            model = new SiberianEHR.MeasuredUnit({
-                Value: 10,
-                Unit: 'kg',
+            model = new SiberianEHR.MeasuredUnit.Model({
+                DefaultValue: {
+                    Value: 10,
+                    Unit: 'kg'
+                },
                 Required: true,
                 PropertyName: 'weight'
             });
@@ -108,44 +130,13 @@ describe("Measured Unit widget", function () {
             model.set({Value: ''});
             expect(foo.invalid_handler).toHaveBeenCalled();
         });
-
-        it("should pass AssumedValue if empty value is passed and Required=true", function(){
-            model.set({AssumedValue: {Unit: 'kg', Value: 50}});
-            model.set({Value: ''});
-            expect(model.get('Value')).toEqual(50);
-        });
-
-        it("should pass AssumedValue in different measure if selected", function(){
-            model.set({
-                AssumedValue: {Unit: 'kg', Value: 5000},
-                getValueConverter: function (property, fromUnit, toUnit){
-                    switch(property){
-                        case 'weight':
-                            if (fromUnit === 'kg'  && toUnit === 't'){
-                                return function (value) {
-                                    return value / 1000;
-                                };
-                            }
-                            if (fromUnit === 't'  && toUnit === 'kg'){
-                                return function (value) {
-                                    return value * 1000;
-                                }
-                            }
-                    }
-                },
-                Units:{ 'kg':{}, 't': {} }
-            });
-            model.set({Unit: 't'});
-            model.set({Value: ''});
-            expect(model.get('Value')).toEqual(5);
-        });
     });
 
     describe("model value precision", function(){
         var model;
 
         beforeEach(function () {
-            model = new SiberianEHR.MeasuredUnit({
+            model = new SiberianEHR.MeasuredUnit.Model({
                 PropertyName : 'weight',
                 getValueConverter: function (property, fromUnit, toUnit){
                     switch(property){
@@ -166,8 +157,10 @@ describe("Measured Unit widget", function () {
                     'kg':{precision: 0},
                     't':{precision: 2}
                 },
-                Value: 10,
-                Unit: 'kg'
+                DefaultValue: {
+                    Value: 10,
+                    Unit: 'kg'
+                }
             });
         });
 
@@ -180,6 +173,97 @@ describe("Measured Unit widget", function () {
             model.set({Value:16.4});
             model.set({Unit:'t'});
             expect(parseFloat(model.get('Value'))).toEqual(0.02);
+        });
+    });
+
+    describe("assumed value and user interaction", function(){
+        var element = $('<div id="container"></div>'),
+            widget, options;
+
+        beforeEach(function(){
+            options = {
+                DefaultValue: {
+                    Value: 1,
+                    Unit: 'unit1x'
+                },
+                Units:{
+                    'unit1x':{},
+                    'unit2x':{}
+                },
+                getValueConverter: function (property, fromUnit, toUnit){
+                    if (fromUnit === 'unit1x'  && toUnit === 'unit2x'){
+                        return function (value) {
+                            return value * 2;
+                        }
+                    };
+                    if (fromUnit === 'unit2x'  && toUnit === 'unit1x'){
+                        return function (value) {
+                            return value / 2;
+                        }
+                    }
+                }
+            };
+        });
+
+        it("should fill in the placeholder with 5 (assumed value is 10 in different untis) on specifying empty value, whilst model value should be ''",function(){
+            options.AssumedValue = {
+                Value: 10,
+                Unit: 'unit2x'
+            };
+            widget = $(element).measuredUnit(options);
+            $(element).find('input[name=Value]').val('');
+            expect(parseFloat($(element).find('input[name=Value]').attr('placeholder'))).toEqual(5);
+            expect($(element).find('input[name=Value]').val()).toEqual('');
+        });
+
+        it("should fill in the placeholder with 10 (assumed value is in the same units) on specifying empty value, whilst model value should be ''",function(){
+            options.AssumedValue = {
+                Value: 10,
+                Unit: 'unit1x'
+            };
+            widget = $(element).measuredUnit(options);
+            $(element).find('input[name=Value]').val('');
+            expect(parseFloat($(element).find('input[name=Value]').attr('placeholder'))).toEqual(10);
+            expect($(element).find('input[name=Value]').val()).toEqual('');
+        });
+    });
+
+    describe("min/max test", function(){
+        var model, foo;
+        beforeEach(function () {
+            model = new SiberianEHR.MeasuredUnit.Model({
+                DefaultValue: {
+                    Value: 10,
+                    Unit: 'kg'
+                },
+                Units:{
+                    'kg': {minValue: 1, maxValue: 250, precision: 0}
+                },
+                Required: true,
+                PropertyName: 'weight'
+            });
+            foo = {
+                invalid_handler : function(){
+                    return;
+                }
+            };
+            spyOn(foo, 'invalid_handler');
+            model.on('invalid', foo.invalid_handler, model);
+        });
+
+        it("should show error on value less than minimal", function () {
+            model.set({Value: -1});
+            expect(foo.invalid_handler).toHaveBeenCalled();
+        });
+
+        it("should show error on value greater than minimal", function () {
+            model.set({Value: 300});
+            expect(foo.invalid_handler).toHaveBeenCalled();
+        });
+
+        it("should not show error on value within the bounds", function () {
+            model.set({Value: 200});
+            expect(model.get('isError')).toEqual(false);
         });
     });
 });

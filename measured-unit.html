@@ -20,10 +20,11 @@
             <p>This is example of measured unit widget.</p>
 
             <form action=".">
-                <h4>Humans body temperature (assumed value is 36.6 degrees centigrade)</h4>
+                <h4>Humans body temperature (assumed value is 36.6 degrees centigrade), min/max and required constraints</h4>
                 <div id="measured-input1"></div>
-                <h4>Pressure</h4>
+                <h4>Pressure (no constraints)</h4>
                 <div id="measured-input2"></div>
+                <h4>Height (Required constraint)</h4>
                 <div id="measured-input3"></div>
             </form>
         </div>
@@ -43,9 +44,8 @@
         <script type="text/javascript">
             $(function(){
                 $('#measured-input1').measuredUnit({
-                    AssumedValue: { Value: 36.6, Unit: "C" },  // assumed value - the value set to the control if user has not touched it
-                    Value: 36.6,    //Current value
-                    Unit: 'C',      // Current measurement unit value
+                    AssumedValue: { Value: 36.6, Unit: 'C' },  // assumed value - the value set to the control if user has not touched it
+                    DefaultValue: { Value: 36.6, Unit: 'C' },  // Current Value and its measurement
                     Required : true, // specifies whether this value must be filled in
                     /** Array of possible measurement units
                      *  Unit structure - object. Key is measure
@@ -100,9 +100,11 @@
                     }
                 });
                 $('#measured-input2').measuredUnit({
-                    Value: 0,
-                    Unit: 'mm Hg',
-                    Required : true,
+                    DefaultValue: {
+                        Value: 0,
+                        Unit: 'mm Hg'
+                    },
+                    Required : false,
                     Units: {
                         'mm Hg' : {
                             precision: 0
@@ -127,6 +129,14 @@
                                 }
                         }
                     }
+                });
+                $('#measured-input3').measuredUnit({
+                    DefaultValue: {
+                        Value: 160,
+                        Unit: 'cm'
+                    },
+                    Required : true,
+                    PropertyName : 'height'
                 });
             });
         </script>
