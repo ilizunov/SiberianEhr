@@ -16,10 +16,18 @@
 </head>
 <body>
 
-<div class="hero-unit"><h1>Hello world!</h1>
+<div class="hero-unit"><h1>DateTime Picker</h1>
     <form action=".">
-        <h4>DateTime Picker</h4>
+        <h4>Month Picker</h4>
+        <div id="datetime-picker0"></div>
+        <h4>Day Picker</h4>
         <div id="datetime-picker1"></div>
+        <h4>Hour Picker</h4>
+        <div id="datetime-picker2"></div>
+        <h4>Minute Picker</h4>
+        <div id="datetime-picker3"></div>
+        <h4>Second Picker</h4>
+        <div id="datetime-picker4"></div>
     </form>
 </div>
 
@@ -38,8 +46,24 @@
 <!--Example code-->
 <script type="text/javascript">
     $(function(){
+        $('#datetime-picker0').dateTimePicker({
+            format: 'YYYY-??',
+            Magnitude: 63494389149.55
+        });
         $('#datetime-picker1').dateTimePicker({
             format: 'YYYY-MM-??',
+            Magnitude: 63494389149.55
+        });
+        $('#datetime-picker2').dateTimePicker({
+            format: 'YYYY-MM-DD ??',
+            Magnitude: 63494389149.55
+        });
+        $('#datetime-picker3').dateTimePicker({
+            format: 'YYYY-MM-DD hh:??',
+            Magnitude: 63494389149.55
+        });
+        $('#datetime-picker4').dateTimePicker({
+            format: 'YYYY-MM-DD hh:mm:??',
             Magnitude: 63494389149.55
         });
     });

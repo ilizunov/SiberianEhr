@@ -2,47 +2,59 @@
 
     "use strict";
 
-    SiberianEHR.DateTimePicker = Backbone.Model.extend({
+    SiberianEHR.DateTimePicker = {}; // adds widget namespace
+
+    SiberianEHR.DateTimePicker.Model = Backbone.Model.extend({
         initialize: function(options) {
-            var _startOfDays = moment([1, 1, 1, 0, 0, 0, 0]); // 0001-01-01 0:00 +0:00
             var formatReader = new SiberianEHR.DateTimeFormatReader();
+            var format = formatReader.readDateFormat(options.format);
             var settings = {},
-                date = moment(_startOfDays).add(options.Magnitude,'seconds');
-            _.extend(settings, formatReader.readDateFormat(options.format),
+                date = moment.utc(SiberianEHR.DateTimePicker.Consts._startOfDays).add(options.Magnitude,'seconds');
+            _.extend(settings, format,
                 {
-                    date : date,
-                    _startOfDays : _startOfDays
+                    Value : date,
+                    format: format // Constraint
                 },
                 {
-                    Year    : date.year(),
-                    Month   : date.month(),
-                    Day     : date.date(),
-                    Hour    : date.hour(),
-                    Minute  : date.minute(),
-                    Second  : date.second(),
-                    Millisecond: date.milliseconds()
+                    Year    : format.hasYear ? date.year() : 1,
+                    Month   : format.hasMonth ? date.month() : 0,
+                    Day     : format.hasDay ? date.date(): 1,
+                    Hour    : format.hasHour ? date.hour(): 0,
+                    Minute  : format.hasMinute ? date.minute(): 0,
+                    Second  : format.hasSecond ? date.second(): 0,
+                    Millisecond: format.hasMillisecond ? date.milliseconds() : 0
                 }
             );
             this.set(settings);
+            // Renew Value and Magnitude
+            this.recalculate();
             // Set available hours array
             this.set({
-                ri_HoursArray:_.map(_.range(0, 23),function(element, index, list){
+                ri_HoursArray:_.map(_.range(0, 24),function(element, index, list){
                     return {
                         hourNumber: element
                     };
-                })
-            });
-            // Set months array for rivets
-            this.set({
+                }),
+                // Set minutes array
+                ri_MinutesArray:_.map(_.range(0, 60),function(element, index, list){
+                    return {
+                        minuteNumber: element
+                    };
+                }),
+                // Set minutes array
+                ri_SecondsArray:_.map(_.range(0, 60),function(element, index, list){
+                    return {
+                        secondNumber: element
+                    };
+                }),
+                // Set months array for rivets
                 ri_MonthsArray: _.map(moment().lang()._months, function(element, index, list){
                     return {
                         monthNumber: index,
                         monthName: element
                     };
-                })
-            });
-            // Set years array for rivets
-            this.set({
+                }),
+                // Set years array for rivets
                 ri_YearsArray:_.map(_.range(settings.Year-5, settings.Year+5), function(element, index, list){
                     return {
                         yearName: element
@@ -53,18 +65,26 @@
             this.recalculateDays();
             //and also bind this recalculation on changing month or year
             this.on('change:Year change:Month', this.recalculateDays, this);
+            //TODO UTC
             this.on('change:Year change:Month change:Day change:Hour change:Minute change:Second change:Millisecond', this.preValidate, this);
         },
+        /**
+         * Gets value of selected date as ISO8601 string
+         * @return {String} Value of selected date as ISO8601 string
+         */
         getValue: function(){
-            var json = this.toJSON();
-            //TODO UTC
-            return moment([json.Year, json.Month, json.Day, json.Hour, json.Minute, json.Second, json.Millisecond]).format();
+            return this.get('date').format();
         },
+        /**
+         * Recalculates date and magnitude
+         */
         recalculate: function(){
             var json = this.toJSON();
-            var m = moment([json.Year, json.Month, json.Day, json.Hour, json.Minute, json.Second, json.Millisecond]);
+            //TODO UTC
+            var m = moment([parseInt(json.Year), parseInt(json.Month), parseInt(json.Day),
+                parseInt(json.Hour), parseInt(json.Minute), parseInt(json.Second), json.Millisecond]);
             this.set('date', m);
-            this.set('Magnitude', m.diff(this.get('_startOfDays'), 'milliseconds')/1000);
+            this.set('Magnitude', m.diff(SiberianEHR.DateTimePicker.Consts._startOfDays, 'milliseconds')/1000);
         },
         /**
          * When year or month is changed, we have to recalculate the number of days in current month
@@ -97,14 +117,37 @@
         isError: false
     });
 
-    SiberianEHR.DateTimePickerView = SiberianEHR.BindingView.extend({
+    /**
+     * Deserializes model from json
+     * @param json {Object}
+     * @return {SiberianEHR.DateTimePicker.Model}
+     */
+    SiberianEHR.DateTimePicker.deserialize = function(json){
+        //TODO
+    }
+
+    /**
+     * Serializes model of SiberianEHR.DateTimePicker.Model
+     *
+     * @param model {SiberianEHR.DateTimePicker.Model} model to serialize
+     * @return {Object} Contains 2 key-value pairs - Value - ISO8601 string and corresponding Magnitude
+     */
+    SiberianEHR.DateTimePicker.serialize = function(model){
+        var json = model.toJSON();
+        return {
+            Value: moment(json.Value).format(),
+            Magnitude: json.Magnitude,
+            format: json.format
+        };
+    }
+
+    SiberianEHR.DateTimePicker.Consts = {
+        _startOfDays : moment([1, 1, 1, 0, 0, 0, 0, 0]) // 0001-01-01 0:00 +0:00
+    };
+
+    SiberianEHR.DateTimePicker.View = SiberianEHR.BindingView.extend({
         templateName: 'datetime-picker',
-        events:{
-            "click #monthPickerPartControl #add":          "addMonth",
-            "click #monthPickerPartControl #remove":       "removeMonth",
-            "click #dayPickerPartControl #add":            "addDay",
-            "click #dayPickerPartControl #remove":         "removeDay"
-        },
+        events:{ },
         initialize:function(options){
             this.model.on('change:isBusy',  this.blockWidgetIfModelIsBusy, this); // Block UI while the model is busy
             this.model.on('change:isError', this.clearError, this);
@@ -124,44 +167,15 @@
          */
         showError: function(model, error){
             //TODO show error
-        },
-        /**
-         * When clicked on adding a month
-         */
-        addMonth: function(){
-            this.model.set({
-                hasMonth: true
-            });
-        },
-        /**
-         * When clicked on removing a month
-         */
-        removeMonth: function(){
-            this.model.set({
-                hasMonth:false,
-                hasDay:false
-            });
-        },
-        /**
-         * When clicked on adding a day
-         */
-        addDay: function(){
-            this.model.set({hasDay: true});
-        },
-        /**
-         * When clicked on removing a day
-         */
-        removeDay: function(){
-            this.model.set({hasDay: false});
         }
     });
 
     $.fn.dateTimePicker = function (options) {
-        var model = new SiberianEHR.DateTimePicker(options);
+        var model = new SiberianEHR.DateTimePicker.Model(options);
 
         return this.each(function () {
             var $el = $(this),
-                view = new SiberianEHR.DateTimePickerView({
+                view = new SiberianEHR.DateTimePicker.View({
                     el: $el,
                     model: model
                 });

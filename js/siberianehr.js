@@ -55,33 +55,59 @@ SiberianEHR.BindingView = Backbone.View.extend({
 });
 
 SiberianEHR.DateTimeFormatReader = function(){};
-SiberianEHR.DateTimeFormatReader.prototype.readDateFormat = function(dateTimeFormat){
-    var format = {
-        hasCentury: false,
-        isRequiredCentury: false,
-        hasYear: false,
-        isRequiredYear: false,
-        hasMonth: false,
-        isRequiredMonth: false,
-        hasDay: false,
-        isRequiredDay: false,
-        hasHour: false,
-        isRequiredHour: false,
-        hasMinute: false,
-        isRequiredMinute: false,
-        hasSecond: false,
-        isRequiredSecond: false,
-        hasMillisecond: false,
-        isRequiredMillisecond: false,
-        hasTimeZone: false,
-        isRequiredTimeZone: false
-    };
-    if (dateTimeFormat == 'YYYY-MM-??'){
-        format.hasCentury = format.hasYear = format.hasMonth = format.hasDay = true;
-        format.isRequiredCentury = format.isRequiredYear = format.isRequiredMonth = true;
+_.extend(SiberianEHR.DateTimeFormatReader.prototype, {
+    readDateFormat : function(dateTimeFormat){
+        var format = {
+            hasCentury: false,
+            isRequiredCentury: false,
+            hasYear: false,
+            isRequiredYear: false,
+            hasMonth: false,
+            isRequiredMonth: false,
+            hasDay: false,
+            isRequiredDay: false,
+            hasHour: false,
+            isRequiredHour: false,
+            hasMinute: false,
+            isRequiredMinute: false,
+            hasSecond: false,
+            isRequiredSecond: false,
+            hasMillisecond: false,
+            isRequiredMillisecond: false,
+            hasTimeZone: false,
+            isRequiredTimeZone: false
+        };
+        switch (dateTimeFormat){
+            case 'YYYY-??':    // Month
+                format.hasCentury = format.hasYear = format.hasMonth = true;
+                format.isRequiredCentury = format.isRequiredYear = true;
+                break;
+            case 'YYYY-MM-??': // Day
+                format.hasCentury = format.hasYear = format.hasMonth = format.hasDay = true;
+                format.isRequiredCentury = format.isRequiredYear = format.isRequiredMonth = true;
+                break;
+            case 'YYYY-MM-DD ??': // Hour
+                format.hasCentury = format.hasYear = format.hasMonth = format.hasDay = format.hasHour = true;
+                format.isRequiredCentury = format.isRequiredYear = format.isRequiredMonth = format.isRequiredDay = true;
+                break;
+            case 'YYYY-MM-DD hh:??': // minute
+                format.hasCentury = format.hasYear = format.hasMonth = format.hasDay = format.hasHour =
+                    format.hasMinute = true;
+                format.isRequiredCentury = format.isRequiredYear = format.isRequiredMonth = format.isRequiredDay =
+                    format.isRequiredHour = true;
+                break;
+            case 'YYYY-MM-DD hh:mm:??': // second
+                format.hasCentury = format.hasYear = format.hasMonth = format.hasDay = format.hasHour =
+                    format.hasMinute = format.hasSecond = true;
+                format.isRequiredCentury = format.isRequiredYear = format.isRequiredMonth = format.isRequiredDay =
+                    format.isRequiredHour = format.isRequiredMinute = true;
+                break;
+            default:
+                break;
+        }
+        return format;
     }
-    return format;
-};
+});
 
 rivets.configure({
     adapter: {
