@@ -4,8 +4,8 @@ describe("Variate Date-time Picker Widget", function () {
         beforeEach(function(){
             view = new SiberianEHR.DateTimePickerView({
                 model : new SiberianEHR.DateTimePicker({
-                    format: 'YYYY-MM',
-                    datetime: '2013-02'
+                    format: 'YYYY-MM-??',
+                    Magnitude: 63494389149.55
                 })
             });
             view.render();

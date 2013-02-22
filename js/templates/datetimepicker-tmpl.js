@@ -22,5 +22,16 @@ JST['datetime-picker'] = '' +
                 '<a class="btn" href="#" title="Specify day" id="add" data-hide="model.hasDay"><i class="icon-plus"></i></a>' +
                 '<a class="btn" href="#" title="Remove day" id="remove" data-show="model.hasDay"><i class="icon-remove"></i></a>' +
             '</div>'+
+            '<div id="hourPickerPartControl" class="row">' +
+                '<div id="hourPickerPart" class="span2">' +
+                '<select data-value="model.Day" class="span2" data-show="model.hasHour">' +
+                    '<option data-each-hour="model.ri_HoursArray" data-value="hour:HourNumber" data-text="hour:HourNumber"></option>' +
+                '</select>' +
+                '</div>' +
+                '<a class="btn" href="#" title="Specify hour" id="add" data-hide="model.hasHour"><i class="icon-plus"></i></a>' +
+                '<a class="btn" href="#" title="Remove hour" id="remove" data-show="model.hasHour"><i class="icon-remove"></i></a>' +
+            '</div>'+
+            '<span class="label" data-text="model:getValue < .Year .Month .Day .Hour .Minute .Second .Millisecond"></span>' +
+            '<span class="label" data-text="model.Magnitude"></span>' +
         '</div>'+
     '</div>';

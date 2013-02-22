@@ -58,25 +58,27 @@ SiberianEHR.DateTimeFormatReader = function(){};
 SiberianEHR.DateTimeFormatReader.prototype.readDateFormat = function(dateTimeFormat){
     var format = {
         hasCentury: false,
+        isRequiredCentury: false,
         hasYear: false,
+        isRequiredYear: false,
         hasMonth: false,
+        isRequiredMonth: false,
         hasDay: false,
+        isRequiredDay: false,
         hasHour: false,
+        isRequiredHour: false,
         hasMinute: false,
+        isRequiredMinute: false,
         hasSecond: false,
+        isRequiredSecond: false,
         hasMillisecond: false,
+        isRequiredMillisecond: false,
         hasTimeZone: false,
-        /**
-         * Compact form means 20050809T183142+0330
-         * Non-compact form means 2005-08-09T18:31:42+03:30
-         */
-        isCompactForm: false
+        isRequiredTimeZone: false
     };
-    if (dateTimeFormat == 'YYYY-MM'){
-        format.hasCentury = format.hasYear = format.hasMonth = true;
-    }
-    if (dateTimeFormat == 'YYYY-MM-DD'){
+    if (dateTimeFormat == 'YYYY-MM-??'){
         format.hasCentury = format.hasYear = format.hasMonth = format.hasDay = true;
+        format.isRequiredCentury = format.isRequiredYear = format.isRequiredMonth = true;
     }
     return format;
 };

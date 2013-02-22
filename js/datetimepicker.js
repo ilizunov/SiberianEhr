@@ -4,20 +4,35 @@
 
     SiberianEHR.DateTimePicker = Backbone.Model.extend({
         initialize: function(options) {
+            var _startOfDays = moment([1, 1, 1, 0, 0, 0, 0]); // 0001-01-01 0:00 +0:00
             var formatReader = new SiberianEHR.DateTimeFormatReader();
             var settings = {},
-                date = moment(options.datetime);
+                date = moment(_startOfDays).add(options.Magnitude,'seconds');
             _.extend(settings, formatReader.readDateFormat(options.format),
                 {
-                    date : date
+                    date : date,
+                    _startOfDays : _startOfDays
                 },
                 {
                     Year    : date.year(),
                     Month   : date.month(),
-                    Day     : date.date()
-                });
-            // Set months array for rivets
+                    Day     : date.date(),
+                    Hour    : date.hour(),
+                    Minute  : date.minute(),
+                    Second  : date.second(),
+                    Millisecond: date.milliseconds()
+                }
+            );
             this.set(settings);
+            // Set available hours array
+            this.set({
+                ri_HoursArray:_.map(_.range(0, 23),function(element, index, list){
+                    return {
+                        hourNumber: element
+                    };
+                })
+            });
+            // Set months array for rivets
             this.set({
                 ri_MonthsArray: _.map(moment().lang()._months, function(element, index, list){
                     return {
@@ -34,13 +49,22 @@
                     };
                 })
             });
-            /**
-             * Recalculate number of days
-             */
+            // Recalculate number of days
             this.recalculateDays();
             //and also bind this recalculation on changing month or year
             this.on('change:Year change:Month', this.recalculateDays, this);
-            this.on('change:Year change:Month change:Day', this.preValidate, this);
+            this.on('change:Year change:Month change:Day change:Hour change:Minute change:Second change:Millisecond', this.preValidate, this);
+        },
+        getValue: function(){
+            var json = this.toJSON();
+            //TODO UTC
+            return moment([json.Year, json.Month, json.Day, json.Hour, json.Minute, json.Second, json.Millisecond]).format();
+        },
+        recalculate: function(){
+            var json = this.toJSON();
+            var m = moment([json.Year, json.Month, json.Day, json.Hour, json.Minute, json.Second, json.Millisecond]);
+            this.set('date', m);
+            this.set('Magnitude', m.diff(this.get('_startOfDays'), 'milliseconds')/1000);
         },
         /**
          * When year or month is changed, we have to recalculate the number of days in current month
@@ -65,6 +89,7 @@
             //TODO validation
             //return this.trigger("invalid", this, "Value should be specified");
             //this.set('isError', false); //this won't cause re-validation because no {validation: true} is specified
+            this.recalculate();
         },
         /**
          *  indicates whether there is error or not
