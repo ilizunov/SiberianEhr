@@ -66,8 +66,14 @@ describe("Variate Date-time Picker Widget", function () {
         });
 
         it("Should change magnitude because some parts of date-time are ignored",function(){
+            //2013-02-21
             var json = SiberianEHR.DateTimePicker.serialize(model);
             expect(json.Magnitude).toEqual(63494323200);
+            expect(json.Value).toEqual('2013-02-21T00:00:00+00:00');
+            expect(json.format).toEqual(model.get('format'));
+            var modelCopy = SiberianEHR.DateTimePicker.deserialize(json);
+            var modelCopyJSON = SiberianEHR.DateTimePicker.serialize(modelCopy);
+            expect(_.isEqual(json, modelCopyJSON)).toEqual(true);
         });
 
     });

@@ -13,7 +13,7 @@
             _.extend(settings, format,
                 {
                     Value : date,
-                    format: format // Constraint
+                    format: options.format // Constraint
                 },
                 {
                     Year    : format.hasYear ? date.year() : 1,
@@ -73,7 +73,7 @@
          * @return {String} Value of selected date as ISO8601 string
          */
         getValue: function(){
-            return this.get('date').format();
+            return this.get('Value').format();
         },
         /**
          * Recalculates date and magnitude
@@ -81,9 +81,9 @@
         recalculate: function(){
             var json = this.toJSON();
             //TODO UTC
-            var m = moment([parseInt(json.Year), parseInt(json.Month), parseInt(json.Day),
+            var m = moment.utc([parseInt(json.Year), parseInt(json.Month), parseInt(json.Day),
                 parseInt(json.Hour), parseInt(json.Minute), parseInt(json.Second), json.Millisecond]);
-            this.set('date', m);
+            this.set('Value', m);
             this.set('Magnitude', m.diff(SiberianEHR.DateTimePicker.Consts._startOfDays, 'milliseconds')/1000);
         },
         /**
@@ -118,12 +118,15 @@
     });
 
     /**
-     * Deserializes model from json
+     * De-serializes model from json
      * @param json {Object}
      * @return {SiberianEHR.DateTimePicker.Model}
      */
     SiberianEHR.DateTimePicker.deserialize = function(json){
-        //TODO
+        return new SiberianEHR.DateTimePicker.Model({
+            format: json.format,
+            Magnitude: json.Magnitude
+        });
     }
 
     /**
@@ -135,14 +138,14 @@
     SiberianEHR.DateTimePicker.serialize = function(model){
         var json = model.toJSON();
         return {
-            Value: moment(json.Value).format(),
+            Value: moment.utc(json.Value).format(),
             Magnitude: json.Magnitude,
             format: json.format
         };
     }
 
     SiberianEHR.DateTimePicker.Consts = {
-        _startOfDays : moment([1, 1, 1, 0, 0, 0, 0, 0]) // 0001-01-01 0:00 +0:00
+        _startOfDays : moment.utc([1, 1, 1, 0, 0, 0, 0, 0]) // 0001-01-01 0:00 +0:00
     };
 
     SiberianEHR.DateTimePicker.View = SiberianEHR.BindingView.extend({
