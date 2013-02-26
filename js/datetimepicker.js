@@ -6,66 +6,28 @@
 
     SiberianEHR.DateTimePicker.Model = Backbone.Model.extend({
         initialize: function(options) {
-            var formatReader = new SiberianEHR.DateTimeFormatReader();
-            var format = formatReader.readDateFormat(options.format);
             var settings = {},
                 date = moment.utc(SiberianEHR.DateTimePicker.Consts._startOfDays).add(options.Magnitude,'seconds');
-            _.extend(settings, format,
+            _.extend(settings,
+                options.format,
                 {
                     Value : date,
-                    format: options.format // Constraint
+                    dateFormat: options.format.dateFormat // Constraint
                 },
                 {
-                    Year    : format.hasYear ? date.year() : 1,
-                    Month   : format.hasMonth ? date.month() : 0,
-                    Day     : format.hasDay ? date.date(): 1,
-                    Hour    : format.hasHour ? date.hour(): 0,
-                    Minute  : format.hasMinute ? date.minute(): 0,
-                    Second  : format.hasSecond ? date.second(): 0,
-                    Millisecond: format.hasMillisecond ? date.milliseconds() : 0
+                    Year    : options.format.hasYear ? date.year() : 1,
+                    Month   : options.format.hasMonth ? date.month() : 0,
+                    Day     : options.format.hasDay ? date.date(): 1,
+                    Hour    : options.format.hasHour ? date.hour(): 0,
+                    Minute  : options.format.hasMinute ? date.minute(): 0,
+                    Second  : options.format.hasSecond ? date.second(): 0,
+                    Millisecond: options.format.hasMillisecond ? date.milliseconds() : 0
                 }
             );
             this.set(settings);
             // Renew Value and Magnitude
             this.recalculate();
-            // Set available hours array
-            this.set({
-                ri_HoursArray:_.map(_.range(0, 24),function(element, index, list){
-                    return {
-                        hourNumber: element
-                    };
-                }),
-                // Set minutes array
-                ri_MinutesArray:_.map(_.range(0, 60),function(element, index, list){
-                    return {
-                        minuteNumber: element
-                    };
-                }),
-                // Set minutes array
-                ri_SecondsArray:_.map(_.range(0, 60),function(element, index, list){
-                    return {
-                        secondNumber: element
-                    };
-                }),
-                // Set months array for rivets
-                ri_MonthsArray: _.map(moment().lang()._months, function(element, index, list){
-                    return {
-                        monthNumber: index,
-                        monthName: element
-                    };
-                }),
-                // Set years array for rivets
-                ri_YearsArray:_.map(_.range(settings.Year-5, settings.Year+5), function(element, index, list){
-                    return {
-                        yearName: element
-                    };
-                })
-            });
-            // Recalculate number of days
-            this.recalculateDays();
-            //and also bind this recalculation on changing month or year
-            this.on('change:Year change:Month', this.recalculateDays, this);
-            //TODO UTC
+            this.on('change:Year change:Month change:Day change:Hour change:Minute change:Second change:Millisecond', this.recalculate, this);
             this.on('change:Year change:Month change:Day change:Hour change:Minute change:Second change:Millisecond', this.preValidate, this);
         },
         /**
@@ -75,27 +37,30 @@
         getValue: function(){
             return this.get('Value').format();
         },
+        getDateValue: function(){
+            return this.get('Value').format(this.get('dateFormat').toUpperCase());
+        },
         /**
          * Recalculates date and magnitude
          */
+        getDate: function(){
+            return this.get('Value').format('yyyy-mm-dd');
+        },
+        setDate: function(date){
+            var json = this.toJSON();
+            var m = moment.utc(date);
+            this.set({
+                Year    : json.hasYear ? m.year() : 1,
+                Month   : json.hasMonth ? m.month() : 0,
+                Day     : json.hasDay ? m.date(): 1
+            });
+        },
         recalculate: function(){
             var json = this.toJSON();
-            //TODO UTC
             var m = moment.utc([parseInt(json.Year), parseInt(json.Month), parseInt(json.Day),
                 parseInt(json.Hour), parseInt(json.Minute), parseInt(json.Second), json.Millisecond]);
             this.set('Value', m);
             this.set('Magnitude', m.diff(SiberianEHR.DateTimePicker.Consts._startOfDays, 'milliseconds')/1000);
-        },
-        /**
-         * When year or month is changed, we have to recalculate the number of days in current month
-         */
-        recalculateDays: function(){
-            var json = this.toJSON();
-            this.set({
-                ri_DaysArray: _.map(_.range(1,moment([json.Year, json.Month]).daysInMonth()+1), function(element, index, list){
-                    return {DayNumber: element};
-                })
-            });
         },
         preValidate: function(){
             //TODO pre-validation
@@ -174,7 +139,13 @@
     });
 
     $.fn.dateTimePicker = function (options) {
-        var model = new SiberianEHR.DateTimePicker.Model(options);
+        var formatReader = new SiberianEHR.DateTimeFormatReader();
+        var format = formatReader.readDateFormat(options.format);
+
+        var model = new SiberianEHR.DateTimePicker.Model({
+            format: format,
+            Magnitude: options.Magnitude
+        });
 
         return this.each(function () {
             var $el = $(this),
@@ -184,6 +155,14 @@
                 });
             view.render();
             $el.data('view', view);
+            $el.find('#date input').datepicker({
+                autoclose : true,
+                startView : format.hasDay ? 'month' : format.hasMonth ? 'year' : 'decade',
+                minViewMode : format.hasDay ? 'days' : format.hasMonth ? 'months' : 'years',
+                format: format.dateFormat
+            }).on('changeDate', function(e){
+                view.model.setDate(e.date.toString());
+            });
         });
     };
 }(window.jQuery);

@@ -13,21 +13,20 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
     <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/datepicker.css">
 </head>
 <body>
 
 <div class="hero-unit"><h1>DateTime Picker</h1>
     <form action=".">
-        <h4>Month Picker</h4>
+        <h4>Year Picker</h4>
         <div id="datetime-picker0"></div>
-        <h4>Day Picker</h4>
+        <h4>Month Picker</h4>
         <div id="datetime-picker1"></div>
-        <h4>Hour Picker</h4>
+        <h4>Day Picker</h4>
         <div id="datetime-picker2"></div>
-        <h4>Minute Picker</h4>
+        <h4>Hour Picker</h4>
         <div id="datetime-picker3"></div>
-        <h4>Second Picker</h4>
-        <div id="datetime-picker4"></div>
     </form>
 </div>
 
@@ -39,6 +38,7 @@
 <script src="js/vendor/handlebars.js"></script>
 <script src="js/vendor/jquery.blockUI.js"></script>
 <script src="js/vendor/moment.js"></script>
+<script src="js/vendor/bootstrap-datepicker.js"></script>
 <!--Application-->
 <script src="js/siberianehr.js"></script>
 <script src="js/templates/datetimepicker-tmpl.js"></script>
@@ -47,23 +47,19 @@
 <script type="text/javascript">
     $(function(){
         $('#datetime-picker0').dateTimePicker({
-            format: 'YYYY-??',
+            format: 'YYYY-XX-XXTXX:XX:XX',
             Magnitude: 63494389149.55
         });
         $('#datetime-picker1').dateTimePicker({
-            format: 'YYYY-MM-??',
+            format: 'YYYY-??-XXTXX:XX:XX',
             Magnitude: 63494389149.55
         });
         $('#datetime-picker2').dateTimePicker({
-            format: 'YYYY-MM-DD ??',
+            format: 'YYYY-MM-??TXX:XX:XX',
             Magnitude: 63494389149.55
         });
         $('#datetime-picker3').dateTimePicker({
-            format: 'YYYY-MM-DD hh:??',
-            Magnitude: 63494389149.55
-        });
-        $('#datetime-picker4').dateTimePicker({
-            format: 'YYYY-MM-DD hh:mm:??',
+            format: 'YYYY-MM-DDT??:XX:XX',
             Magnitude: 63494389149.55
         });
     });

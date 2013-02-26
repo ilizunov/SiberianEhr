@@ -75,36 +75,114 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
             hasMillisecond: false,
             isRequiredMillisecond: false,
             hasTimeZone: false,
-            isRequiredTimeZone: false
+            isRequiredTimeZone: false,
+            dateFormat: '',
+            timeFormat: ''
         };
-        switch (dateTimeFormat){
-            case 'YYYY-??':    // Month
-                format.hasCentury = format.hasYear = format.hasMonth = true;
-                format.isRequiredCentury = format.isRequiredYear = true;
-                break;
-            case 'YYYY-MM-??': // Day
-                format.hasCentury = format.hasYear = format.hasMonth = format.hasDay = true;
-                format.isRequiredCentury = format.isRequiredYear = format.isRequiredMonth = true;
-                break;
-            case 'YYYY-MM-DD ??': // Hour
-                format.hasCentury = format.hasYear = format.hasMonth = format.hasDay = format.hasHour = true;
-                format.isRequiredCentury = format.isRequiredYear = format.isRequiredMonth = format.isRequiredDay = true;
-                break;
-            case 'YYYY-MM-DD hh:??': // minute
-                format.hasCentury = format.hasYear = format.hasMonth = format.hasDay = format.hasHour =
-                    format.hasMinute = true;
-                format.isRequiredCentury = format.isRequiredYear = format.isRequiredMonth = format.isRequiredDay =
-                    format.isRequiredHour = true;
-                break;
-            case 'YYYY-MM-DD hh:mm:??': // second
-                format.hasCentury = format.hasYear = format.hasMonth = format.hasDay = format.hasHour =
-                    format.hasMinute = format.hasSecond = true;
-                format.isRequiredCentury = format.isRequiredYear = format.isRequiredMonth = format.isRequiredDay =
-                    format.isRequiredHour = format.isRequiredMinute = true;
-                break;
-            default:
-                break;
-        }
+        //YYYY-MM-DDThh:mm:ss[.mmm]
+        var dateFormat = dateTimeFormat.substr(0, 10).toUpperCase().split('-');
+        /**
+         * Parse Year
+         */
+        _.extend(format, (function(s){
+            if (s == 'YYYY')
+                return {
+                    hasCentury: true,
+                    hasYear: true,
+                    dateFormat: 'yyyy'
+                };
+            return null;
+        })(dateFormat[0]));
+        /**
+         * Parse Month
+         */
+        _.extend(format, (function(s){
+            var format = {
+                hasMonth: false,
+                isRequiredMonth: false,
+                dateFormat: 'yyyy-mm'
+            };
+            if (s == 'XX')
+                return null;
+            format.hasMonth = true;
+            if (s == 'MM')
+                format.isRequiredMonth = true;
+            return format;
+        })(dateFormat[1]));
+        /**
+         * Parse Day
+         */
+        _.extend(format, (function(s){
+            var format = {
+                hasDay: false,
+                isRequiredDay: false,
+                dateFormat: 'yyyy-mm-dd'
+            };
+            if (s == 'XX')
+                return null;
+            format.hasDay = true;
+            if (s == 'DD')
+                format.isRequiredDay = true;
+            return format;
+        })(dateFormat[2]));
+        //Returns format
+        var timeFormat = dateTimeFormat.substr(11).toUpperCase().split(':');
+        /**
+         * Parse Hour
+         */
+        _.extend(format, (function(s){
+            var format = {
+                hasHour: false,
+                isRequiredHour: false,
+                timeFormat: 'hh'
+            };
+            if (s == 'XX')
+                return null;
+            format.hasHour = true;
+            if (s == 'HH')
+                format.isRequiredHour = true;
+            return format;
+        })(timeFormat[0]));
+        /**
+         * Parse Minute
+         */
+        _.extend(format, (function(s){
+            var format = {
+                hasMinute: false,
+                isRequiredMinute: false,
+                timeFormat: 'hh:mm'
+            };
+            if (s == 'XX')
+                return null;
+            format.hasMinute = true;
+            if (s == 'MM')
+                format.isRequiredMinute = true;
+            return format;
+        })(timeFormat[1]));
+        /**
+         * Parse Second and Millisecond
+         */
+        _.extend(format, (function(s){
+            var format = {
+                hasSecond: false,
+                isRequiredSecond: false,
+                hasMillisecond: false,
+                isRequiredMillisecond: false,
+                timeFormat: 'hh:mm:ss'
+            };
+            var parts = s.split('.');
+            if (parts[0] == 'XX')
+                return null;
+            format.hasSecond = true;
+            if (parts[0] == 'SS')
+                format.isRequiredSecond = true;
+            if (parts.length == 1) return format;
+            if (parts[1] == 'XXX') return format;
+            format.hasMillisecond = true;
+            if (parts[1] == 'MMM') format.isRequiredMillisecond = true;
+
+            return format;
+        })(timeFormat[2]));
         return format;
     }
 });
