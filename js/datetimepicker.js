@@ -40,6 +40,9 @@
         getDateValue: function(){
             return this.get('Value').format(this.get('dateFormat').toUpperCase());
         },
+        getTimeValue: function(){
+            return this.get('Value').format(this.get('timeFormat'));
+        },
         /**
          * Recalculates date and magnitude
          */
@@ -53,6 +56,15 @@
                 Year    : json.hasYear ? m.year() : 1,
                 Month   : json.hasMonth ? m.month() : 0,
                 Day     : json.hasDay ? m.date(): 1
+            });
+        },
+        setTime: function(time){
+            var json = this.toJSON();
+            var m = moment.utc(time, "hh:mm:ss");
+            this.set({
+                Hour: json.hasHour ? m.hour() : 0,
+                Minute: json.hasMinute ? m.minute() : 0,
+                Second: json.hasSecond ? m.second() : 0
             });
         },
         recalculate: function(){
@@ -110,7 +122,7 @@
     }
 
     SiberianEHR.DateTimePicker.Consts = {
-        _startOfDays : moment.utc([1, 1, 1, 0, 0, 0, 0, 0]) // 0001-01-01 0:00 +0:00
+        _startOfDays : moment.utc([1, 0, 1, 0, 0, 0, 0, 0]) // 0001-01-01 0:00 +0:00
     };
 
     SiberianEHR.DateTimePicker.View = SiberianEHR.BindingView.extend({
@@ -163,6 +175,14 @@
             }).on('changeDate', function(e){
                 view.model.setDate(e.date.toString());
             });
+            $el.find('#time input').timepicker({
+                minuteStep: 1,
+                showMinutes: format.hasMinute, //FIXME - no such option
+                showSeconds: format.hasSecond,
+                showMeridian: false
+            }).on('changeTime.timepicker', function(e) {
+                view.model.setTime(e.time.value);
+            });;
         });
     };
 }(window.jQuery);

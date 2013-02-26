@@ -1,88 +1,137 @@
 describe("Variate Date-time Picker Widget", function () {
-    describe("rendering", function () {
-        var view;
-        beforeEach(function(){
-            view = new SiberianEHR.DateTimePicker.View({
-                model : new SiberianEHR.DateTimePicker.Model({
-                    format: 'YYYY-MM-??',
-                    Magnitude: 63494389149.55
-                })
-            });
-            view.render();
-        });
-
-        it("In select box year should be selected", function () {
-            //Test for rivets late binding
-            //Fixed rivets error #75: Improve data-value bindings on dynamic select elements
-            //https://github.com/adheerajkumar/rivets/commit/ee1b0980f6417ef1bf90f543a6f649cd59a69fa6
-            expect(parseInt($('select[name=Year]', view.el).val())).toEqual(2013);
-        });
-    });
-
     describe("model initialization", function(){
-        var model;
-
+        var format, m;
         beforeEach(function(){
-            model = new SiberianEHR.DateTimePicker.Model({
-                format: 'YYYY-MM-??',
-                Magnitude: 63494389149.55
-            });
+            format = {
+                hasCentury: false, isRequiredCentury: false,
+                hasYear: false, isRequiredYear: false,
+                hasMonth: false, isRequiredMonth: false,
+                hasDay: false, isRequiredDay: false,
+                hasHour: false, isRequiredHour: false,
+                hasMinute: false, isRequiredMinute: false,
+                hasSecond: false, isRequiredSecond: false,
+                hasMillisecond: false, isRequiredMillisecond: false,
+                hasTimeZone: false, isRequiredTimeZone: false,
+                dateFormat: '', timeFormat: ''
+            };
+            m = 63494389149.55;
         });
-
+        it("Should initialize model with year",function(){
+            format.dateFormat = 'YYYY';
+            format.hasYear = true;
+            var model = new SiberianEHR.DateTimePicker.Model({
+                Magnitude: m,
+                format: format
+            }),
+                json = model.toJSON();
+            expect(json.Year).toEqual(2013);
+            expect(json.Month).toEqual(0);
+            expect(json.Day).toEqual(1);
+            expect(json.Hour).toEqual(0);
+            expect(json.Minute).toEqual(0);
+            expect(json.Second).toEqual(0);
+            expect(json.Millisecond).toEqual(0);
+            expect(model.getDateValue()).toEqual('2013');
+        });
+        it("Should initialize model with year and month",function(){
+            format.dateFormat = 'YYYY-MM';
+            format.hasYear = format.hasMonth = true;
+            var model = new SiberianEHR.DateTimePicker.Model({
+                    Magnitude: m,
+                    format: format
+                }),
+                json = model.toJSON();
+            expect(json.Year).toEqual(2013);
+            expect(json.Month).toEqual(1);
+            expect(json.Day).toEqual(1);
+            expect(json.Hour).toEqual(0);
+            expect(json.Minute).toEqual(0);
+            expect(json.Second).toEqual(0);
+            expect(json.Millisecond).toEqual(0);
+            expect(model.getDateValue()).toEqual('2013-02');
+        });
         it("Should initialize model with year, month and day",function(){
-            expect(model.get('Year')).toEqual(2013);
-            expect(model.get('Month')).toEqual(1);
-            expect(model.get('Day')).toEqual(21);
-            expect(model.get('Hour')).toEqual(0);
-            expect(model.get('Minute')).toEqual(0);
-            expect(model.get('Second')).toEqual(0);
-            expect(model.get('Millisecond')).toEqual(0);
+            format.dateFormat = 'YYYY-MM-DD';
+            format.hasYear = format.hasMonth = format.hasDay = true;
+            var model = new SiberianEHR.DateTimePicker.Model({
+                    Magnitude: m,
+                    format: format
+                }),
+                json = model.toJSON();
+            expect(json.Year).toEqual(2013);
+            expect(json.Month).toEqual(1);
+            expect(json.Day).toEqual(21);
+            expect(json.Hour).toEqual(0);
+            expect(json.Minute).toEqual(0);
+            expect(json.Second).toEqual(0);
+            expect(json.Millisecond).toEqual(0);
+            expect(model.getDateValue()).toEqual('2013-02-21');
+        });
+        it("Should initialize model with year, month, day and hour",function(){
+            format.dateFormat = 'YYYY-MM-DD';
+            format.timeFormat = 'HH';
+            format.hasYear = format.hasMonth = format.hasDay = true;
+            format.hasHour = true;
+            var model = new SiberianEHR.DateTimePicker.Model({
+                    Magnitude: m,
+                    format: format
+                }),
+                json = model.toJSON();
+            expect(json.Year).toEqual(2013);
+            expect(json.Month).toEqual(1);
+            expect(json.Day).toEqual(21);
+            expect(json.Hour).toEqual(18);
+            expect(json.Minute).toEqual(0);
+            expect(json.Second).toEqual(0);
+            expect(json.Millisecond).toEqual(0);
+            expect(model.getDateValue()).toEqual('2013-02-21');
+            expect(model.getTimeValue()).toEqual('18');
+        });
+        it("Should initialize model with year, month, day, hour & minute",function(){
+            format.dateFormat = 'YYYY-MM-DD';
+            format.timeFormat = 'HH:mm';
+            format.hasYear = format.hasMonth = format.hasDay = true;
+            format.hasHour = format.hasMinute = true;
+            var model = new SiberianEHR.DateTimePicker.Model({
+                    Magnitude: m,
+                    format: format
+                }),
+                json = model.toJSON();
+            expect(json.Year).toEqual(2013);
+            expect(json.Month).toEqual(1);
+            expect(json.Day).toEqual(21);
+            expect(json.Hour).toEqual(18);
+            expect(json.Minute).toEqual(19);
+            expect(json.Second).toEqual(0);
+            expect(json.Millisecond).toEqual(0);
+            expect(model.getDateValue()).toEqual('2013-02-21');
+            expect(model.getTimeValue()).toEqual('18:19');
+        });
+        it("Should initialize model with year, month, day, hour, minute and second",function(){
+            format.dateFormat = 'YYYY-MM-DD';
+            format.timeFormat = 'HH:mm:ss';
+            format.hasYear = format.hasMonth = format.hasDay = true;
+            format.hasHour = format.hasMinute = format.hasSecond = true;
+            var model = new SiberianEHR.DateTimePicker.Model({
+                    Magnitude: m,
+                    format: format
+                }),
+                json = model.toJSON();
+            expect(json.Year).toEqual(2013);
+            expect(json.Month).toEqual(1);
+            expect(json.Day).toEqual(21);
+            expect(json.Hour).toEqual(18);
+            expect(json.Minute).toEqual(19);
+            expect(json.Second).toEqual(9);
+            expect(json.Millisecond).toEqual(0);
+            expect(model.getDateValue()).toEqual('2013-02-21');
+            expect(model.getTimeValue()).toEqual('18:19:09');
         });
     });
 
-    describe("model manipulation", function(){
-        var model;
+    describe("model manipulation", function(){});
 
-        beforeEach(function(){
-            model = new SiberianEHR.DateTimePicker.Model({
-                format: 'YYYY-MM-DD hh:mm:??',
-                Magnitude: 63494389149.55
-            });
-        });
-        it("should add one minute on adding one minute",function(){
-            model.set('Minute', 1);
-            expect(model.get('Minute')).toEqual(1);
-        });
-    });
+    describe("model serialization/deserialization", function(){});
 
-    describe("model serialization/deserialization", function(){
-        var model;
-
-        beforeEach(function(){
-            model = new SiberianEHR.DateTimePicker.Model({
-                format: 'YYYY-MM-??',
-                Magnitude: 63494389149.55
-            });
-        });
-
-        it("Should change magnitude because some parts of date-time are ignored",function(){
-            //2013-02-21
-            var json = SiberianEHR.DateTimePicker.serialize(model);
-            expect(json.Magnitude).toEqual(63494323200);
-            expect(json.Value).toEqual('2013-02-21T00:00:00+00:00');
-            expect(json.format).toEqual(model.get('format'));
-            var modelCopy = SiberianEHR.DateTimePicker.deserialize(json);
-            var modelCopyJSON = SiberianEHR.DateTimePicker.serialize(modelCopy);
-            expect(_.isEqual(json, modelCopyJSON)).toEqual(true);
-        });
-
-    });
-
-    /**
-     * TODO tests
-     * 1. Fractional seconds
-     * 2. Valid/invalid dates (or delegate it to view, so user being unable to input a wrong date)
-     * 3. De-serialize
-     */
-
+    describe("Format reader parsing",function(){});
 });

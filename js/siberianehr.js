@@ -134,7 +134,7 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
             var format = {
                 hasHour: false,
                 isRequiredHour: false,
-                timeFormat: 'hh'
+                timeFormat: 'HH' // time format corresponding to momentjs
             };
             if (s == 'XX')
                 return null;
@@ -150,7 +150,7 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
             var format = {
                 hasMinute: false,
                 isRequiredMinute: false,
-                timeFormat: 'hh:mm'
+                timeFormat: 'HH:mm'
             };
             if (s == 'XX')
                 return null;
@@ -168,7 +168,7 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
                 isRequiredSecond: false,
                 hasMillisecond: false,
                 isRequiredMillisecond: false,
-                timeFormat: 'hh:mm:ss'
+                timeFormat: 'HH:mm:ss'
             };
             var parts = s.split('.');
             if (parts[0] == 'XX')

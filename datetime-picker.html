@@ -14,6 +14,7 @@
 
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/datepicker.css">
+    <link rel="stylesheet" href="css/bootstrap-timepicker.css">
 </head>
 <body>
 
@@ -25,8 +26,14 @@
         <div id="datetime-picker1"></div>
         <h4>Day Picker</h4>
         <div id="datetime-picker2"></div>
-        <h4>Hour Picker</h4>
+        <h4>Up to hour Picker</h4>
         <div id="datetime-picker3"></div>
+        <h4>Up to minute Picker</h4>
+        <div id="datetime-picker4"></div>
+        <h4>Up to second Picker</h4>
+        <div id="datetime-picker5"></div>
+        <h4>time Picker</h4>
+        <div id="datetime-picker6"></div>
     </form>
 </div>
 
@@ -39,6 +46,7 @@
 <script src="js/vendor/jquery.blockUI.js"></script>
 <script src="js/vendor/moment.js"></script>
 <script src="js/vendor/bootstrap-datepicker.js"></script>
+<script src="js/vendor/bootstrap-timepicker.js"></script>
 <!--Application-->
 <script src="js/siberianehr.js"></script>
 <script src="js/templates/datetimepicker-tmpl.js"></script>
@@ -60,6 +68,18 @@
         });
         $('#datetime-picker3').dateTimePicker({
             format: 'YYYY-MM-DDT??:XX:XX',
+            Magnitude: 63494389149.55
+        });
+        $('#datetime-picker4').dateTimePicker({
+            format: 'YYYY-MM-DDTHH:??:XX',
+            Magnitude: 63494389149.55
+        });
+        $('#datetime-picker5').dateTimePicker({
+            format: 'YYYY-MM-DDTHH:MM:??',
+            Magnitude: 63494389149.55
+        });
+        $('#datetime-picker6').dateTimePicker({
+            format: 'XXXX-XX-XXTHH:MM:SS',
             Magnitude: 63494389149.55
         });
     });
