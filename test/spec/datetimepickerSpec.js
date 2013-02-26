@@ -42,13 +42,13 @@ describe("Variate Date-time Picker Widget", function () {
                 }),
                 json = model.toJSON();
             expect(json.Year).toEqual(2013);
-            expect(json.Month).toEqual(1);
+            expect(json.Month).toEqual(0);
             expect(json.Day).toEqual(1);
             expect(json.Hour).toEqual(0);
             expect(json.Minute).toEqual(0);
             expect(json.Second).toEqual(0);
             expect(json.Millisecond).toEqual(0);
-            expect(model.getDateValue()).toEqual('2013-02');
+            expect(model.getDateValue()).toEqual('2013-01');
         });
         it("Should initialize model with year, month and day",function(){
             format.dateFormat = 'YYYY-MM-DD';
@@ -59,13 +59,13 @@ describe("Variate Date-time Picker Widget", function () {
                 }),
                 json = model.toJSON();
             expect(json.Year).toEqual(2013);
-            expect(json.Month).toEqual(1);
+            expect(json.Month).toEqual(0);
             expect(json.Day).toEqual(21);
             expect(json.Hour).toEqual(0);
             expect(json.Minute).toEqual(0);
             expect(json.Second).toEqual(0);
             expect(json.Millisecond).toEqual(0);
-            expect(model.getDateValue()).toEqual('2013-02-21');
+            expect(model.getDateValue()).toEqual('2013-01-21');
         });
         it("Should initialize model with year, month, day and hour",function(){
             format.dateFormat = 'YYYY-MM-DD';
@@ -78,13 +78,13 @@ describe("Variate Date-time Picker Widget", function () {
                 }),
                 json = model.toJSON();
             expect(json.Year).toEqual(2013);
-            expect(json.Month).toEqual(1);
+            expect(json.Month).toEqual(0);
             expect(json.Day).toEqual(21);
             expect(json.Hour).toEqual(18);
             expect(json.Minute).toEqual(0);
             expect(json.Second).toEqual(0);
             expect(json.Millisecond).toEqual(0);
-            expect(model.getDateValue()).toEqual('2013-02-21');
+            expect(model.getDateValue()).toEqual('2013-01-21');
             expect(model.getTimeValue()).toEqual('18');
         });
         it("Should initialize model with year, month, day, hour & minute",function(){
@@ -98,13 +98,13 @@ describe("Variate Date-time Picker Widget", function () {
                 }),
                 json = model.toJSON();
             expect(json.Year).toEqual(2013);
-            expect(json.Month).toEqual(1);
+            expect(json.Month).toEqual(0);
             expect(json.Day).toEqual(21);
             expect(json.Hour).toEqual(18);
             expect(json.Minute).toEqual(19);
             expect(json.Second).toEqual(0);
             expect(json.Millisecond).toEqual(0);
-            expect(model.getDateValue()).toEqual('2013-02-21');
+            expect(model.getDateValue()).toEqual('2013-01-21');
             expect(model.getTimeValue()).toEqual('18:19');
         });
         it("Should initialize model with year, month, day, hour, minute and second",function(){
@@ -118,13 +118,13 @@ describe("Variate Date-time Picker Widget", function () {
                 }),
                 json = model.toJSON();
             expect(json.Year).toEqual(2013);
-            expect(json.Month).toEqual(1);
+            expect(json.Month).toEqual(0);
             expect(json.Day).toEqual(21);
             expect(json.Hour).toEqual(18);
             expect(json.Minute).toEqual(19);
             expect(json.Second).toEqual(9);
             expect(json.Millisecond).toEqual(0);
-            expect(model.getDateValue()).toEqual('2013-02-21');
+            expect(model.getDateValue()).toEqual('2013-01-21');
             expect(model.getTimeValue()).toEqual('18:19:09');
         });
     });
