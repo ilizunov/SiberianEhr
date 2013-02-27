@@ -27,8 +27,8 @@
             this.set(settings);
             // Renew Value and Magnitude
             this.recalculate();
-            this.on('change:Year change:Month change:Day change:Hour change:Minute change:Second change:Millisecond', this.recalculate, this);
-            this.on('change:Year change:Month change:Day change:Hour change:Minute change:Second change:Millisecond', this.preValidate, this);
+            this.on('change', this.recalculate, this);
+            this.on('change', this.preValidate, this);
         },
         /**
          * Gets value of selected date as ISO8601 string
@@ -82,16 +82,14 @@
         /**
          * Validates model
          */
-        validate:function(){
+        validate: function(){
             //TODO validation
             //return this.trigger("invalid", this, "Value should be specified");
             //this.set('isError', false); //this won't cause re-validation because no {validation: true} is specified
-            this.recalculate();
         },
-        /**
-         *  indicates whether there is error or not
-         */
-        isError: false
+        defaults: {
+            isError: false
+        }        
     });
 
     /**
