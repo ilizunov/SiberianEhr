@@ -1,6 +1,6 @@
 !function ($) {
 
-    "use strict";
+    'use strict';
 
     SiberianEHR.DateTimePicker = {}; // adds widget namespace
 
@@ -60,7 +60,7 @@
         },
         setTime: function(time){
             var json = this.toJSON();
-            var m = moment.utc(time, "hh:mm:ss");
+            var m = moment.utc(time, 'hh:mm:ss');
             this.set({
                 Hour: json.hasHour ? m.hour() : 0,
                 Minute: json.hasMinute ? m.minute() : 0,
@@ -84,8 +84,8 @@
          */
         validate: function(){
             //TODO validation
-            //return this.trigger("invalid", this, "Value should be specified");
-            //this.set('isError', false); //this won't cause re-validation because no {validation: true} is specified
+            //return this.trigger('invalid', this, 'Value should be specified');
+            return this.trigger('valid');
         },
         defaults: {
             isError: false
@@ -128,14 +128,13 @@
         events:{ },
         initialize:function(options){
             this.model.on('change:isBusy',  this.blockWidgetIfModelIsBusy, this); // Block UI while the model is busy
-            this.model.on('change:isError', this.clearError, this);
+            this.model.on('valid', this.clearError, this);
             this.model.on('invalid', this.showError, this);
         },
         /**
-         * Clears the validation error state if model has isError=false
+         * Clears the validation error state
          */
         clearError: function(){
-            if (this.model.get('isError')) return; // if isError state is true - do nothing
             //TODO hide error state
         },
         /**

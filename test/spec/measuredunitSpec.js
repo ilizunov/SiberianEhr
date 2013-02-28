@@ -243,12 +243,13 @@ describe("Measured Unit widget", function () {
                 PropertyName: 'weight'
             });
             foo = {
-                invalid_handler : function(){
-                    return;
-                }
+                invalid_handler : function(){return;},
+                valid_handler : function(){return;}
             };
             spyOn(foo, 'invalid_handler');
+            spyOn(foo, 'valid_handler');
             model.on('invalid', foo.invalid_handler, model);
+            model.on('valid', foo.valid_handler, model);
         });
 
         it("should show error on value less than minimal", function () {
@@ -263,7 +264,7 @@ describe("Measured Unit widget", function () {
 
         it("should not show error on value within the bounds", function () {
             model.set({Value: 200});
-            expect(model.get('isError')).toEqual(false);
+            expect(foo.valid_handler).toHaveBeenCalled();
         });
     });
 });

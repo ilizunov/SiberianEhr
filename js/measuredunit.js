@@ -1,6 +1,6 @@
 !function ($) {
 
-    "use strict";
+    'use strict';
 
     SiberianEHR.MeasuredUnit = {}; // adds widget namespace
 
@@ -24,7 +24,7 @@
                  */
                 getValueConverter: function (property, fromUnit, toUnit){
                     //if not implemented in options - when called there will be an exception
-                    throw new Error("Not implemented");
+                    throw new Error('Not implemented');
                 },
                 /**
                  * Field indicates busy model state (e.g. server calculation or validation). When Model is busy it is
@@ -42,7 +42,7 @@
                 /**
                  * Default value
                  */
-                DefaultValue: {Value: 0, Unit: null},
+                DefaultValue: {Value: '', Unit: null},
                 /**
                  * By defaults no units specified as array
                  */
@@ -86,7 +86,7 @@
             /**
              * Attach pre-validation on value change
              */
-            this.on('change:Value', this.preValidate, this);
+            this.on('change:Value change:Unit', this.preValidate, this);
         },
         unitChanged: function() {
             var previous    = this.previousAttributes();
@@ -130,12 +130,14 @@
          * non-digital symbols in user input and format the input to specified precision.
          */
         preValidate: function(){
-            var json = this.toJSON(), currentValue = this.toPrecision(
+            var json = this.toJSON();
+            var precision = _.isNull(json.Unit) ? -1 : json.Units[json.Unit].precision;
+            var currentValue = this.toPrecision(
                     /**
                      * Remove anything which is not a digit, comma or dot. Also replace dot by comma
                      */
                     (' '+json.Value).replace(/([^0-9.,-])/g, '').replace(',','.'),
-                    json.Units[json.Unit].precision
+                    precision
                 );
             if (json.Value != currentValue){ //if the values are different (and they can be of different types)
                 return this.set('Value', currentValue), null; // set the value and return
@@ -144,29 +146,58 @@
             this.validate();
         },
         /**
+         * Gets min value for json representation of model
+         * @param json
+         */
+        getMinValue:function(json){
+            if (_.isUndefined(json.Unit)) return undefined;
+            if (_.isUndefined(json.Units[json.Unit])) return undefined;
+            if (_.isUndefined(json.Units[json.Unit].minValue)) return undefined;
+            return json.Units[json.Unit].minValue;
+        },
+        /**
+         * Gets max value for json representation of model
+         * @param json
+         */
+        getMaxValue:function(json){
+            if (_.isUndefined(json.Unit)) return undefined;
+            if (_.isUndefined(json.Units[json.Unit])) return undefined;
+            if (_.isUndefined(json.Units[json.Unit].maxValue)) return undefined;
+            return json.Units[json.Unit].maxValue;
+        },
+        /**
          * Validates model
          */
         validate:function(){
             var json = this.toJSON();
-            if (json.Required && _.isNull(json.Value)){
-                this.set('isError', true);
-                return this.trigger("invalid", this, "Value should be specified");
-            }
-            //check for existence of minimal possible value
-            if (!_.isUndefined(json.Units[json.Unit].minValue)){
-                if (json.Value < json.Units[json.Unit].minValue){
-                    this.set('isError', true);
-                    return this.trigger("invalid", this, "Value should not be less than " + json.Units[json.Unit].minValue);
+            if (json.Required){
+                //if field is required
+                if (_.isNull(json.Value)){
+                    //check for null value
+                    return this.trigger('invalid', this, 'Value should be specified');
+                }
+                if (_.isNull(json.Unit)){
+                    return this.trigger('invalid', this, 'Measure should be specified');
                 }
             }
-            //check for existence of maximal possible value
-            if (!_.isUndefined(json.Units[json.Unit].maxValue)){
-                if (json.Value > json.Units[json.Unit].maxValue){
-                    this.set('isError', true);
-                    return this.trigger("invalid", this, "Value should not be greater than " + json.Units[json.Unit].maxValue);
+            //if value is required or some value has been specified
+            if (json.Required || !_.isNull(json.Value)) {
+                var minValue = this.getMinValue(json),
+                    maxValue = this.getMaxValue(json);
+                //check for existence of minimal possible value
+                if (!_.isUndefined(minValue)) {
+                    if (json.Value < minValue) {
+                        return this.trigger('invalid', this, 'Value should not be less than ' + json.Units[json.Unit].minValue);
+                    }
+                }
+                //check for existence of maximal possible value
+                if (!_.isUndefined(maxValue)) {
+                    if (json.Value > maxValue) {
+                        return this.trigger('invalid', this, 'Value should not be greater than ' + json.Units[json.Unit].maxValue);
+                    }
                 }
             }
-            this.set('isError', false); //this won't cause re-validation because no {validation: true} is specified
+            return this.trigger('valid');
         },
         /**
          * Gets assumed value for model's current unit measure, with precision points
@@ -176,6 +207,8 @@
             var json = this.toJSON(),
                 assumedValue = json.AssumedValue;
             if (_.isNull(assumedValue)) return null; //if no value is set - just exit
+            //if no default value is provided, but assumed value is specified - return assumed value
+            if (_.isNull(json.Unit)) return assumedValue.Value;
             //if current unit measure is the same as assumed unit measure
             if (json.Unit == assumedValue.Unit)
                 return assumedValue.Value;
@@ -195,7 +228,7 @@
         templateName: 'measured-unit',
         initialize:function(options){
             this.model.on('change:isBusy',  this.blockWidgetIfModelIsBusy, this); // Block UI while the model is busy
-            this.model.on('change:isError', this.clearError, this);
+            this.model.on('valid', this.clearError, this);
             this.model.on('invalid', this.showError, this);
         },
         /**
@@ -208,10 +241,9 @@
                 this.unblockWidget();
         },
         /**
-         * Clears the validation error state if model has isError=false
+         * Clears the validation error state
          */
         clearError: function(){
-            if (this.model.get('isError')) return; // if isError state is true - do nothing
             this.$el.find('.help-inline').text('');// clear error text
             this.$el.children('.control-group').removeClass('error');
         },

@@ -16,12 +16,13 @@
     </head>
     <body>
 
-        <div class="hero-unit"><h1>Hello world!</h1>
-            <p>This is example of measured unit widget.</p>
-
+        <div class="hero-unit"><h2>Measured Unit Widget</h2>
             <form action=".">
-                <h4>Humans body temperature (assumed value is 36.6 degrees centigrade), min/max and required constraints</h4>
+                <h4>Humans body temperature, min/max constraints</h4>
                 <div id="measured-input1"></div>
+                <span class="help-block">Assumed value is 36.6 degrees centigrade, no default value provided,
+                        min/max constraints applied if some value is specified.
+                </span>
                 <h4>Pressure (no constraints)</h4>
                 <div id="measured-input2"></div>
                 <h4>Height (Required constraint)</h4>
@@ -45,8 +46,6 @@
             $(function(){
                 $('#measured-input1').measuredUnit({
                     AssumedValue: { Value: 36.6, Unit: 'C' },  // assumed value - the value set to the control if user has not touched it
-                    DefaultValue: { Value: 36.6, Unit: 'C' },  // Current Value and its measurement
-                    Required : true, // specifies whether this value must be filled in
                     /** Array of possible measurement units
                      *  Unit structure - object. Key is measure
                      *  {
