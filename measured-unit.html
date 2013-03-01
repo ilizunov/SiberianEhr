@@ -18,15 +18,18 @@
 
         <div class="hero-unit"><h2>Measured Unit Widget</h2>
             <form action=".">
-                <h4>Humans body temperature, min/max constraints</h4>
+                <h4>Humans body temperature</h4>
                 <div id="measured-input1"></div>
-                <span class="help-block">Assumed value is 36.6 degrees centigrade, no default value provided,
-                        min/max constraints applied if some value is specified.
+                <span class="help-block">Assumed value is 36.6 degrees centigrade. <br/>
+                    No default value passed. <br/> Min/max constraints applied if some value is specified.
                 </span>
-                <h4>Pressure (no constraints)</h4>
+                <h4>Pressure</h4>
                 <div id="measured-input2"></div>
-                <h4>Height (Required constraint)</h4>
-                <div id="measured-input3"></div>
+                <span class="help-block">no constraints</span>
+                <h4>Height</h4>
+                <div id="measured-input3"></div><span class="help-block">Required constraint. Only default value is set.</span>
+                <h4>Height</h4>
+                <div id="measured-input4"></div><span class="help-block">Assumed value and required constraints. <br/>No default value passed.</span>
             </form>
         </div>
 
@@ -134,6 +137,15 @@
                         Value: 160,
                         Unit: 'cm'
                     },
+                    Required : true,
+                    PropertyName : 'height'
+                });
+                $('#measured-input4').measuredUnit({
+                    AssumedValue: {
+                        Value: 160,
+                        Unit: 'cm'
+                    },
+                    Units: {'cm':{}},
                     Required : true,
                     PropertyName : 'height'
                 });
