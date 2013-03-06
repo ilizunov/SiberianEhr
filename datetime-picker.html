@@ -22,18 +22,13 @@
     <form action=".">
         <h4>Year Picker</h4>
         <div id="datetime-picker0"></div>
+        <span class="help-inline">format: <strong>YYYY-XX-XX</strong></span>
         <h4>Month Picker</h4>
         <div id="datetime-picker1"></div>
+        <span class="help-inline">format: <strong>YYYY-??-XX</strong></span>
         <h4>Day Picker</h4>
         <div id="datetime-picker2"></div>
-        <h4>Up to hour Picker</h4>
-        <div id="datetime-picker3"></div>
-        <h4>Up to minute Picker</h4>
-        <div id="datetime-picker4"></div>
-        <h4>Up to second Picker</h4>
-        <div id="datetime-picker5"></div>
-        <h4>time Picker</h4>
-        <div id="datetime-picker6"></div>
+        <span class="help-inline">format: <strong>YYYY-MM-??</strong></span>
     </form>
 </div>
 
@@ -64,22 +59,6 @@
         });
         $('#datetime-picker2').dateTimePicker({
             format: 'YYYY-MM-??TXX:XX:XX',
-            Magnitude: 63494389149.55
-        });
-        $('#datetime-picker3').dateTimePicker({
-            format: 'YYYY-MM-DDT??:XX:XX',
-            Magnitude: 63494389149.55
-        });
-        $('#datetime-picker4').dateTimePicker({
-            format: 'YYYY-MM-DDTHH:??:XX',
-            Magnitude: 63494389149.55
-        });
-        $('#datetime-picker5').dateTimePicker({
-            format: 'YYYY-MM-DDTHH:MM:??',
-            Magnitude: 63494389149.55
-        });
-        $('#datetime-picker6').dateTimePicker({
-            format: 'XXXX-XX-XXTHH:MM:SS',
             Magnitude: 63494389149.55
         });
     });

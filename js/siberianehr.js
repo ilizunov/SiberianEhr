@@ -77,7 +77,14 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
             hasTimeZone: false,
             isRequiredTimeZone: false,
             dateFormat: '',
-            timeFormat: ''
+            timeFormat: '',
+            /**
+             * Returns date format for bootstrap-datepicker (lowercase yyyy-mm-dd).
+             * @return {String}
+             */
+            getDateFormatForDatePicker: function(){
+                return this.dateFormat.toLowerCase();
+            }
         };
         //YYYY-MM-DDThh:mm:ss[.mmm]
         var dateFormat = dateTimeFormat.substr(0, 10).toUpperCase().split('-');
@@ -89,7 +96,7 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
                 return {
                     hasCentury: true,
                     hasYear: true,
-                    dateFormat: 'yyyy'
+                    dateFormat: 'YYYY'
                 };
             return null;
         })(dateFormat[0]));
@@ -100,7 +107,7 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
             var format = {
                 hasMonth: false,
                 isRequiredMonth: false,
-                dateFormat: 'yyyy-mm'
+                dateFormat: 'YYYY-MM'
             };
             if (s == 'XX')
                 return null;
@@ -116,7 +123,7 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
             var format = {
                 hasDay: false,
                 isRequiredDay: false,
-                dateFormat: 'yyyy-mm-dd'
+                dateFormat: 'YYYY-MM-DD'
             };
             if (s == 'XX')
                 return null;

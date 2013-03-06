@@ -12,7 +12,8 @@
                 options.format,
                 {
                     Value : date,
-                    dateFormat: options.format.dateFormat // Constraint
+                    dateFormat: options.format.dateFormat, // constraint
+                    inputDateFormat: '' //date format provided by bootstrap-datepicker
                 },
                 {
                     Year    : options.format.hasYear ? date.year() : 1,
@@ -26,36 +27,32 @@
             );
             this.set(settings);
             // Renew Value and Magnitude
-            this.recalculate();
-            this.on('change', this.recalculate, this);
-            this.on('change', this.preValidate, this);
+            this.recalculateDate();
+            this.on('change:Year change:Month change:Day', this.recalculateDate, this);
+            this.on('change:Year change:Month change:Day', this.preValidate, this);
         },
         /**
          * Gets value of selected date as ISO8601 string
          * @return {String} Value of selected date as ISO8601 string
          */
-        getValue: function(){
+        ri_getValue: function(){
             return this.get('Value').format();
         },
         getDateValue: function(){
-            return this.get('Value').format(this.get('dateFormat').toUpperCase());
+            return this.get('Value').format(this.get('dateFormat'));
         },
         getTimeValue: function(){
             return this.get('Value').format(this.get('timeFormat'));
         },
-        /**
-         * Recalculates date and magnitude
-         */
-        getDate: function(){
-            return this.get('Value').format('yyyy-mm-dd');
-        },
-        setDate: function(date){
+        setDate: function(date, format){
             var json = this.toJSON();
-            var m = moment.utc(date);
+            var m = moment.utc(date); //, format.parts.slice().join('-') //TODO
+            //alert(date+":"+format);
             this.set({
                 Year    : json.hasYear ? m.year() : 1,
                 Month   : json.hasMonth ? m.month() : 0,
-                Day     : json.hasDay ? m.date(): 1
+                Day     : json.hasDay ? m.date(): 1,
+                inputDateFormat: format
             });
         },
         setTime: function(time){
@@ -67,7 +64,7 @@
                 Second: json.hasSecond ? m.second() : 0
             });
         },
-        recalculate: function(){
+        recalculateDate: function(){
             var json = this.toJSON();
             var m = moment.utc([parseInt(json.Year), parseInt(json.Month), parseInt(json.Day),
                 parseInt(json.Hour), parseInt(json.Minute), parseInt(json.Second), json.Millisecond]);
@@ -75,16 +72,31 @@
             this.set('Magnitude', m.diff(SiberianEHR.DateTimePicker.Consts._startOfDays, 'milliseconds')/1000);
         },
         preValidate: function(){
-            //TODO pre-validation
-            // if pre-validation passed - go to validation
+            //no pre-validation required, because we use ready component to hold input
             this.validate();
         },
-        /**
-         * Validates model
-         */
         validate: function(){
-            //TODO validation
-            //return this.trigger('invalid', this, 'Value should be specified');
+            var json = this.toJSON();
+            /**
+             * Date input validation
+             */
+            if (json.hasYear && json.isRequiredYear){
+                //if year is required, but doesn't exist in selected date format we should trigger an invalid event
+                if (!_.contains(
+                    json.inputDateFormat.parts.slice(), //copying an array
+                    'yyyy')){
+                    return this.trigger('invalid', this, 'Year should be selected');
+                }
+            }
+            if (json.hasMonth && json.isRequiredMonth){
+                //if year is required, but doesn't exist in selected date format we should trigger an invalid event
+                if (!_.contains(
+                    json.inputDateFormat.parts.slice(), //copying an array
+                    'mm')
+                    ){
+                    return this.trigger('invalid', this, 'Month should be selected');
+                }
+            }
             return this.trigger('valid');
         },
         defaults: {
@@ -135,7 +147,8 @@
          * Clears the validation error state
          */
         clearError: function(){
-            //TODO hide error state
+            this.$el.find('.control-group.date').removeClass('error');
+            this.$el.find('.control-group.date span.error-message').text('');
         },
         /**
          * Show validation error
@@ -143,7 +156,9 @@
          * @param {string} error - text of error message
          */
         showError: function(model, error){
-            //TODO show error
+            this.$el.find('.control-group.date').addClass('error');
+            this.$el.find('.control-group.date span.error-message').text(error);
+            this.$el.find('.datepicker').datepicker('setValue');
         }
     });
 
@@ -164,15 +179,15 @@
                 });
             view.render();
             $el.data('view', view);
-            $el.find('#date input').datepicker({
+            $el.find('.datepicker').datepicker({
                 autoclose : true,
                 startView : format.hasDay ? 'month' : format.hasMonth ? 'year' : 'decade',
                 minViewMode : format.hasDay ? 'days' : format.hasMonth ? 'months' : 'years',
-                format: format.dateFormat
+                format: format.getDateFormatForDatePicker()
             }).on('changeDate', function(e){
-                view.model.setDate(e.date.toString());
+                view.model.setDate(e.date, e.format);
             });
-            $el.find('#time input').timepicker({
+            $el.find('.bootstrap-timepicker').timepicker({
                 minuteStep: 1,
                 showMinutes: format.hasMinute, //FIXME - no such option
                 showSeconds: format.hasSecond,
