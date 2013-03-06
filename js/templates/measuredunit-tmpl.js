@@ -7,8 +7,10 @@ JST['measured-unit'] = '' +
             '</select>' +
             '<span class="help-inline"></span>'+
             '<div>' +
-                '<span class="label" data-text="model.Value"></span>' +
-                '<span class="label" data-text="model.Unit"></span>' +
+                '<span class="label" data-show="model.Value">' +
+                    '<span data-text="model.Value"></span> &nbsp;' +
+                    '<span data-text="model.Unit"></span>' +
+                '</span>' +
             '</div>' +
         '</div>'+
     '</div>';
