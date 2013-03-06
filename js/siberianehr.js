@@ -82,7 +82,9 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
              * Returns date format for bootstrap-datepicker (lowercase yyyy-mm-dd).
              * @return {String}
              */
-            getDateFormatForDatePicker: function(){
+            getDateFormatForDatePicker: function(format){
+                if (!_.isUndefined(format))
+                    return format.toLowerCase();
                 return this.dateFormat.toLowerCase();
             }
         };

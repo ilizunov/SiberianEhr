@@ -6,14 +6,17 @@
 
     SiberianEHR.DateTimePicker.Model = Backbone.Model.extend({
         initialize: function(options) {
-            var settings = {},
+            var settings = {
+                    localDateFormat : 'DD-MM-YYYY'
+                },
                 date = moment.utc(SiberianEHR.DateTimePicker.Consts._startOfDays).add(options.Magnitude,'seconds');
             _.extend(settings,
                 options.format,
                 {
                     Value : date,
                     dateFormat: options.format.dateFormat, // constraint
-                    inputDateFormat: '' //date format provided by bootstrap-datepicker
+                    inputDateFormat: null, //date format provided by bootstrap-datepicker
+                    localDateFormat: options.localDateFormat //custom date format
                 },
                 {
                     Year    : options.format.hasYear ? date.year() : 1,
@@ -28,6 +31,7 @@
             this.set(settings);
             // Renew Value and Magnitude
             this.recalculateDate();
+            // attach events on date change
             this.on('change:Year change:Month change:Day', this.recalculateDate, this);
             this.on('change:Year change:Month change:Day', this.preValidate, this);
         },
@@ -39,15 +43,36 @@
             return this.get('Value').format();
         },
         getDateValue: function(){
-            return this.get('Value').format(this.get('dateFormat'));
+            var format = '',
+                json = this.toJSON(),
+                localDateFormatParts = json.localDateFormat.split('-'),
+                fparts = null;
+            if (_.isNull(json.inputDateFormat)){
+                fparts = [];
+                if (json.hasYear) fparts.push('yyyy');
+                if (json.hasMonth) fparts.push('mm');
+                if (json.hasDay) fparts.push('dd');
+            }
+            else
+            {
+                fparts = json.inputDateFormat.parts.slice();
+            }
+            _.each(localDateFormatParts, function(element, index, list){
+                var el = element.toLowerCase();//FIXME
+                if (_.contains(fparts, el)){
+                    if (format !== '')
+                        format += '-';
+                    format += el.toUpperCase();
+                }
+            });
+            return this.get('Value').format(format);
         },
         getTimeValue: function(){
             return this.get('Value').format(this.get('timeFormat'));
         },
         setDate: function(date, format){
             var json = this.toJSON();
-            var m = moment.utc(date); //, format.parts.slice().join('-') //TODO
-            //alert(date+":"+format);
+            var m = moment.utc(date);
             this.set({
                 Year    : json.hasYear ? m.year() : 1,
                 Month   : json.hasMonth ? m.month() : 0,
@@ -98,10 +123,7 @@
                 }
             }
             return this.trigger('valid');
-        },
-        defaults: {
-            isError: false
-        }        
+        }
     });
 
     /**
@@ -168,7 +190,8 @@
 
         var model = new SiberianEHR.DateTimePicker.Model({
             format: format,
-            Magnitude: options.Magnitude
+            Magnitude: options.Magnitude,
+            localDateFormat: options.localDateFormat
         });
 
         return this.each(function () {
@@ -183,7 +206,7 @@
                 autoclose : true,
                 startView : format.hasDay ? 'month' : format.hasMonth ? 'year' : 'decade',
                 minViewMode : format.hasDay ? 'days' : format.hasMonth ? 'months' : 'years',
-                format: format.getDateFormatForDatePicker()
+                format: format.getDateFormatForDatePicker(options.localDateFormat)
             }).on('changeDate', function(e){
                 view.model.setDate(e.date, e.format);
             });
@@ -194,7 +217,7 @@
                 showMeridian: false
             }).on('changeTime.timepicker', function(e) {
                 view.model.setTime(e.time.value);
-            });;
+            });
         });
     };
 }(window.jQuery);
