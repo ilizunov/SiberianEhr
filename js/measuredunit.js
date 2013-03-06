@@ -227,8 +227,18 @@
     SiberianEHR.MeasuredUnit.View = SiberianEHR.BindingView.extend({
         templateName: 'measured-unit',
         initialize:function(options){
+            this.model.on('change:isBusy',  this.blockWidgetIfModelIsBusy, this); // Block UI while the model is busy
             this.model.on('valid', this.clearError, this);
             this.model.on('invalid', this.showError, this);
+        },
+        /**
+         * Blocks model from user input when model is busy doing recalculation
+         */
+        blockWidgetIfModelIsBusy: function(){
+            if (this.model.get('isBusy'))
+                this.blockWidget();
+            else
+                this.unblockWidget();
         },
         /**
          * Clears the validation error state
