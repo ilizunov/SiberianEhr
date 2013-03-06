@@ -6,9 +6,7 @@
 
     SiberianEHR.DateTimePicker.Model = Backbone.Model.extend({
         initialize: function(options) {
-            var settings = {
-                    localDateFormat : 'DD-MM-YYYY'
-                },
+            var settings = {},
                 date = moment.utc(SiberianEHR.DateTimePicker.Consts._startOfDays).add(options.Magnitude,'seconds');
             _.extend(settings,
                 options.format,
@@ -16,7 +14,7 @@
                     Value : date,
                     dateFormat: options.format.dateFormat, // constraint
                     inputDateFormat: null, //date format provided by bootstrap-datepicker
-                    localDateFormat: options.localDateFormat //custom date format
+                    localDateFormat: options.localDateFormat//custom date format
                 },
                 {
                     Year    : options.format.hasYear ? date.year() : 1,
@@ -122,6 +120,15 @@
                     return this.trigger('invalid', this, 'Month should be selected');
                 }
             }
+            if (json.hasDay && json.isRequiredDay){
+                //if year is required, but doesn't exist in selected date format we should trigger an invalid event
+                if (!_.contains(
+                    json.inputDateFormat.parts.slice(), //copying an array
+                    'dd')
+                    ){
+                    return this.trigger('invalid', this, 'Day should be selected');
+                }
+            }
             return this.trigger('valid');
         }
     });
@@ -187,6 +194,9 @@
     $.fn.dateTimePicker = function (options) {
         var formatReader = new SiberianEHR.DateTimeFormatReader();
         var format = formatReader.readDateFormat(options.format);
+
+        if (_.isUndefined(options.localDateFormat))
+            options.localDateFormat = 'DD-MM-YYYY';
 
         var model = new SiberianEHR.DateTimePicker.Model({
             format: format,

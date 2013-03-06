@@ -1,5 +1,5 @@
 JST['datetime-picker'] = '' +
-    '<div class="control-group date" data-show="model.hasYear">' +
+    '<div class="row control-group date" data-show="model.hasYear">' +
         '<div class="controls">' +
             '<div class="input-append date datepicker span2">'+
                 '<input type="text" data-value="model:getDateValue < .Year .Month .Day" class="input-small">'+
@@ -8,7 +8,7 @@ JST['datetime-picker'] = '' +
             '<span class="help-inline error-message"></span>' +
         '</div>'+
     '</div>' +
-    '<div class="control-group time" data-show="model.hasHour">' +
+    '<div class="row control-group time" data-show="model.hasHour">' +
         '<div class="controls">' +
             '<div class="input-append bootstrap-timepicker span2">'+
                 '<input type="text" data-value="model:getTimeValue < .Hour .Minute .Second .Millisecond" class="input-small">'+

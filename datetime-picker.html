@@ -28,7 +28,10 @@
         <span class="help-inline">format: <strong>YYYY-??-XX</strong></span>
         <h4>Day Picker</h4>
         <div id="datetime-picker2"></div>
-        <span class="help-inline">format: <strong>YYYY-MM-??</strong></span>
+        <span class="help-inline">format: <strong>YYYY-MM-??, month is required</strong></span>
+        <h4>Day Picker</h4>
+        <div id="datetime-picker3"></div>
+        <span class="help-inline">format: <strong>YYYY-MM-DD, day and month are required</strong></span>
     </form>
 </div>
 
@@ -62,6 +65,10 @@
         $('#datetime-picker2').dateTimePicker({
             format: 'YYYY-MM-??TXX:XX:XX',
             localDateFormat: 'DD-MM-YYYY',
+            Magnitude: 63494389149.55
+        });
+        $('#datetime-picker3').dateTimePicker({
+            format: 'YYYY-MM-DDTXX:XX:XX',
             Magnitude: 63494389149.55
         });
     });
