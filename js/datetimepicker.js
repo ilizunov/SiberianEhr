@@ -168,9 +168,8 @@
         templateName: 'datetime-picker',
         events:{ },
         initialize:function(options){
-            this.model.on('change:isBusy',  this.blockWidgetIfModelIsBusy, this); // Block UI while the model is busy
-            this.model.on('valid', this.clearError, this);
-            this.model.on('invalid', this.showError, this);
+            //call parent initialization method
+            SiberianEHR.BindingView.prototype.initialize.call(this,options);
         },
         /**
          * Clears the validation error state

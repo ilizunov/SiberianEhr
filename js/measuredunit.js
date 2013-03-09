@@ -50,7 +50,11 @@
                 /**
                  * Default property name
                  */
-                PropertyName: null
+                PropertyName: null,
+                /**
+                 *  indicates whether there is error or not
+                 */
+                isError: false
             });
             /**
              * Modify Units collection if not set
@@ -217,19 +221,15 @@
             var newValue = convertFunction(assumedValue.Value),
                 precision = json.Units[json.Unit].precision;
             return this.toPrecision(newValue, json.Units[json.Unit].precision);
-        },
-        /**
-         *  indicates whether there is error or not
-         */
-        isError: false
+        }
     });
 
     SiberianEHR.MeasuredUnit.View = SiberianEHR.BindingView.extend({
         templateName: 'measured-unit',
         initialize:function(options){
             this.model.on('change:isBusy',  this.blockWidgetIfModelIsBusy, this); // Block UI while the model is busy
-            this.model.on('valid', this.clearError, this);
-            this.model.on('invalid', this.showError, this);
+            //call parent initialization method
+            SiberianEHR.BindingView.prototype.initialize.call(this,options);
         },
         /**
          * Blocks model from user input when model is busy doing recalculation
@@ -255,6 +255,20 @@
         showError: function(model, error){
             this.$el.find('.help-inline').text(error);
             this.$el.children('.control-group').addClass('error');
+        },
+        /**
+         * Gets (if nothing passed) or sets model using provided json
+         * @param json
+         * @return {*}
+         */
+        value: function(json){
+            if (_.isObject(json)){
+                var model = SiberianEHR.MeasuredUnit.deserialize(json);
+                this.model = model;
+                this.initialize();
+                this.render();
+            }else //serialize
+                return SiberianEHR.MeasuredUnit.serialize(this.model);
         }
     });
 
@@ -280,17 +294,37 @@
         return new SiberianEHR.MeasuredUnit.Model( { DefaultValue: json } );
     };
 
-    $.fn.measuredUnit = function (options) {
-        var model = new SiberianEHR.MeasuredUnit.Model(options);
-
-        return this.each(function () {
-            var $el = $(this),
-                view = new SiberianEHR.MeasuredUnit.View({
-                    el: $el,
-                    model: model
+    var methods = {
+        value: function(json){
+            return this.data('view').value(json);
+        },
+        init: function(options){
+            var model;
+            //if we passed an object as options - we want to create a new widget[s], and bind them to model
+            if (_.isObject(options))
+                model = new SiberianEHR.MeasuredUnit.Model(options);
+            return this.each(function () {
+                var $el = $(this),
+                    view = new SiberianEHR.MeasuredUnit.View({
+                        el: $el,
+                        model: model
+                    });
+                view.render();
+                $el.data('view', view);
             });
-            view.render();
-            $el.data('view', view);
-        });
+        },
+        widget: function(){
+            return this.data('view');
+        }
+    };
+
+    $.fn.measuredUnit = function (options) {
+        if (methods[options] && _.isFunction(methods[options])) {
+            return methods[options].apply(this, Array.prototype.slice.call( arguments, 1 ));
+        } else if (_.isObject(options) || _.isUndefined(options) || _.isNull(options)) {
+            return methods.init.apply( this, arguments );
+        } else {
+            $.error( 'Method ' + options + ' does not exist on SiberianEHR.MeasuredUnit' );
+        }
     };
 }(window.jQuery);

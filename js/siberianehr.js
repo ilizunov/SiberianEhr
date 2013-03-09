@@ -4,7 +4,10 @@ var JST = {};
 
 SiberianEHR.BindingView = Backbone.View.extend({
     initialize: function (options) {
-        // initialize me!
+        if (this.clearError && _.isFunction(this.clearError))
+            this.model.on('valid', this.clearError, this);
+        if (this.showError && _.isFunction(this.showError))
+            this.model.on('invalid', this.showError, this);
     },
 
     /**
