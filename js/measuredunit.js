@@ -2,59 +2,36 @@
 
     'use strict';
 
-    SiberianEHR.MeasuredUnit = {}; // adds widget namespace
+    /**
+     * Namespace for MeasuredUnit widget
+     * @namespace SiberianEHR.MeasuredUnit
+     */
+    SiberianEHR.MeasuredUnit = {};
 
+    /**
+     * Model of measured unit
+     * @class SiberianEHR.MeasuredUnit.Model
+     */
     SiberianEHR.MeasuredUnit.Model = Backbone.Model.extend({
+        /**
+         * Backbone model initialization method
+         * @method
+         * @name SiberianEHR.MeasuredUnit.Model#initialize
+         * @param {Object} options - options which are passed from pluging call, like $('#mu1').measuredUnit({options})
+         */
         initialize: function(options) {
-            /**
-             * Options are passed here, because model should be able to get its defaults by its own, not by widget
-             * @type {*}
-             */
             var settings = _.defaults(options, {
-                /**
-                 * Measure unit converter function factory to be exposed in measuredUnit widget
-                 *
-                 * @param property  {string}    Measured property name. This is the first part of the key to find a rule
-                 *                              of conversion.
-                 *                              When called a real function we should pass this.get('propertyName')
-                 * @param fromUnit  {string}    Current measure unit name. This is the second part of the key.
-                 * @param toUnit    {string}    New measure unit name. This is the last part of key.
-                 *
-                 * @return {function} Value, measured in new units
-                 */
                 getValueConverter: function (property, fromUnit, toUnit){
                     //if not implemented in options - when called there will be an exception
                     throw new Error('Not implemented');
                 },
-                /**
-                 * Field indicates busy model state (e.g. server calculation or validation). When Model is busy it is
-                 * supposed to be disabled for user's input
-                 */
-                isBusy : false,
-                /**
-                 * Field indicates whether this quantity is required (cannot be null)
-                 */
-                Required: false,
-                /**
-                 * By defaults no assuming value is specified
-                 */
-                AssumedValue: null,
-                /**
-                 * Default value
-                 */
-                DefaultValue: {Value: '', Unit: null},
-                /**
-                 * By defaults no units specified as array
-                 */
-                Units: null,
-                /**
-                 * Default property name
-                 */
-                PropertyName: null,
-                /**
-                 *  indicates whether there is error or not
-                 */
-                isError: false
+                isBusy : false, //Field indicates busy model state (e.g. server calculation or validation). When Model is busy it is supposed to be disabled for user's input
+                Required: false, // Field indicates whether this quantity is required (cannot be null)
+                AssumedValue: null, //By defaults no assuming value is specified
+                DefaultValue: {Value: '', Unit: null}, //Default value, passed from widget call
+                Units: null, //By defaults no units specified as array
+                PropertyName: null, //Default property name
+                isError: false //indicates whether there is error or not
             });
             /**
              * Modify Units collection if not set
@@ -79,10 +56,7 @@
                 getValueConverter : settings.getValueConverter,
                 Required: settings.Required
             });
-            /**
-             * Creating the structure for selecting measurements, because rivets can only iterate arrays, not objects
-             */
-            this.set('unitsAsArray', _.map(options.Units, function(value, key, list) { return { 'measure': key }; }));
+            this.setupComputed(options);
             /**
              * Attach handler on unit change
              */
@@ -92,6 +66,25 @@
              */
             this.on('change:Value change:Unit', this.preValidate, this);
         },
+        /**
+         * Setup model computed properties. In particular model it is 'rv_unitsAsArray' - units to get the rivets binding
+         *
+         * @method
+         * @name SiberianEHR.MeasuredUnit.Model#setupComputed
+         * @param {Object} options - the same options as passed in {@link SiberianEHR.MeasuredUnit.Model#initialize}
+         */
+        setupComputed: function(options){
+            /**
+             * Creating the structure for selecting measurements, because rivets can only iterate arrays, not objects
+             */
+            this.set('rv_unitsAsArray', _.map(options.Units, function(value, key, list) { return { 'measure': key }; }));
+        },
+        /**
+         * Event handler for unit changing. Locks widget from user input, converts value to new unit measure and
+         * modifies the value according to specified precision.
+         * @method
+         * @name SiberianEHR.MeasuredUnit.Model#unitChanged
+         */
         unitChanged: function() {
             var previous    = this.previousAttributes();
             /**
@@ -120,6 +113,8 @@
          *
          * @param value Value to be evaluated with specified precision
          * @param toPrecision Precision indicated in decimal places, -1 implies no limit
+         * @method
+         * @name SiberianEHR.MeasuredUnit.Model#toPrecision
          */
         toPrecision: function(value, toPrecision){
             var newValue = parseFloat(value);
@@ -132,6 +127,8 @@
         /**
          * Pre-validates model state. Changes empty value to Assumed if Required is true. Also perform replacement of
          * non-digital symbols in user input and format the input to specified precision.
+         * @method
+         * @name SiberianEHR.MeasuredUnit.Model#preValidate
          */
         preValidate: function(){
             var json = this.toJSON();
@@ -152,6 +149,8 @@
         /**
          * Gets min value for json representation of model
          * @param json
+         * @method
+         * @name SiberianEHR.MeasuredUnit.Model#getMinValue
          */
         getMinValue:function(json){
             if (_.isUndefined(json.Unit)) return undefined;
@@ -162,6 +161,8 @@
         /**
          * Gets max value for json representation of model
          * @param json
+         * @method
+         * @name SiberianEHR.MeasuredUnit.Model#getMaxValue
          */
         getMaxValue:function(json){
             if (_.isUndefined(json.Unit)) return undefined;
@@ -170,7 +171,9 @@
             return json.Units[json.Unit].maxValue;
         },
         /**
-         * Validates model
+         * Validates model. If model is not valid - triggers 'invalid' event, otherwise 'valid' event
+         * @method
+         * @name SiberianEHR.MeasuredUnit.Model#validate
          */
         validate:function(){
             var json = this.toJSON();
@@ -206,6 +209,8 @@
         /**
          * Gets assumed value for model's current unit measure, with precision points
          * @return {Number}
+         * @method
+         * @name SiberianEHR.MeasuredUnit.Model#getAssumedValue
          */
         getAssumedValue: function(){
             var json = this.toJSON(),
@@ -224,8 +229,22 @@
         }
     });
 
+    /**
+     * @classdesc View of measured unit widget
+     * @class SiberianEHR.MeasuredUnit.View
+     */
     SiberianEHR.MeasuredUnit.View = SiberianEHR.BindingView.extend({
+        /**
+         * @name SiberianEHR.MeasuredUnit.View#templateName
+         * @property {string} name of the Handlebars JST template {@link JST}
+         */
         templateName: 'measured-unit',
+        /**
+         * Initializes a view. Attaches widget blocking to 'isBusy' model property.
+         * @param {Object} options Contains 'el' - element, where to render view and 'model' - corresponding model
+         * @name SiberianEHR.MeasuredUnit.View#initialize
+         * @method
+         */
         initialize:function(options){
             this.model.on('change:isBusy',  this.blockWidgetIfModelIsBusy, this); // Block UI while the model is busy
             //call parent initialization method
@@ -233,6 +252,8 @@
         },
         /**
          * Blocks model from user input when model is busy doing recalculation
+         * @name SiberianEHR.MeasuredUnit.View#blockWidgetIfModelIsBusy
+         * @method
          */
         blockWidgetIfModelIsBusy: function(){
             if (this.model.get('isBusy'))
@@ -242,6 +263,8 @@
         },
         /**
          * Clears the validation error state
+         * @method
+         * @name SiberianEHR.MeasuredUnit.View#clearError
          */
         clearError: function(){
             this.$el.find('.help-inline').text('');// clear error text
@@ -251,6 +274,8 @@
          * Show validation error
          * @param {SiberianEHR.MeasuredUnit} model - Model
          * @param {string} error - text of error message
+         * @method
+         * @name SiberianEHR.MeasuredUnit.View#showError
          */
         showError: function(model, error){
             this.$el.find('.help-inline').text(error);
@@ -259,7 +284,9 @@
         /**
          * Gets (if nothing passed) or sets model using provided json
          * @param json
-         * @return {*}
+         * @return {Object|null} Serialized version of model like {Unit: 'unit measure value', Value: 'Magnitude' }
+         * @method
+         * @name SiberianEHR.MeasuredUnit.View#value
          */
         value: function(json){
             if (_.isObject(json)){
@@ -274,8 +301,10 @@
 
     /**
      * Returns current value of object
-     * @param model
-     * @returns {*} magnitude as object like { Value: 'value', Unit: 'unit' }
+     * @param {SiberianEHR.MeasuredUnit.Model} model
+     * @return {Object} magnitude as object like { Value: 'value', Unit: 'unit' }
+     * @name SiberianEHR.MeasuredUnit.serialize
+     * @function
      */
     SiberianEHR.MeasuredUnit.serialize = function(model){
         var json = model.toJSON();
@@ -287,17 +316,35 @@
 
     /**
      * Returns a model based on specified json object
-     * @param json {} object like { Value: 'value', Unit: 'unit' }
-     * @returns {SiberianEHR.MeasuredUnit.Model}
+     * @param {Object} json object like { Value: 'value', Unit: 'unit' }
+     * @return {SiberianEHR.MeasuredUnit.Model}
+     * @name SiberianEHR.MeasuredUnit.deserialize
+     * @function
      */
     SiberianEHR.MeasuredUnit.deserialize = function(json){
         return new SiberianEHR.MeasuredUnit.Model( { DefaultValue: json } );
     };
 
+    /**
+     * @type {Object} methods, that can be invoked through jQuery plugin interface
+     */
     var methods = {
+        /**
+         * Wrapper for [SiberianEHR.MeasuredUnit.View -> value function]{@link SiberianEHR.MeasuredUnit.View#value}.
+         * @param {Object|null} json
+         * @return {Object|null} See {@link SiberianEHR.MeasuredUnit.View#value}
+         * @name methods#value
+         * @method
+         */
         value: function(json){
             return this.data('view').value(json);
         },
+        /**
+         * @param {Object|string+args} options
+         * @method
+         * @name methods#init
+         * @return For every filtered instance creates and attaches a widget
+         */
         init: function(options){
             var model;
             //if we passed an object as options - we want to create a new widget[s], and bind them to model
@@ -313,11 +360,23 @@
                 $el.data('view', view);
             });
         },
+        /**
+         * Allows an access to view
+         * @method
+         * @name methods#widget
+         * @return {SiberianEHR.MeasuredUnit.View}
+         */
         widget: function(){
             return this.data('view');
         }
     };
 
+    /**
+     * @function
+     * @name measuredUnit
+     * @param {Object|string+args} options
+     * @return {*}
+     */
     $.fn.measuredUnit = function (options) {
         if (methods[options] && _.isFunction(methods[options])) {
             return methods[options].apply(this, Array.prototype.slice.call( arguments, 1 ));
