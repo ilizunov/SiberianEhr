@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>SiberianEhr by ilizunov</title>
+    <!--<link rel="stylesheet" href="/stylesheets/styles.css">-->
+    <!--<link rel="stylesheet" href="/stylesheets/pygment_trac.css">-->
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://raw.github.com/ilizunov/SiberianEhr/master/css/datepicker.css">
+    <link rel="stylesheet" type="text/css" href="https://raw.github.com/ilizunov/SiberianEhr/master/css/bootstrap-timepicker.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/bootstrap.js"></script>
+    <script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/underscore.js"></script>
+    <script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/backbone.js"></script>
+    <script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/rivets.js"></script>
+    <script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/handlebars.js"></script>
+    <script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/rivets.js"></script>
+    <script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/jquery.blockUI.js"></script>
+    <script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/plugins.js"></script>
+    <script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/siberianehr.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <ul class="nav">
+                <a class="brand" href="/">SiberianEHR</a>
+                <li><a href="/doc">Docs</a></li>
+                <li><a href="/doc/api">API</a></li>
+                <li class="dropdown">
+                    <a href="/demo" class="dropdown-toggle" data-toggle="dropdown">Examples <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Widgets</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#measuredunit">Measured Unit</a></li>
+                        <li><a href="#datetimepicker">Datetime picker</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="wrapper">
+        {{ content }}
+    </div>
+</div>
+<!-- end header -->
+
+
+<!--[if !IE]>
+<script>fixScale(document);</script><![endif]-->
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-27774651-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

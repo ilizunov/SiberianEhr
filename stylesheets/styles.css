@@ -852,6 +852,5 @@ section #title .credits.right {
 
 img.logo {
   display:block;
-  margin-left:auto;
-  margin-right:auto;
+  margin: 4em auto;
 }

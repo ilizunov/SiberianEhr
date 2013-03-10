@@ -1,0 +1,183 @@
+---
+layout: demo
+title: Demo page
+---
+<h1>Widgets</h1>
+
+<h2 id="measuredunit">Measured Unit</h2>
+
+<script src="https://raw.github.com/ilizunov/SiberianEhr/master/js/templates/measuredunit-tmpl.js"></script>
+<script src="https://raw.github.com/ilizunov/SiberianEhr/master/js/measuredunit.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $('#measured-input1').measuredUnit({
+            AssumedValue: { Value: 36.6, Unit: 'C' },  // assumed value - the value set to the control if user has not touched it
+            /** Array of possible measurement units
+             *  Unit structure - object. Key is measure
+             *  {
+             *      minValue: undefined,    // minimal value
+             *      maxValue: undefined,    // maximal value
+             *      //
+             *      // Precision, in terms of number of decimal places
+             *      // Value  0 implies integer value
+             *      // Value -1 implies no rounding, the value is stored as is
+             *      //
+             *      precision: -1
+             *  }*/
+            Units: {
+                'C' : {
+                    precision: 1,
+                    minValue: 35,
+                    maxValue: 42
+                },
+                'F' : {
+                    precision: 1,
+                    minValue: 95,
+                    maxValue: 107.6
+                }
+            },
+            PropertyName : 'temperature', // Name of the measured property, e.g. "temperature"
+            /**
+             * Sample measure unit converter to be exposed in measuredUnit widget
+             *
+             * @param property  {string}    Measured property name. This is the first part of the key to find a rule
+             *                              of conversion.
+             *                              When called a real function we should pass this.get('propertyName')
+             * @param fromUnit  {string}    Current measure unit name. This is the second part of the key.
+             * @param toUnit    {string}    New measure unit name. This is the last part of key.
+             *
+             * @return {function} Value, measured in new units
+             */
+            getValueConverter: function (property, fromUnit, toUnit){
+                switch(property){
+                    case 'temperature':
+                        if (fromUnit === 'C'  && toUnit === 'F'){
+                            return function (value) {
+                                return (value * 9 / 5 + 32);
+                            };
+                        }
+                        if (fromUnit === 'F'  && toUnit === 'C'){
+                            return function (value) {
+                                return ((value - 32) * 5 / 9);
+                            }
+                        }
+                }
+            }
+        });
+        $('#measured-input2').measuredUnit({
+            DefaultValue: {
+                Value: 0,
+                Unit: 'mm Hg'
+            },
+            Required : false,
+            Units: {
+                'mm Hg' : {
+                    precision: 0
+                },
+                'Pa' : {
+                    precision: 1
+                }
+            },
+            PropertyName : 'pressure',
+            getValueConverter: function (property, fromUnit, toUnit){
+                switch(property){
+                    case 'pressure':
+                        if (fromUnit === 'mm Hg'  && toUnit === 'Pa'){
+                            return function (value) {
+                                return (value * 51.715);
+                            };
+                        }
+                        if (fromUnit === 'Pa'  && toUnit === 'mm Hg'){
+                            return function (value) {
+                                return (value / 51.715);
+                            }
+                        }
+                }
+            }
+        });
+        $('#measured-input3').measuredUnit({
+            DefaultValue: {
+                Value: 160,
+                Unit: 'cm'
+            },
+            Required : true,
+            PropertyName : 'height'
+        });
+        $('#measured-input4').measuredUnit({
+            AssumedValue: {
+                Value: 160,
+                Unit: 'cm'
+            },
+            Units: {'cm':{}},
+            Required : true,
+            PropertyName : 'height'
+        });
+    });
+</script>
+
+
+<h4>Human's body temperature</h4>
+
+<div id="measured-input1"></div>
+<span class="help-block">Assumed value is 36.6 degrees centigrade. <br/>
+    No default value passed. <br/> Min/max constraints applied if some value is specified.
+</span>
+
+<h4>Pressure</h4>
+<div id="measured-input2"></div>
+<span class="help-block">no constraints</span>
+
+<h4>Height</h4>
+<div id="measured-input3"></div><span class="help-block">Required constraint. Only default value is set.</span>
+
+<h4>Height</h4>
+<div id="measured-input4"></div><span class="help-block">Assumed value and required constraints. <br/>No default value passed.</span>
+
+
+
+<h2 id="datetimepicker">Datetime picker</h2>
+
+
+<script src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/moment.js"></script>
+<script src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/bootstrap-datepicker.js"></script>
+<script src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/bootstrap-timepicker.js"></script>
+<script src="https://raw.github.com/ilizunov/SiberianEhr/master/js/templates/datetimepicker-tmpl.js"></script>
+<script src="https://raw.github.com/ilizunov/SiberianEhr/master/js/datetimepicker.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $('#datetime-picker0').dateTimePicker({
+            format: 'YYYY-XX-XXTXX:XX:XX',
+            localDateFormat: 'DD-MM-YYYY',
+            Magnitude: 63494389149.55
+        });
+        $('#datetime-picker1').dateTimePicker({
+            format: 'YYYY-??-XXTXX:XX:XX',
+            localDateFormat: 'DD-MM-YYYY',
+            Magnitude: 63494389149.55
+        });
+        $('#datetime-picker2').dateTimePicker({
+            format: 'YYYY-MM-??TXX:XX:XX',
+            localDateFormat: 'DD-MM-YYYY',
+            Magnitude: 63494389149.55
+        });
+        $('#datetime-picker3').dateTimePicker({
+            format: 'YYYY-MM-DDTXX:XX:XX',
+            Value: '2013-01-21'
+        });
+    });
+</script>
+<h4>Year Picker</h4>
+<div id="datetime-picker0"></div>
+<span class="help-inline">format: <strong>YYYY-XX-XX</strong></span>
+
+<h4>Month Picker</h4>
+<div id="datetime-picker1"></div>
+<span class="help-inline">format: <strong>YYYY-??-XX</strong></span>
+
+<h4>Day Picker</h4>
+<div id="datetime-picker2"></div>
+<span class="help-inline">format: <strong>YYYY-MM-??, month is required</strong></span>
+
+<h4>Day Picker</h4>
+<div id="datetime-picker3"></div>
+<span class="help-inline">format: <strong>YYYY-MM-DD, day and month are required</strong></span>
