@@ -115,25 +115,135 @@ title: Demo page
     });
 </script>
 
+<table>
+    <tr>
+        <td>
+            <h4>Human's body temperature</h4>
+            <div id="measured-input1"></div>
+            <span class="help-block">Assumed value is 36.6 degrees centigrade. <br/>
+                No default value passed. <br/> Min/max constraints applied if some value is specified.
+            </span>
+        </td>
+        <td>
+            {% highlight javascript %}
+            $('#measured-input1').measuredUnit({
+                AssumedValue: { Value: 36.6, Unit: 'C' },  // assumed value - the value set to the control if user has not touched it
+                Units: {
+                    'C' : {
+                        precision: 1,
+                        minValue: 35,
+                        maxValue: 42
+                    },
+                    'F' : {
+                        precision: 1,
+                        minValue: 95,
+                        maxValue: 107.6
+                    }
+                },
+                PropertyName : 'temperature', // Name of the measured property, e.g. "temperature"
+                getValueConverter: function (property, fromUnit, toUnit){
+                    switch(property){
+                        case 'temperature':
+                            if (fromUnit === 'C'  && toUnit === 'F'){
+                                return function (value) {
+                                    return (value * 9 / 5 + 32);
+                                };
+                            }
+                            if (fromUnit === 'F'  && toUnit === 'C'){
+                                return function (value) {
+                                    return ((value - 32) * 5 / 9);
+                                }
+                            }
+                    }
+                }
+            });
+            {% endhighlight %}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h4>Pressure</h4>
+            <div id="measured-input2"></div>
+            <span class="help-block">no constraints</span>
+        </td>
+        <td>
+            {% highlight javascript %}
+            $('#measured-input2').measuredUnit({
+                DefaultValue: {
+                    Value: 0,
+                    Unit: 'mm Hg'
+                },
+                Required : false,
+                Units: {
+                    'mm Hg' : {
+                        precision: 0
+                    },
+                    'Pa' : {
+                        precision: 1
+                    }
+                },
+                PropertyName : 'pressure',
+                getValueConverter: function (property, fromUnit, toUnit){
+                    switch(property){
+                        case 'pressure':
+                            if (fromUnit === 'mm Hg'  && toUnit === 'Pa'){
+                                return function (value) {
+                                    return (value * 51.715);
+                                };
+                            }
+                            if (fromUnit === 'Pa'  && toUnit === 'mm Hg'){
+                                return function (value) {
+                                    return (value / 51.715);
+                                }
+                            }
+                    }
+                }
+            });
+            {% endhighlight %}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h4>Height</h4>
+            <div id="measured-input3"></div><span class="help-block">Required constraint. Only default value is set.</span>
+        </td>
+        <td>
+            {% highlight javascript %}
+            $('#measured-input3').measuredUnit({
+                DefaultValue: {
+                    Value: 160,
+                    Unit: 'cm'
+                },
+                Required : true,
+                PropertyName : 'height'
+            });
+            {% endhighlight %}
+        </td>
+    </tr>
+    <tr>
+    <tr>
+        <td>
+            <h4>Height</h4>
+            <div id="measured-input4"></div><span class="help-block">Required constraint. Only default value is set
+            .</span>
+        </td>
+        <td>
+            {% highlight javascript %}
+            $('#measured-input4').measuredUnit({
+                AssumedValue: {
+                    Value: 160,
+                    Unit: 'cm'
+                },
+                Units: {'cm':{}},
+                Required : true,
+                PropertyName : 'height'
+            });
+            {% endhighlight %}
+        </td>
+    </tr>
 
-<h4>Human's body temperature</h4>
 
-<div id="measured-input1"></div>
-<span class="help-block">Assumed value is 36.6 degrees centigrade. <br/>
-    No default value passed. <br/> Min/max constraints applied if some value is specified.
-</span>
-
-<h4>Pressure</h4>
-<div id="measured-input2"></div>
-<span class="help-block">no constraints</span>
-
-<h4>Height</h4>
-<div id="measured-input3"></div><span class="help-block">Required constraint. Only default value is set.</span>
-
-<h4>Height</h4>
-<div id="measured-input4"></div><span class="help-block">Assumed value and required constraints. <br/>No default value passed.</span>
-
-
+</table>
 
 <h2 id="datetimepicker">Datetime picker</h2>
 
@@ -166,18 +276,73 @@ title: Demo page
         });
     });
 </script>
-<h4>Year Picker</h4>
-<div id="datetime-picker0"></div>
-<span class="help-inline">format: <strong>YYYY-XX-XX</strong></span>
 
-<h4>Month Picker</h4>
-<div id="datetime-picker1"></div>
-<span class="help-inline">format: <strong>YYYY-??-XX</strong></span>
 
-<h4>Day Picker</h4>
-<div id="datetime-picker2"></div>
-<span class="help-inline">format: <strong>YYYY-MM-??, month is required</strong></span>
+<table>
+    <tr>
+        <td>
+            <h4>Year Picker</h4>
+            <div id="datetime-picker0"></div>
+            <span class="help-inline">format: <strong>YYYY-XX-XX</strong></span>
+        </td>
+        <td>
+            {% highlight javascript %}
+            $('#datetime-picker0').dateTimePicker({
+                format: 'YYYY-XX-XXTXX:XX:XX',
+                localDateFormat: 'DD-MM-YYYY',
+                Magnitude: 63494389149.55
+            });
+            {% endhighlight %}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h4>Month Picker</h4>
+            <div id="datetime-picker1"></div>
+            <span class="help-inline">format: <strong>YYYY-??-XX</strong></span>
+        </td>
+        <td>
+            {% highlight javascript %}
+            $('#datetime-picker1').dateTimePicker({
+                format: 'YYYY-??-XXTXX:XX:XX',
+                localDateFormat: 'DD-MM-YYYY',
+                Magnitude: 63494389149.55
+            });
+            {% endhighlight %}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h4>Day Picker</h4>
+            <div id="datetime-picker2"></div>
+            <span class="help-inline">format: <strong>YYYY-MM-??, month is required</strong></span>
+        </td>
+        <td>
+            {% highlight javascript %}
+            $('#datetime-picker2').dateTimePicker({
+                format: 'YYYY-MM-??TXX:XX:XX',
+                localDateFormat: 'DD-MM-YYYY',
+                Magnitude: 63494389149.55
+            });
+            {% endhighlight %}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h4>Day Picker</h4>
+            <div id="datetime-picker3"></div>
+            <span class="help-inline">format: <strong>YYYY-MM-DD, day and month are required</strong></span>
+        </td>
+        <td>
+            {% highlight javascript %}
+            $('#datetime-picker3').dateTimePicker({
+                format: 'YYYY-MM-DDTXX:XX:XX',
+                Value: '2013-01-21'
+            });
+            {% endhighlight %}
+        </td>
+    </tr>
+</table>
 
-<h4>Day Picker</h4>
-<div id="datetime-picker3"></div>
-<span class="help-inline">format: <strong>YYYY-MM-DD, day and month are required</strong></span>
+
+
