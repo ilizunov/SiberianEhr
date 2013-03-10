@@ -25,7 +25,7 @@
             var formatReader = new SiberianEHR.DateTimeFormatReader();
             var format = formatReader.readDateFormat(options.format);
             _.defaults(options, {
-                localDateFormat : 'DD-MM-YYYY'
+                localDateFormat : 'DD-MM-YYYY' //russian date format
             });
             _.extend(settings,
                 format,
@@ -112,9 +112,9 @@
             var json = this.toJSON();
             var m = moment.utc(date);
             this.set({
-                Year    : json.hasYear ? m.year() : 1,
-                Month   : json.hasMonth ? m.month() : 0,
-                Day     : json.hasDay ? m.date(): 1,
+                Year    : (json.hasYear ? m.year() : 1),
+                Month   : (json.hasMonth ? m.month() : 0),
+                Day     : (json.hasDay ? m.date(): 1),
                 inputDateFormat: format
             });
         },
@@ -335,7 +335,7 @@
                     });
                 $el.find('.bootstrap-timepicker').timepicker({
                     minuteStep: 1,
-                    showMinutes: format.hasMinute, //FIXME - no such option
+                    showMinutes: format.hasMinute, //TODO - no such option
                     showSeconds: format.hasSecond,
                     showMeridian: false
                 }).on('changeTime.timepicker', function(e) {
