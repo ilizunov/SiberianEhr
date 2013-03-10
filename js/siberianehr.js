@@ -115,8 +115,6 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
      */
     readDateFormat : function(dateTimeFormat){
         var format = {
-            hasCentury: false,
-            isRequiredCentury: false,
             hasYear: false,
             isRequiredYear: false,
             hasMonth: false,
@@ -151,13 +149,17 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
          * Parse Year
          */
         _.extend(format, (function(s){
+            var format = {
+                hasYear: false,
+                isRequiredYear: false,
+                dateFormat: 'YYYY'
+            };
+            if (s == 'XXXX')
+                return null;
+            format.hasYear = true;
             if (s == 'YYYY')
-                return {
-                    hasCentury: true,
-                    hasYear: true,
-                    dateFormat: 'YYYY'
-                };
-            return null;
+                format.isRequiredYear = true;
+            return format;
         })(dateFormat[0]));
         /**
          * Parse Month
