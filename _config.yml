@@ -1,4 +1,5 @@
 auto: true
 lsi: false
 pygments: true
+markdown: redcarpet
 root: http://ilizunov.github.com/SiberianEhr/
