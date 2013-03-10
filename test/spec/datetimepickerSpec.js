@@ -133,6 +133,15 @@ describe("Variate Date-time Picker Widget", function () {
             var sjson = SiberianEHR.DateTimePicker.serialize(model);
             expect(_.isEqual(json, sjson)).toEqual(true);
         });
+        it("Deserialization from string test", function(){
+            var json = {
+                Value: '2013-01-21T00:00:00+00:00',
+                format: 'YYYY-MM-DDTXX:XX:XX'
+            };
+            model = SiberianEHR.DateTimePicker.deserialize(json);
+            var sjson = SiberianEHR.DateTimePicker.serialize(model);
+            expect(sjson.Magnitude).toEqual(63494323200);
+        });
     });
 
     describe("Format reader parsing",function(){

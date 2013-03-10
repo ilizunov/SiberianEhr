@@ -20,8 +20,15 @@
          * @param {Object} options - options which are passed from pluging call, like $('#mu1').dateTimePicker({options})
          */
         initialize: function(options) {
-            var settings = {},
+            var settings = {}, date;
+            if (!_.isUndefined(options.Magnitude)){
                 date = moment.utc(SiberianEHR.DateTimePicker.Consts._startOfDays).add(options.Magnitude,'seconds');
+            }else if(!_.isUndefined(options.Value)){
+                date = moment.utc(SiberianEHR.DateTimePicker.Consts._startOfDays).add(
+                        moment.utc(options.Value, 'YYYY-MM-DDTHH:mm:ss.SSS').
+                            diff(SiberianEHR.DateTimePicker.Consts._startOfDays, 'seconds'),
+                    'seconds');
+            }else { date = moment(SiberianEHR.DateTimePicker.Consts._startOfDays); }
             var formatReader = new SiberianEHR.DateTimeFormatReader();
             var format = formatReader.readDateFormat(options.format);
             _.defaults(options, {
@@ -198,16 +205,20 @@
 
     /**
      * De-serializes model from json
-     * @function
+     *
      * @name SiberianEHR.DateTimePicker.deserialize
-     * @param json {Object}
-     * @return {SiberianEHR.DateTimePicker.Model}
+     * @function
+     * @param json {Object} json object like {format:{}, Magnitude:date_in_seconds_since_01_01_0001} or {format:{}, Value: 'ISO8601 datetime string'}
+     * @return {Object} Deserialized [SiberianEHR.DateTimePicker.Model]{@link SiberianEHR.DateTimePicker.Model}
      */
     SiberianEHR.DateTimePicker.deserialize = function(json){
-        return new SiberianEHR.DateTimePicker.Model({
-            format: json.format,
-            Magnitude: json.Magnitude
+        var model;
+        model = new SiberianEHR.DateTimePicker.Model({
+            format:json.format,
+            Magnitude:json.Magnitude,
+            Value: json.Value
         });
+        return model;
     }
 
     /**
