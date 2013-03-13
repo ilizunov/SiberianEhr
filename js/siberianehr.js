@@ -1,28 +1,55 @@
+/**
+ * Root namespace for SiberianEHR
+ * @namespace SiberianEHR
+ */
 var SiberianEHR = {};
+
+/**
+ * Root namespace for SiberianEHR templates
+ * @namespace JST
+ */
 var JST = {};
 
-
+/**
+ * @classdesc Root class for all SiberianEHR views with bindings
+ * @class BindingView
+ */
 SiberianEHR.BindingView = Backbone.View.extend({
     initialize: function (options) {
-        // initialize me!
+        if (this.clearError && _.isFunction(this.clearError))
+            this.model.on('valid', this.clearError, this);
+        if (this.showError && _.isFunction(this.showError))
+            this.model.on('invalid', this.showError, this);
+        if (_.isUndefined(this.value) || !_.isFunction(this.value)){
+            $.error('Error. There is no implementation of value(json) function');
+        }
     },
 
     /**
      * Renders HTML content into element.
+     * @name BindingView#render
+     * @method
      */
     render: function () {
         this.$el.html(this.getTemplate()(this.getContext()));
         this.setupBindings();
     },
     /**
-     * @returns Template function, ready to compile conetxt to HTML
+     * Returns handlebars compiled template
+     *
+     * @name BindingView#getTemplate
+     * @method
+     * @returns Template function, ready to compile context to HTML
      */
     getTemplate: function () {
         return Handlebars.compile(JST[this.templateName]);
     },
 
     /**
+     * Return model (if a view has an own one) as JSON
      *
+     * @name BindingView#getContext
+     * @method
      * @returns model's JSON data
      */
     getContext: function () {
@@ -34,6 +61,9 @@ SiberianEHR.BindingView = Backbone.View.extend({
     /**
      * Bind rivets.js bindings to ready DOM
      * Save Rivets view in rivets attribute.
+     *
+     * @name BindingView#setupBindings
+     * @method
      */
     setupBindings: function () {
         this.rivets = rivets.bind(this.el, {model: this.model});
@@ -41,6 +71,9 @@ SiberianEHR.BindingView = Backbone.View.extend({
 
     /**
      * Blocks widget from user's editing
+     *
+     * @name BindingView#blockWidget
+     * @method
      */
     blockWidget: function(){
         this.$el.block();
@@ -48,18 +81,40 @@ SiberianEHR.BindingView = Backbone.View.extend({
 
     /**
      * Unblock widget from user's editing
+     *
+     * @name BindingView#unblockWidget
+     * @method
      */
     unblockWidget: function(){
         this.$el.unblock();
     }
 });
 
+/**
+ * Date and time format reader class.
+ *
+ * Allows to read ISO8601-like format (YYYY-MM-DDThh:mm:ss[.mmm]) with constraints of requirements.
+ *
+ * @example
+ * Every part of this string can be replaced with '??' - not required, but being able to specify or 'XX' -
+ *      this part of date (and smaller parts) are unable to specify.
+ * Note that if the month (it could be a year actually, month is chosen only as an example) is not required - this fact
+ * means that day and smaller parts of datetime will not be parsed and format like 'YYYY-??-something' will be read like
+ * 'YYYY-??-XXTxx:xx:xx'.
+ *
+ * @class DateTimeFormatReader
+ */
 SiberianEHR.DateTimeFormatReader = function(){};
 _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
+    /**
+     * @name DateTimeFormatReader#readDateFormat
+     * @method
+     * @param {string} dateTimeFormat - ISO8601-like string. YYYY-MM-DDThh:mm:ss[.mmm]
+     *
+     * @return {Object}
+     */
     readDateFormat : function(dateTimeFormat){
         var format = {
-            hasCentury: false,
-            isRequiredCentury: false,
             hasYear: false,
             isRequiredYear: false,
             hasMonth: false,
@@ -94,13 +149,17 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
          * Parse Year
          */
         _.extend(format, (function(s){
+            var format = {
+                hasYear: false,
+                isRequiredYear: false,
+                dateFormat: 'YYYY'
+            };
+            if (s == 'XXXX')
+                return null;
+            format.hasYear = true;
             if (s == 'YYYY')
-                return {
-                    hasCentury: true,
-                    hasYear: true,
-                    dateFormat: 'YYYY'
-                };
-            return null;
+                format.isRequiredYear = true;
+            return format;
         })(dateFormat[0]));
         /**
          * Parse Month
@@ -145,6 +204,7 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
                 isRequiredHour: false,
                 timeFormat: 'HH' // time format corresponding to momentjs
             };
+            if (_.isUndefined(s) || (s.length == 0)) return null;
             if (s == 'XX')
                 return null;
             format.hasHour = true;
@@ -161,6 +221,7 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
                 isRequiredMinute: false,
                 timeFormat: 'HH:mm'
             };
+            if (_.isUndefined(s) || (s.length == 0)) return null;
             if (s == 'XX')
                 return null;
             format.hasMinute = true;
@@ -179,6 +240,7 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
                 isRequiredMillisecond: false,
                 timeFormat: 'HH:mm:ss'
             };
+            if (_.isUndefined(s) || (s.length == 0)) return null;
             var parts = s.split('.');
             if (parts[0] == 'XX')
                 return null;
@@ -196,6 +258,9 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
     }
 });
 
+/**
+ * Configure rivets for using with Backbone.js
+ */
 rivets.configure({
     adapter: {
         subscribe: function (obj, keypath, callback) {
@@ -216,6 +281,11 @@ rivets.configure({
     }
 });
 
+/**
+ * Adds new 'data-placeholder' attribute to rivets.js
+ * @param el DOM element
+ * @param value Value to be set as placeholder
+ */
 rivets.binders.placeholder = function(el, value) {
     el.placeholder = value
 };

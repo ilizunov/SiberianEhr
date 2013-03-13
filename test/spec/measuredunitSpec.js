@@ -267,4 +267,69 @@ describe("Measured Unit widget", function () {
             expect(foo.valid_handler).toHaveBeenCalled();
         });
     });
+
+    describe("Value serialization/deserialization. JQuery plugin notation.", function(){
+        var element = $('<div id="container"></div>'),
+            widget, options;
+
+        beforeEach(function(){
+            options = {
+                DefaultValue: {
+                    Value: 160,
+                    Unit: 'cm'
+                },
+                Units: {'cm':{}},
+                Required : true,
+                PropertyName : 'height'
+            };
+            element.measuredUnit(options);
+        });
+
+        it("should read value of widget as json",function(){
+            var json = element.measuredUnit('value');
+            expect(json.Value).toEqual(160);
+            expect(json.Unit).toEqual('cm');
+        });
+
+        it("should write value (json) to widget",function(){
+            var json = element.measuredUnit('value');
+            json.Value = 200;
+            element.measuredUnit('value', json);
+            expect(json.Value).toEqual(200);
+            expect(json.Unit).toEqual('cm');
+        });
+    });
+
+    describe("Value serialization/deserialization. Twitter plugin notation.", function(){
+        var element = $('<div id="container"></div>'),
+            widget, options;
+
+        beforeEach(function(){
+            options = {
+                DefaultValue: {
+                    Value: 160,
+                    Unit: 'cm'
+                },
+                Units: {'cm':{}},
+                Required : true,
+                PropertyName : 'height'
+            };
+            element.measuredUnit(options);
+            widget = element.measuredUnit('widget');
+        });
+
+        it("should read value of widget as json",function(){
+            var json = widget.value();
+            expect(json.Value).toEqual(160);
+            expect(json.Unit).toEqual('cm');
+        });
+
+        it("should write value (json) to widget",function(){
+            var json = widget.value();
+            json.Value = 200;
+            widget.value(json);
+            expect(json.Value).toEqual(200);
+            expect(json.Unit).toEqual('cm');
+        });
+    });
 });
