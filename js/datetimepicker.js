@@ -257,6 +257,12 @@
          */
         templateName: 'datetime-picker',
         /**
+         * Events to be handled in view
+         */
+        events: {
+            //'change input': 'onInputChange'
+        },
+        /**
          * Initializes a view.
          * @param {Object} options Contains 'el' - element, where to render view and 'model' - corresponding model
          * @name SiberianEHR.DateTimePicker.View#initialize
@@ -265,6 +271,39 @@
         initialize:function(options){
             //call parent initialization method
             SiberianEHR.BindingView.prototype.initialize.call(this,options);
+            this.initializeWidget();
+        },
+        /**
+         * Initializes bootstap-datepicker and bootstrap-timepicker due to formats
+         * @name SiberianEHR.DateTimePicker.View#initializeWidget
+         * @method
+         * @private
+         */
+        initializeWidget:function(){
+            this.$el.find('.datepicker').datepicker({
+                autoclose : true,
+                startView : this.options.format.hasDay ? 'month' : this.options.format.hasMonth ? 'year' : 'decade',
+                minViewMode : this.options.format.hasDay ? 'days' : this.options.format.hasMonth ? 'months' : 'years',
+                format: this.options.format.getDateFormatForDatePicker(this.options.localDateFormat)
+            }).on('changeDate', {model: this.model}, this.onDateChanged);
+            this.$el.find('.bootstrap-timepicker').timepicker({
+                minuteStep: 1,
+                showMinutes: this.options.format.hasMinute, //TODO - no such option
+                showSeconds: this.options.format.hasSecond,
+                showMeridian: false
+            }).on('changeTime.timepicker', function(e) {
+                    this.model.setTime(e.time.value);
+                });
+        },
+        /**
+         * Date changed handler
+         * @name SiberianEHR.DateTimePicker.View#onDateChanged
+         * @method
+         * @private
+         * @param e {Event} Object {date: Date, format: String}. Typed date format in lowercase like 'mm-yyyy'.
+         */
+        onDateChanged: function(e){
+            e.data.model.setDate(e.date, e.format);
         },
         /**
          * Clears the validation error state
@@ -319,7 +358,7 @@
             return this.data('view').value(json);
         },
         /**
-         * @param {Object|string+args} options
+         * @param {Object|string} options
          * @method
          * @name methods#init
          * @return For every filtered instance creates and attaches a widget
@@ -332,26 +371,10 @@
                 var $el = $(this),
                     view = new SiberianEHR.DateTimePicker.View({
                         el: $el,
-                        model: model
+                        model: model,
+                        format: format,
+                        localDateFormat: options.localDateFormat
                     });
-                view.render();
-                $el.data('view', view);
-                $el.find('.datepicker').datepicker({
-                    autoclose : true,
-                    startView : format.hasDay ? 'month' : format.hasMonth ? 'year' : 'decade',
-                    minViewMode : format.hasDay ? 'days' : format.hasMonth ? 'months' : 'years',
-                    format: format.getDateFormatForDatePicker(options.localDateFormat)
-                }).on('changeDate', function(e){
-                        view.model.setDate(e.date, e.format);
-                    });
-                $el.find('.bootstrap-timepicker').timepicker({
-                    minuteStep: 1,
-                    showMinutes: format.hasMinute, //TODO - no such option
-                    showSeconds: format.hasSecond,
-                    showMeridian: false
-                }).on('changeTime.timepicker', function(e) {
-                    view.model.setTime(e.time.value);
-                });
             });
         },
         /**
@@ -368,7 +391,7 @@
     /**
      * @function
      * @name dateTimePicker
-     * @param {Object|string+args} options
+     * @param {Object|string} options
      * @return {*}
      */
     $.fn.dateTimePicker = function (options) {

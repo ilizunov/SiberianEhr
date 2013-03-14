@@ -356,8 +356,6 @@
                         el: $el,
                         model: model
                     });
-                view.render();
-                $el.data('view', view);
             });
         },
         /**
