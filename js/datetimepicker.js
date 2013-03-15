@@ -364,6 +364,10 @@
          * @return For every filtered instance creates and attaches a widget
          */
         init: function(options){
+            if (_.isUndefined(options))
+                $.error("Options are required for DateTimePicker widget initialization");
+            if (_.isUndefined(options.format))
+                $.error("Format is required for DateTimePicker widget initialization");
             var formatReader = new SiberianEHR.DateTimeFormatReader();
             var format = formatReader.readDateFormat(options.format);
             var model = new SiberianEHR.DateTimePicker.DateTimePickerModel(options);

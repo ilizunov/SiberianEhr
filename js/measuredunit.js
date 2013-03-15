@@ -17,7 +17,7 @@
          * Backbone model initialization method
          * @method
          * @name SiberianEHR.MeasuredUnit.MeasuredUnitModel#initialize
-         * @param {Object} options - options which are passed from pluging call, like $('#mu1').measuredUnit({options})
+         * @param {Object} options - options which are passed from plugin call, like $('#mu1').measuredUnit({options})
          */
         initialize: function(options) {
             var settings = _.defaults(options, {
