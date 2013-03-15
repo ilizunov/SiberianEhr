@@ -10,13 +10,13 @@
 
     /**
      * Model of DateTimePicker
-     * @class SiberianEHR.DateTimePicker.Model
+     * @class SiberianEHR.DateTimePicker.DateTimePickerModel
      */
-    SiberianEHR.DateTimePicker.Model = Backbone.Model.extend({
+    SiberianEHR.DateTimePicker.DateTimePickerModel = Backbone.Model.extend({
         /**
          * Backbone model initialization method
          * @method
-         * @name SiberianEHR.DateTimePicker.Model#initialize
+         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#initialize
          * @param {Object} options - options which are passed from pluging call, like $('#mu1').dateTimePicker({options})
          */
         initialize: function(options) {
@@ -63,7 +63,7 @@
         /**
          * Gets value of selected date as ISO8601 string. Used in rivetjs.
          * @method
-         * @name SiberianEHR.DateTimePicker.Model#rv_getValue
+         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#rv_getValue
          * @return {String} Value of selected date as ISO8601 string
          */
         rv_getValue: function(){
@@ -71,8 +71,8 @@
         },
         /**
          * @method
-         * @name SiberianEHR.DateTimePicker.Model#getDateValue
-         * @return {string} gets date in a format 'localDateFormat' as specified in options in {@link SiberianEHR.DateTimePicker.Model#initialize}
+         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#getDateValue
+         * @return {string} gets date in a format 'localDateFormat' as specified in options in {@link SiberianEHR.DateTimePicker.DateTimePickerModel#initialize}
          */
         getDateValue: function(){
             var format = '',
@@ -101,7 +101,7 @@
         },
         /**
          * @method
-         * @name SiberianEHR.DateTimePicker.Model#getTimeValue
+         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#getTimeValue
          * @todo Not yet implemented
          * @return {string} Time in specified format
          */
@@ -113,7 +113,7 @@
          * @param {Date} date
          * @param {Object} format
          * @method
-         * @name SiberianEHR.DateTimePicker.Model#setDate
+         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#setDate
          */
         setDate: function(date, format){
             var json = this.toJSON();
@@ -127,7 +127,7 @@
         },
         /**
          * @method
-         * @name SiberianEHR.DateTimePicker.Model#setTime
+         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#setTime
          * @todo Not yet implemented
          * @param time
          */
@@ -144,7 +144,7 @@
          * Recalculates Magnitude due to models properties as Year, Month etc. into number of seconds since 01.01.0001T00:00:00.000
          * Value - ISO8601 string representation of Magnitude
          * @method
-         * @name SiberianEHR.DateTimePicker.Model#recalculateDate
+         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#recalculateDate
          */
         recalculateDate: function(){
             var json = this.toJSON();
@@ -154,9 +154,9 @@
             this.set('Magnitude', m.diff(SiberianEHR.DateTimePicker.Consts._startOfDays, 'milliseconds')/1000);
         },
         /**
-         * In this case no pre-validation is needed, just a wrapper to {@link SiberianEHR.DateTimePicker.Model#validate}
+         * In this case no pre-validation is needed, just a wrapper to {@link SiberianEHR.DateTimePicker.DateTimePickerModel#validate}
          * @method
-         * @name SiberianEHR.DateTimePicker.Model#preValidate
+         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#preValidate
          */
         preValidate: function(){
             //no pre-validation required, because we use ready component to hold input
@@ -165,7 +165,7 @@
         /**
          * Triggers 'valid' or 'invalid' events
          * @method
-         * @name SiberianEHR.DateTimePicker.Model#
+         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#
          * @return {null}
          */
         validate: function(){
@@ -209,11 +209,11 @@
      * @name SiberianEHR.DateTimePicker.deserialize
      * @function
      * @param json {Object} json object like {format:{}, Magnitude:date_in_seconds_since_01_01_0001} or {format:{}, Value: 'ISO8601 datetime string'}
-     * @return {Object} Deserialized [SiberianEHR.DateTimePicker.Model]{@link SiberianEHR.DateTimePicker.Model}
+     * @return {Object} Deserialized [SiberianEHR.DateTimePicker.DateTimePickerModel]{@link SiberianEHR.DateTimePicker.DateTimePickerModel}
      */
     SiberianEHR.DateTimePicker.deserialize = function(json){
         var model;
-        model = new SiberianEHR.DateTimePicker.Model({
+        model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
             format:json.format,
             Magnitude:json.Magnitude,
             Value: json.Value
@@ -222,10 +222,10 @@
     }
 
     /**
-     * Serializes model of [SiberianEHR.DateTimePicker.Model]{@link SiberianEHR.DateTimePicker.Model}
+     * Serializes model of [SiberianEHR.DateTimePicker.DateTimePickerModel]{@link SiberianEHR.DateTimePicker.DateTimePickerModel}
      * @function
      * @name SiberianEHR.DateTimePicker.serialize
-     * @param model {SiberianEHR.DateTimePicker.Model} model to serialize
+     * @param model {SiberianEHR.DateTimePicker.DateTimePickerModel} model to serialize
      * @return {Object} Contains 2 key-value pairs - Value - ISO8601 string and corresponding Magnitude
      */
     SiberianEHR.DateTimePicker.serialize = function(model){
@@ -247,12 +247,12 @@
     };
 
     /**
-     * @class SiberianEHR.DateTimePicker.View
+     * @class SiberianEHR.DateTimePicker.DateTimePickerView
      * @classdesc View of SiberianEHR.DateTimePicker widget
      */
-    SiberianEHR.DateTimePicker.View = SiberianEHR.BindingView.extend({
+    SiberianEHR.DateTimePicker.DateTimePickerView = SiberianEHR.BindingView.extend({
         /**
-         * @name SiberianEHR.DateTimePicker.View#templateName
+         * @name SiberianEHR.DateTimePicker.DateTimePickerView#templateName
          * @property {string} name of the Handlebars JST template {@link JST}
          */
         templateName: 'datetime-picker',
@@ -265,7 +265,7 @@
         /**
          * Initializes a view.
          * @param {Object} options Contains 'el' - element, where to render view and 'model' - corresponding model
-         * @name SiberianEHR.DateTimePicker.View#initialize
+         * @name SiberianEHR.DateTimePicker.DateTimePickerView#initialize
          * @method
          */
         initialize:function(options){
@@ -275,7 +275,7 @@
         },
         /**
          * Initializes bootstap-datepicker and bootstrap-timepicker due to formats
-         * @name SiberianEHR.DateTimePicker.View#initializeWidget
+         * @name SiberianEHR.DateTimePicker.DateTimePickerView#initializeWidget
          * @method
          * @private
          */
@@ -296,8 +296,8 @@
                 });
         },
         /**
-         * Date changed handler
-         * @name SiberianEHR.DateTimePicker.View#onDateChanged
+         * Date changed handler. Invokes model's [setDate]{@link SiberianEHR.DateTimePicker.DateTimePickerModel#setDate}
+         * @name SiberianEHR.DateTimePicker.DateTimePickerView#onDateChanged
          * @method
          * @private
          * @param e {Event} Object {date: Date, format: String}. Typed date format in lowercase like 'mm-yyyy'.
@@ -308,7 +308,7 @@
         /**
          * Clears the validation error state
          * @method
-         * @name SiberianEHR.DateTimePicker.View#clearError
+         * @name SiberianEHR.DateTimePicker.DateTimePickerView#clearError
          */
         clearError: function(){
             this.$el.find('.control-group.date').removeClass('error');
@@ -316,10 +316,10 @@
         },
         /**
          * Show validation error
-         * @param {SiberianEHR.DateTimePicker} model - Model
+         * @param {SiberianEHR.DateTimePicker.DateTimePickerModel} model - Model
          * @param {string} error - text of error message
          * @method
-         * @name SiberianEHR.DateTimePicker.View#showError
+         * @name SiberianEHR.DateTimePicker.DateTimePickerView#showError
          */
         showError: function(model, error){
             this.$el.find('.control-group.date').addClass('error');
@@ -331,7 +331,7 @@
          * @param json
          * @return {Object|null} Serialized version of model like {Magnitude: 'magnitude value', Value: 'ISO8601 string' }
          * @method
-         * @name SiberianEHR.DateTimePicker.View#value
+         * @name SiberianEHR.DateTimePicker.DateTimePickerView#value
          */
         value: function(json){
             if (_.isObject(json)){
@@ -348,9 +348,9 @@
      */
     var methods = {
         /**
-         * Wrapper for [SiberianEHR.DateTimePicker.View -> value function]{@link SiberianEHR.DateTimePicker.View#value}.
+         * Wrapper for [SiberianEHR.DateTimePicker.DateTimePickerView -> value function]{@link SiberianEHR.DateTimePicker.DateTimePickerView#value}.
          * @param {Object|null} json
-         * @return {Object|null} See {@link SiberianEHR.DateTimePicker.View#value}
+         * @return {Object|null} See {@link SiberianEHR.DateTimePicker.DateTimePickerView#value}
          * @name methods#value
          * @method
          */
@@ -366,10 +366,10 @@
         init: function(options){
             var formatReader = new SiberianEHR.DateTimeFormatReader();
             var format = formatReader.readDateFormat(options.format);
-            var model = new SiberianEHR.DateTimePicker.Model(options);
+            var model = new SiberianEHR.DateTimePicker.DateTimePickerModel(options);
             return this.each(function () {
                 var $el = $(this),
-                    view = new SiberianEHR.DateTimePicker.View({
+                    view = new SiberianEHR.DateTimePicker.DateTimePickerView({
                         el: $el,
                         model: model,
                         format: format,
@@ -381,7 +381,7 @@
          * Allows an access to view
          * @method
          * @name methods#widget
-         * @return {SiberianEHR.DateTimePicker.View}
+         * @return {SiberianEHR.DateTimePicker.DateTimePickerView}
          */
         widget: function(){
             return this.data('view');

@@ -7,7 +7,7 @@ describe("Variate Date-time Picker Widget", function () {
         });
         it("Should initialize model with year",function(){
             format = 'YYYY-XX-XX';
-            var model = new SiberianEHR.DateTimePicker.Model({
+            var model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
                     Magnitude: m,
                     format: format,
                     localDateFormat: localDateFormat
@@ -24,7 +24,7 @@ describe("Variate Date-time Picker Widget", function () {
         });
         it("Should initialize model with year and month",function(){
             format = 'YYYY-MM-XX';
-            var model = new SiberianEHR.DateTimePicker.Model({
+            var model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
                     Magnitude: m,
                     format: format,
                     localDateFormat: localDateFormat
@@ -41,7 +41,7 @@ describe("Variate Date-time Picker Widget", function () {
         });
         it("Should initialize model with year, month and day",function(){
             format = 'YYYY-MM-DD';
-            var model = new SiberianEHR.DateTimePicker.Model({
+            var model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
                     Magnitude: m,
                     format: format,
                     localDateFormat: localDateFormat
@@ -76,7 +76,7 @@ describe("Variate Date-time Picker Widget", function () {
             spyOn(foo, 'valid_handler');
         });
         it("Month required checking",function(){
-            model = new SiberianEHR.DateTimePicker.Model({
+            model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
                 Magnitude: m,
                 localDateFormat: localDateFormat,
                 format: format
@@ -86,7 +86,7 @@ describe("Variate Date-time Picker Widget", function () {
             expect(foo.invalid_handler).toHaveBeenCalled();
         });
         it("Day required checking",function(){
-            model = new SiberianEHR.DateTimePicker.Model({
+            model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
                 Magnitude: m,
                 localDateFormat: localDateFormat,
                 format: format
@@ -96,7 +96,7 @@ describe("Variate Date-time Picker Widget", function () {
             expect(foo.invalid_handler).toHaveBeenCalled();
         });
         it("Everything is required and provided checking",function(){
-            model = new SiberianEHR.DateTimePicker.Model({
+            model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
                 Magnitude: m,
                 localDateFormat: localDateFormat,
                 format: format
@@ -114,7 +114,7 @@ describe("Variate Date-time Picker Widget", function () {
             localDateFormat = 'DD-MM-YYYY';
         });
         it("Serialization test",function(){
-            model = new SiberianEHR.DateTimePicker.Model({
+            model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
                 format: 'YYYY-MM-DDTXX:XX:XX',
                 localDateFormat: localDateFormat,
                 Magnitude: 63494389149.55
