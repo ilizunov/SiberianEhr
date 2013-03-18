@@ -32,7 +32,7 @@
             var formatReader = new SiberianEHR.DateTimeFormatReader();
             var format = formatReader.readDateFormat(options.format);
             _.defaults(options, {
-                localDateFormat : 'DD-MM-YYYY' //russian date format
+                localDateFormat : 'DD-MM-YYYY', //russian date format
             });
             _.extend(settings,
                 format,
@@ -40,6 +40,7 @@
                     Value : date,
                     Magnitude: options.Magnitude,
                     dateFormat: format.dateFormat, // constraint
+                    timeFormat: format.timeFormat, // time constraint
                     inputDateFormat: null, //date format provided by bootstrap-datepicker
                     localDateFormat: options.localDateFormat//custom date format
                 },
@@ -55,10 +56,10 @@
             );
             this.set(settings);
             // Renew Value and Magnitude
-            this.recalculateDate();
+            this.recalculateDateTime();
             // attach events on date change
-            this.on('change:Year change:Month change:Day', this.recalculateDate, this);
-            this.on('change:Year change:Month change:Day', this.preValidate, this);
+            this.on('change:Year change:Month change:Day change:Hour change:Minute change:Second change:Millisecond', this.recalculateDateTime, this);
+            this.on('change:Year change:Month change:Day change:Hour change:Minute change:Second change:Millisecond', this.preValidate, this);
         },
         /**
          * Gets value of selected date as ISO8601 string. Used in rivetjs.
@@ -144,9 +145,9 @@
          * Recalculates Magnitude due to models properties as Year, Month etc. into number of seconds since 01.01.0001T00:00:00.000
          * Value - ISO8601 string representation of Magnitude
          * @method
-         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#recalculateDate
+         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#recalculateDateTime
          */
-        recalculateDate: function(){
+        recalculateDateTime: function(){
             var json = this.toJSON();
             var m = moment.utc([parseInt(json.Year), parseInt(json.Month), parseInt(json.Day),
                 parseInt(json.Hour), parseInt(json.Minute), parseInt(json.Second), json.Millisecond]);
@@ -286,24 +287,29 @@
                 minViewMode : this.options.format.hasDay ? 'days' : this.options.format.hasMonth ? 'months' : 'years',
                 format: this.options.format.getDateFormatForDatePicker(this.options.localDateFormat)
             }).on('changeDate', {model: this.model}, this.onDateChanged);
-            this.$el.find('.bootstrap-timepicker').timepicker({
+            this.$el.find('.bootstrap-timepicker input').timepicker({
                 minuteStep: 1,
-                showMinutes: this.options.format.hasMinute, //TODO - no such option
+                showMinutes: this.options.format.hasMinute,
                 showSeconds: this.options.format.hasSecond,
                 showMeridian: false
-            }).on('changeTime.timepicker', function(e) {
-                    this.model.setTime(e.time.value);
-                });
+            }).on('changeTime.timepicker', {model: this.model}, this.onTimeChanged);
         },
         /**
          * Date changed handler. Invokes model's [setDate]{@link SiberianEHR.DateTimePicker.DateTimePickerModel#setDate}
          * @name SiberianEHR.DateTimePicker.DateTimePickerView#onDateChanged
          * @method
          * @private
-         * @param e {Event} Object {date: Date, format: String}. Typed date format in lowercase like 'mm-yyyy'.
+         * @param e {Event} Object {date: Date, format: String, data.model: SiberianEHR.DateTimePicker.DateTimePickerModel}. Typed date format in lowercase like 'mm-yyyy'.
          */
         onDateChanged: function(e){
             e.data.model.setDate(e.date, e.format);
+        },
+        /**
+         * Time changed handler. Invokes model's [setTime]{@link SiberianEHR.DateTimePicker.DateTimePickerModel#setTime}
+         * @param e {Event} Object {time.value: String, data.model: SiberianEHR.DateTimePicker.DateTimePickerModel}
+         */
+        onTimeChanged: function(e){
+            e.data.model.setTime(e.time.value);
         },
         /**
          * Clears the validation error state

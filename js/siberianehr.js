@@ -254,7 +254,7 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
             if (parts.length == 1) return format;
             if (parts[1] == 'XXX') return format;
             format.hasMillisecond = true;
-            if (parts[1] == 'MMM') format.isRequiredMillisecond = true;
+            if (parts[1] == 'SSS') format.isRequiredMillisecond = true;
 
             return format;
         })(timeFormat[2]));
