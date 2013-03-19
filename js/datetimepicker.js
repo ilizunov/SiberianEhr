@@ -26,8 +26,8 @@
             }else if(!_.isUndefined(options.Value)){
                 date = moment.utc(SiberianEHR.DateTimePicker.Consts._startOfDays).add(
                         moment.utc(options.Value, 'YYYY-MM-DDTHH:mm:ss.SSS').
-                            diff(SiberianEHR.DateTimePicker.Consts._startOfDays, 'seconds'),
-                    'seconds');
+                            diff(SiberianEHR.DateTimePicker.Consts._startOfDays, 'milliseconds'),
+                    'milliseconds');
             }else { date = moment(SiberianEHR.DateTimePicker.Consts._startOfDays); }
             var formatReader = new SiberianEHR.DateTimeFormatReader();
             var format = formatReader.readDateFormat(options.format);
@@ -134,11 +134,12 @@
          */
         setTime: function(time){
             var json = this.toJSON();
-            var m = moment.utc(time, 'hh:mm:ss');
+            var m = moment.utc(time, 'HH:mm:ss.SSS');
             this.set({
                 Hour: json.hasHour ? m.hour() : 0,
                 Minute: json.hasMinute ? m.minute() : 0,
-                Second: json.hasSecond ? m.second() : 0
+                Second: json.hasSecond ? m.second() : 0,
+                Millisecond: json.hasMillisecond ? m.millisecond() : 0
             });
         },
         /**
@@ -291,6 +292,7 @@
                 minuteStep: 1,
                 showMinutes: this.options.format.hasMinute,
                 showSeconds: this.options.format.hasSecond,
+                showMilliseconds: this.options.format.hasMillisecond,
                 showMeridian: false
             }).on('changeTime.timepicker', {model: this.model}, this.onTimeChanged);
         },
