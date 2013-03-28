@@ -1,13 +1,14 @@
 describe("Variate Date-time Picker Widget", function () {
     describe("Model initialization", function(){
-        var localDateFormat, m;
+        var localDateFormat, m, v;
         beforeEach(function(){
             m = 63494389149.55;
             localDateFormat = 'YYYY-MM-DD';
+            v = '0001-02-03T01:23:45.678+0:00';
         });
         it("Should initialize model with year",function(){
             format = 'YYYY-XX-XX';
-            var model = new SiberianEHR.DateTimePicker.Model({
+            var model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
                     Magnitude: m,
                     format: format,
                     localDateFormat: localDateFormat
@@ -24,7 +25,7 @@ describe("Variate Date-time Picker Widget", function () {
         });
         it("Should initialize model with year and month",function(){
             format = 'YYYY-MM-XX';
-            var model = new SiberianEHR.DateTimePicker.Model({
+            var model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
                     Magnitude: m,
                     format: format,
                     localDateFormat: localDateFormat
@@ -41,7 +42,7 @@ describe("Variate Date-time Picker Widget", function () {
         });
         it("Should initialize model with year, month and day",function(){
             format = 'YYYY-MM-DD';
-            var model = new SiberianEHR.DateTimePicker.Model({
+            var model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
                     Magnitude: m,
                     format: format,
                     localDateFormat: localDateFormat
@@ -55,6 +56,58 @@ describe("Variate Date-time Picker Widget", function () {
             expect(json.Second).toEqual(0);
             expect(json.Millisecond).toEqual(0);
             expect(model.getDateValue()).toEqual('2013-01-21');
+        });
+        it("Should initialize model with hour",function(){
+            format = 'XXXX-XX-XXTHH:XX:XX.XXX';
+            var model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
+                    Value: v,
+                    format: format
+                }),
+                json = model.toJSON();
+            expect(json.Hour).toEqual(1);
+            expect(json.Minute).toEqual(0);
+            expect(json.Second).toEqual(0);
+            expect(json.Millisecond).toEqual(0);
+            expect(model.getTimeValue()).toEqual('01');
+        });
+        it("Should initialize model with hour and minute",function(){
+            format = 'XXXX-XX-XXTHH:mm:XX.XXX';
+            var model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
+                    Value: v,
+                    format: format
+                }),
+                json = model.toJSON();
+            expect(json.Hour).toEqual(1);
+            expect(json.Minute).toEqual(23);
+            expect(json.Second).toEqual(0);
+            expect(json.Millisecond).toEqual(0);
+            expect(model.getTimeValue()).toEqual('01:23');
+        });
+        it("Should initialize model with hour, minute and second",function(){
+            format = 'XXXX-XX-XXTHH:mm:ss.XXX';
+            var model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
+                    Value: v,
+                    format: format
+                }),
+                json = model.toJSON();
+            expect(json.Hour).toEqual(1);
+            expect(json.Minute).toEqual(23);
+            expect(json.Second).toEqual(45);
+            expect(json.Millisecond).toEqual(0);
+            expect(model.getTimeValue()).toEqual('01:23:45');
+        });
+        it("Should initialize model with hour, minute, second and millisecond",function(){
+            format = 'XXXX-XX-XXTHH:mm:ss.SSS';
+            var model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
+                    Value: v,
+                    format: format
+                }),
+                json = model.toJSON();
+            expect(json.Hour).toEqual(1);
+            expect(json.Minute).toEqual(23);
+            expect(json.Second).toEqual(45);
+            expect(json.Millisecond).toEqual(678);
+            expect(model.getTimeValue()).toEqual('01:23:45.678');
         });
     });
 
@@ -76,7 +129,7 @@ describe("Variate Date-time Picker Widget", function () {
             spyOn(foo, 'valid_handler');
         });
         it("Month required checking",function(){
-            model = new SiberianEHR.DateTimePicker.Model({
+            model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
                 Magnitude: m,
                 localDateFormat: localDateFormat,
                 format: format
@@ -86,7 +139,7 @@ describe("Variate Date-time Picker Widget", function () {
             expect(foo.invalid_handler).toHaveBeenCalled();
         });
         it("Day required checking",function(){
-            model = new SiberianEHR.DateTimePicker.Model({
+            model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
                 Magnitude: m,
                 localDateFormat: localDateFormat,
                 format: format
@@ -96,7 +149,7 @@ describe("Variate Date-time Picker Widget", function () {
             expect(foo.invalid_handler).toHaveBeenCalled();
         });
         it("Everything is required and provided checking",function(){
-            model = new SiberianEHR.DateTimePicker.Model({
+            model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
                 Magnitude: m,
                 localDateFormat: localDateFormat,
                 format: format
@@ -114,7 +167,7 @@ describe("Variate Date-time Picker Widget", function () {
             localDateFormat = 'DD-MM-YYYY';
         });
         it("Serialization test",function(){
-            model = new SiberianEHR.DateTimePicker.Model({
+            model = new SiberianEHR.DateTimePicker.DateTimePickerModel({
                 format: 'YYYY-MM-DDTXX:XX:XX',
                 localDateFormat: localDateFormat,
                 Magnitude: 63494389149.55

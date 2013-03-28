@@ -10,14 +10,14 @@
 
     /**
      * Model of measured unit
-     * @class SiberianEHR.MeasuredUnit.Model
+     * @class SiberianEHR.MeasuredUnit.MeasuredUnitModel
      */
-    SiberianEHR.MeasuredUnit.Model = Backbone.Model.extend({
+    SiberianEHR.MeasuredUnit.MeasuredUnitModel = Backbone.Model.extend({
         /**
          * Backbone model initialization method
          * @method
-         * @name SiberianEHR.MeasuredUnit.Model#initialize
-         * @param {Object} options - options which are passed from pluging call, like $('#mu1').measuredUnit({options})
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitModel#initialize
+         * @param {Object} options - options which are passed from plugin call, like $('#mu1').measuredUnit({options})
          */
         initialize: function(options) {
             var settings = _.defaults(options, {
@@ -70,8 +70,8 @@
          * Setup model computed properties. In particular model it is 'rv_unitsAsArray' - units to get the rivets binding
          *
          * @method
-         * @name SiberianEHR.MeasuredUnit.Model#setupComputed
-         * @param {Object} options - the same options as passed in {@link SiberianEHR.MeasuredUnit.Model#initialize}
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitModel#setupComputed
+         * @param {Object} options - the same options as passed in {@link SiberianEHR.MeasuredUnit.MeasuredUnitModel#initialize}
          */
         setupComputed: function(options){
             /**
@@ -83,7 +83,7 @@
          * Event handler for unit changing. Locks widget from user input, converts value to new unit measure and
          * modifies the value according to specified precision.
          * @method
-         * @name SiberianEHR.MeasuredUnit.Model#unitChanged
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitModel#unitChanged
          */
         unitChanged: function() {
             var previous    = this.previousAttributes();
@@ -114,7 +114,7 @@
          * @param value Value to be evaluated with specified precision
          * @param toPrecision Precision indicated in decimal places, -1 implies no limit
          * @method
-         * @name SiberianEHR.MeasuredUnit.Model#toPrecision
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitModel#toPrecision
          */
         toPrecision: function(value, toPrecision){
             var newValue = parseFloat(value);
@@ -128,7 +128,7 @@
          * Pre-validates model state. Changes empty value to Assumed if Required is true. Also perform replacement of
          * non-digital symbols in user input and format the input to specified precision.
          * @method
-         * @name SiberianEHR.MeasuredUnit.Model#preValidate
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitModel#preValidate
          */
         preValidate: function(){
             var json = this.toJSON();
@@ -150,7 +150,7 @@
          * Gets min value for json representation of model
          * @param json
          * @method
-         * @name SiberianEHR.MeasuredUnit.Model#getMinValue
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitModel#getMinValue
          */
         getMinValue:function(json){
             if (_.isUndefined(json.Unit)) return undefined;
@@ -162,7 +162,7 @@
          * Gets max value for json representation of model
          * @param json
          * @method
-         * @name SiberianEHR.MeasuredUnit.Model#getMaxValue
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitModel#getMaxValue
          */
         getMaxValue:function(json){
             if (_.isUndefined(json.Unit)) return undefined;
@@ -173,7 +173,7 @@
         /**
          * Validates model. If model is not valid - triggers 'invalid' event, otherwise 'valid' event
          * @method
-         * @name SiberianEHR.MeasuredUnit.Model#validate
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitModel#validate
          */
         validate:function(){
             var json = this.toJSON();
@@ -210,7 +210,7 @@
          * Gets assumed value for model's current unit measure, with precision points
          * @return {Number}
          * @method
-         * @name SiberianEHR.MeasuredUnit.Model#getAssumedValue
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitModel#getAssumedValue
          */
         getAssumedValue: function(){
             var json = this.toJSON(),
@@ -231,18 +231,18 @@
 
     /**
      * @classdesc View of measured unit widget
-     * @class SiberianEHR.MeasuredUnit.View
+     * @class SiberianEHR.MeasuredUnit.MeasuredUnitView
      */
-    SiberianEHR.MeasuredUnit.View = SiberianEHR.BindingView.extend({
+    SiberianEHR.MeasuredUnit.MeasuredUnitView = SiberianEHR.BindingView.extend({
         /**
-         * @name SiberianEHR.MeasuredUnit.View#templateName
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitView#templateName
          * @property {string} name of the Handlebars JST template {@link JST}
          */
         templateName: 'measured-unit',
         /**
          * Initializes a view. Attaches widget blocking to 'isBusy' model property.
          * @param {Object} options Contains 'el' - element, where to render view and 'model' - corresponding model
-         * @name SiberianEHR.MeasuredUnit.View#initialize
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitView#initialize
          * @method
          */
         initialize:function(options){
@@ -252,7 +252,7 @@
         },
         /**
          * Blocks model from user input when model is busy doing recalculation
-         * @name SiberianEHR.MeasuredUnit.View#blockWidgetIfModelIsBusy
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitView#blockWidgetIfModelIsBusy
          * @method
          */
         blockWidgetIfModelIsBusy: function(){
@@ -264,7 +264,7 @@
         /**
          * Clears the validation error state
          * @method
-         * @name SiberianEHR.MeasuredUnit.View#clearError
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitView#clearError
          */
         clearError: function(){
             this.$el.find('.help-inline').text('');// clear error text
@@ -275,7 +275,7 @@
          * @param {SiberianEHR.MeasuredUnit} model - Model
          * @param {string} error - text of error message
          * @method
-         * @name SiberianEHR.MeasuredUnit.View#showError
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitView#showError
          */
         showError: function(model, error){
             this.$el.find('.help-inline').text(error);
@@ -286,7 +286,7 @@
          * @param json
          * @return {Object|null} Serialized version of model like {Unit: 'unit measure value', Value: 'Magnitude' }
          * @method
-         * @name SiberianEHR.MeasuredUnit.View#value
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitView#value
          */
         value: function(json){
             if (_.isObject(json)){
@@ -301,7 +301,7 @@
 
     /**
      * Returns current value of object
-     * @param {SiberianEHR.MeasuredUnit.Model} model
+     * @param {SiberianEHR.MeasuredUnit.MeasuredUnitModel} model
      * @return {Object} magnitude as object like { Value: 'value', Unit: 'unit' }
      * @name SiberianEHR.MeasuredUnit.serialize
      * @function
@@ -317,12 +317,12 @@
     /**
      * Returns a model based on specified json object
      * @param {Object} json object like { Value: 'value', Unit: 'unit' }
-     * @return {SiberianEHR.MeasuredUnit.Model}
+     * @return {SiberianEHR.MeasuredUnit.MeasuredUnitModel}
      * @name SiberianEHR.MeasuredUnit.deserialize
      * @function
      */
     SiberianEHR.MeasuredUnit.deserialize = function(json){
-        return new SiberianEHR.MeasuredUnit.Model( { DefaultValue: json } );
+        return new SiberianEHR.MeasuredUnit.MeasuredUnitModel( { DefaultValue: json } );
     };
 
     /**
@@ -330,9 +330,9 @@
      */
     var methods = {
         /**
-         * Wrapper for [SiberianEHR.MeasuredUnit.View -> value function]{@link SiberianEHR.MeasuredUnit.View#value}.
+         * Wrapper for [SiberianEHR.MeasuredUnit.MeasuredUnitView -> value function]{@link SiberianEHR.MeasuredUnit.MeasuredUnitView#value}.
          * @param {Object|null} json
-         * @return {Object|null} See {@link SiberianEHR.MeasuredUnit.View#value}
+         * @return {Object|null} See {@link SiberianEHR.MeasuredUnit.MeasuredUnitView#value}
          * @name methods#value
          * @method
          */
@@ -340,7 +340,7 @@
             return this.data('view').value(json);
         },
         /**
-         * @param {Object|string+args} options
+         * @param {Object|string} options
          * @method
          * @name methods#init
          * @return For every filtered instance creates and attaches a widget
@@ -349,22 +349,20 @@
             var model;
             //if we passed an object as options - we want to create a new widget[s], and bind them to model
             if (_.isObject(options))
-                model = new SiberianEHR.MeasuredUnit.Model(options);
+                model = new SiberianEHR.MeasuredUnit.MeasuredUnitModel(options);
             return this.each(function () {
                 var $el = $(this),
-                    view = new SiberianEHR.MeasuredUnit.View({
+                    view = new SiberianEHR.MeasuredUnit.MeasuredUnitView({
                         el: $el,
                         model: model
                     });
-                view.render();
-                $el.data('view', view);
             });
         },
         /**
          * Allows an access to view
          * @method
          * @name methods#widget
-         * @return {SiberianEHR.MeasuredUnit.View}
+         * @return {SiberianEHR.MeasuredUnit.MeasuredUnitView}
          */
         widget: function(){
             return this.data('view');
@@ -374,7 +372,7 @@
     /**
      * @function
      * @name measuredUnit
-     * @param {Object|string+args} options
+     * @param {Object|string} options
      * @return {*}
      */
     $.fn.measuredUnit = function (options) {

@@ -1,6 +1,9 @@
 SiberianEhr
 ===========
 
+![Build status](https://api.travis-ci.org/ilizunov/SiberianEhr.png?branch=master)
+
+
 measuredUnit
 ------------
 

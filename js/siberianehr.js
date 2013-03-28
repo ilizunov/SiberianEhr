@@ -23,6 +23,8 @@ SiberianEHR.BindingView = Backbone.View.extend({
         if (_.isUndefined(this.value) || !_.isFunction(this.value)){
             $.error('Error. There is no implementation of value(json) function');
         }
+        this.render(); //renders a view
+        this.$el.data('view', this); //and sets view
     },
 
     /**
@@ -34,6 +36,7 @@ SiberianEHR.BindingView = Backbone.View.extend({
         this.$el.html(this.getTemplate()(this.getContext()));
         this.setupBindings();
     },
+
     /**
      * Returns handlebars compiled template
      *
@@ -58,6 +61,7 @@ SiberianEHR.BindingView = Backbone.View.extend({
         }
         return {};
     },
+
     /**
      * Bind rivets.js bindings to ready DOM
      * Save Rivets view in rivets attribute.
@@ -250,8 +254,8 @@ _.extend(SiberianEHR.DateTimeFormatReader.prototype, {
             if (parts.length == 1) return format;
             if (parts[1] == 'XXX') return format;
             format.hasMillisecond = true;
-            if (parts[1] == 'MMM') format.isRequiredMillisecond = true;
-
+            format.timeFormat = 'HH:mm:ss.SSS';
+            if (parts[1] == 'SSS') format.isRequiredMillisecond = true;
             return format;
         })(timeFormat[2]));
         return format;

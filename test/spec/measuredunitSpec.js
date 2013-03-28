@@ -8,7 +8,7 @@ describe("Measured Unit widget", function () {
         var model;
 
         beforeEach(function () {
-            model = new SiberianEHR.MeasuredUnit.Model({
+            model = new SiberianEHR.MeasuredUnit.MeasuredUnitModel({
                 PropertyName : 'weight',
                 getValueConverter: function (property, fromUnit, toUnit){
                     switch(property){
@@ -63,8 +63,8 @@ describe("Measured Unit widget", function () {
     describe("rendering", function(){
         var view;
         beforeEach(function(){
-            view = new SiberianEHR.MeasuredUnit.View({
-                model: new SiberianEHR.MeasuredUnit.Model({
+            view = new SiberianEHR.MeasuredUnit.MeasuredUnitView({
+                model: new SiberianEHR.MeasuredUnit.MeasuredUnitModel({
                     DefaultValue: {
                         Value: 30,
                         Unit: 'kg'
@@ -109,7 +109,7 @@ describe("Measured Unit widget", function () {
     describe("model validation", function () {
         var model, foo;
         beforeEach(function () {
-            model = new SiberianEHR.MeasuredUnit.Model({
+            model = new SiberianEHR.MeasuredUnit.MeasuredUnitModel({
                 DefaultValue: {
                     Value: 10,
                     Unit: 'kg'
@@ -136,7 +136,7 @@ describe("Measured Unit widget", function () {
         var model;
 
         beforeEach(function () {
-            model = new SiberianEHR.MeasuredUnit.Model({
+            model = new SiberianEHR.MeasuredUnit.MeasuredUnitModel({
                 PropertyName : 'weight',
                 getValueConverter: function (property, fromUnit, toUnit){
                     switch(property){
@@ -231,7 +231,7 @@ describe("Measured Unit widget", function () {
     describe("min/max test", function(){
         var model, foo;
         beforeEach(function () {
-            model = new SiberianEHR.MeasuredUnit.Model({
+            model = new SiberianEHR.MeasuredUnit.MeasuredUnitModel({
                 DefaultValue: {
                     Value: 10,
                     Unit: 'kg'
