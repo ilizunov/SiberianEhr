@@ -125,37 +125,37 @@ title: Demo page
         </td>
         <td>
             {% highlight javascript %}
-            $('#measured-input1').measuredUnit({
-                AssumedValue: { Value: 36.6, Unit: 'C' },  // assumed value - the value set to the control if user has not touched it
-                Units: {
-                    'C' : {
-                        precision: 1,
-                        minValue: 35,
-                        maxValue: 42
-                    },
-                    'F' : {
-                        precision: 1,
-                        minValue: 95,
-                        maxValue: 107.6
-                    }
-                },
-                PropertyName : 'temperature', // Name of the measured property, e.g. "temperature"
-                getValueConverter: function (property, fromUnit, toUnit){
-                    switch(property){
-                        case 'temperature':
-                            if (fromUnit === 'C'  && toUnit === 'F'){
-                                return function (value) {
-                                    return (value * 9 / 5 + 32);
-                                };
-                            }
-                            if (fromUnit === 'F'  && toUnit === 'C'){
-                                return function (value) {
-                                    return ((value - 32) * 5 / 9);
-                                }
-                            }
+$('#measured-input1').measuredUnit({
+    AssumedValue: { Value: 36.6, Unit: 'C' },  // assumed value - the value set to the control if user has not touched it
+    Units: {
+        'C' : {
+            precision: 1,
+            minValue: 35,
+            maxValue: 42
+        },
+        'F' : {
+            precision: 1,
+            minValue: 95,
+            maxValue: 107.6
+        }
+    },
+    PropertyName : 'temperature', // Name of the measured property, e.g. "temperature"
+    getValueConverter: function (property, fromUnit, toUnit){
+        switch(property){
+            case 'temperature':
+                if (fromUnit === 'C'  && toUnit === 'F'){
+                    return function (value) {
+                        return (value * 9 / 5 + 32);
+                    };
+                }
+                if (fromUnit === 'F'  && toUnit === 'C'){
+                    return function (value) {
+                        return ((value - 32) * 5 / 9);
                     }
                 }
-            });
+        }
+    }
+});
             {% endhighlight %}
         </td>
     </tr>
@@ -167,37 +167,37 @@ title: Demo page
         </td>
         <td>
             {% highlight javascript %}
-            $('#measured-input2').measuredUnit({
-                DefaultValue: {
-                    Value: 0,
-                    Unit: 'mm Hg'
-                },
-                Required : false,
-                Units: {
-                    'mm Hg' : {
-                        precision: 0
-                    },
-                    'Pa' : {
-                        precision: 1
-                    }
-                },
-                PropertyName : 'pressure',
-                getValueConverter: function (property, fromUnit, toUnit){
-                    switch(property){
-                        case 'pressure':
-                            if (fromUnit === 'mm Hg'  && toUnit === 'Pa'){
-                                return function (value) {
-                                    return (value * 51.715);
-                                };
-                            }
-                            if (fromUnit === 'Pa'  && toUnit === 'mm Hg'){
-                                return function (value) {
-                                    return (value / 51.715);
-                                }
-                            }
+$('#measured-input2').measuredUnit({
+    DefaultValue: {
+        Value: 0,
+        Unit: 'mm Hg'
+    },
+    Required : false,
+    Units: {
+        'mm Hg' : {
+            precision: 0
+        },
+        'Pa' : {
+            precision: 1
+        }
+    },
+    PropertyName : 'pressure',
+    getValueConverter: function (property, fromUnit, toUnit){
+        switch(property){
+            case 'pressure':
+                if (fromUnit === 'mm Hg'  && toUnit === 'Pa'){
+                    return function (value) {
+                        return (value * 51.715);
+                    };
+                }
+                if (fromUnit === 'Pa'  && toUnit === 'mm Hg'){
+                    return function (value) {
+                        return (value / 51.715);
                     }
                 }
-            });
+        }
+    }
+});
             {% endhighlight %}
         </td>
     </tr>
@@ -208,14 +208,14 @@ title: Demo page
         </td>
         <td>
             {% highlight javascript %}
-            $('#measured-input3').measuredUnit({
-                DefaultValue: {
-                    Value: 160,
-                    Unit: 'cm'
-                },
-                Required : true,
-                PropertyName : 'height'
-            });
+$('#measured-input3').measuredUnit({
+    DefaultValue: {
+        Value: 160,
+        Unit: 'cm'
+    },
+    Required : true,
+    PropertyName : 'height'
+});
             {% endhighlight %}
         </td>
     </tr>
@@ -228,15 +228,15 @@ title: Demo page
         </td>
         <td>
             {% highlight javascript %}
-            $('#measured-input4').measuredUnit({
-                AssumedValue: {
-                    Value: 160,
-                    Unit: 'cm'
-                },
-                Units: {'cm':{}},
-                Required : true,
-                PropertyName : 'height'
-            });
+$('#measured-input4').measuredUnit({
+    AssumedValue: {
+        Value: 160,
+        Unit: 'cm'
+    },
+    Units: {'cm':{}},
+    Required : true,
+    PropertyName : 'height'
+});
             {% endhighlight %}
         </td>
     </tr>
@@ -292,11 +292,11 @@ title: Demo page
         </td>
         <td>
             {% highlight javascript %}
-            $('#datetime-picker0').dateTimePicker({
-                format: 'YYYY-XX-XXTXX:XX:XX',
-                localDateFormat: 'DD-MM-YYYY',
-                Magnitude: 63494389149.55
-            });
+$('#datetime-picker0').dateTimePicker({
+    format: 'YYYY-XX-XXTXX:XX:XX',
+    localDateFormat: 'DD-MM-YYYY',
+    Magnitude: 63494389149.55
+});
             {% endhighlight %}
         </td>
     </tr>
@@ -308,11 +308,11 @@ title: Demo page
         </td>
         <td>
             {% highlight javascript %}
-            $('#datetime-picker1').dateTimePicker({
-                format: 'YYYY-??-XXTXX:XX:XX',
-                localDateFormat: 'DD-MM-YYYY',
-                Magnitude: 63494389149.55
-            });
+$('#datetime-picker1').dateTimePicker({
+    format: 'YYYY-??-XXTXX:XX:XX',
+    localDateFormat: 'DD-MM-YYYY',
+    Magnitude: 63494389149.55
+});
             {% endhighlight %}
         </td>
     </tr>
@@ -324,11 +324,11 @@ title: Demo page
         </td>
         <td>
             {% highlight javascript %}
-            $('#datetime-picker2').dateTimePicker({
-                format: 'YYYY-MM-??TXX:XX:XX',
-                localDateFormat: 'DD-MM-YYYY',
-                Magnitude: 63494389149.55
-            });
+$('#datetime-picker2').dateTimePicker({
+    format: 'YYYY-MM-??TXX:XX:XX',
+    localDateFormat: 'DD-MM-YYYY',
+    Magnitude: 63494389149.55
+});
             {% endhighlight %}
         </td>
     </tr>
@@ -340,10 +340,10 @@ title: Demo page
         </td>
         <td>
             {% highlight javascript %}
-            $('#datetime-picker3').dateTimePicker({
-                format: 'YYYY-MM-DDTXX:XX:XX',
-                Value: '2013-01-21'
-            });
+$('#datetime-picker3').dateTimePicker({
+    format: 'YYYY-MM-DDTXX:XX:XX',
+    Value: '2013-01-21'
+});
             {% endhighlight %}
         </td>
     </tr>
@@ -355,10 +355,10 @@ title: Demo page
 		</td>
 		<td>
 			{% highlight javascript %}
-			$('#datetime-picker4').dateTimePicker({
-				format: 'XXXX-XX-XXTHH:XX:XX',
-				Value: '2013-01-21T18:05:12'
-			});
+$('#datetime-picker4').dateTimePicker({
+	format: 'XXXX-XX-XXTHH:XX:XX',
+	Value: '2013-01-21T18:05:12'
+});
 			{% endhighlight %}
 		</td>
 	</tr>
@@ -370,12 +370,11 @@ title: Demo page
 		</td>
 		<td>
 			{% highlight javascript %}
-			$('#datetime-picker5').dateTimePicker({
-				format: 'XXXX-XX-XXTHH:MM:SS.sss',
-				Value: '0001-01-01T01:23:45.678'
-			});
+$('#datetime-picker5').dateTimePicker({
+	format: 'XXXX-XX-XXTHH:MM:SS.sss',
+	Value: '0001-01-01T01:23:45.678'
+});
 			{% endhighlight %}
-
 		</td>
 	</tr>
 </table>
