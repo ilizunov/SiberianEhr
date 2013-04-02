@@ -63,7 +63,7 @@ title: Demo page
                         }
                 }
             }
-        });
+		});
         $('#measured-input2').measuredUnit({
             DefaultValue: {
                 Value: 0,
@@ -114,7 +114,6 @@ title: Demo page
         });
     });
 </script>
-
 <table>
     <tr>
         <td>
@@ -247,7 +246,6 @@ title: Demo page
 
 <h2 id="datetimepicker">Datetime picker</h2>
 
-
 <script src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/moment.js"></script>
 <script src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/bootstrap-datepicker.js"></script>
 <script src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/bootstrap-timepicker.js"></script>
@@ -274,9 +272,16 @@ title: Demo page
             format: 'YYYY-MM-DDTXX:XX:XX',
             Value: '2013-01-21'
         });
+		$('#datetime-picker4').dateTimePicker({
+            format: 'XXXX-XX-XXTHH:XX:XX',
+            Value: '2013-01-21T18:05:12'
+        });
+        $('#datetime-picker5').dateTimePicker({
+            format: 'XXXX-XX-XXTHH:MM:SS.sss',
+            Value: '0001-01-01T01:23:45.678'
+        });
     });
 </script>
-
 
 <table>
     <tr>
@@ -342,6 +347,37 @@ title: Demo page
             {% endhighlight %}
         </td>
     </tr>
+	<tr>
+		<td>
+			<h4>Hour Picker</h4>
+			<div id="datetime-picker4"></div>
+			<span class="help-inline">format: <strong>HH:XX:XX</strong> hour is required</span>
+		</td>
+		<td>
+			{% highlight javascript %}
+			$('#datetime-picker4').dateTimePicker({
+				format: 'XXXX-XX-XXTHH:XX:XX',
+				Value: '2013-01-21T18:05:12'
+			});
+			{% endhighlight %}
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<h4>Hour-Minute-Second Picker</h4>
+			<div id="datetime-picker5"></div>
+			<span class="help-inline">format: <strong>HH:MM:SS.sss</strong> everything is required</span>
+		</td>
+		<td>
+			{% highlight javascript %}
+			$('#datetime-picker5').dateTimePicker({
+				format: 'XXXX-XX-XXTHH:MM:SS.sss',
+				Value: '0001-01-01T01:23:45.678'
+			});
+			{% endhighlight %}
+
+		</td>
+	</tr>
 </table>
 
 
