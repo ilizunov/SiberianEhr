@@ -379,8 +379,7 @@
 
         change: function(){
             this.format = _.extend(this.format, DPGlobal.getFormatForManualInput(this.element.val(), this.initialFormat));
-            var m = moment.utc(this.element.val(), this.format.parts.slice().join('-').toUpperCase());
-            this.date = m.toDate();
+            this.date = DPGlobal.parseDate(this.element.val(), this.format, this.language);
             this.element.trigger({
                 type: 'changeDate',
                 date: this.date,

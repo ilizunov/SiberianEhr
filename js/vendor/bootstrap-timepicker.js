@@ -442,7 +442,7 @@
       this.isOpen = false;
     },
 
-      highlightMillisecond: function () {
+    highlightMillisecond: function () {
         var $element = this.$element.get(0);
         this.highlightedUnit = 'millisecond';
         if ($element.setSelectionRange) {
@@ -452,7 +452,7 @@
         }
       },
 
-      highlightUnit: function() {
+    highlightUnit: function() {
       this.position = this.getCursorPosition();
       if (this.position >= 0 && this.position <= 2) {
         this.highlightHour();
@@ -629,8 +629,14 @@
       this.update();
     },
 
-    incrementSecond: function() {
-      var newVal = this.second + this.secondStep - (this.second % this.secondStep);
+    incrementSecond: function(step) {
+      var newVal;
+
+      if (step) {
+        newVal = this.second + step;
+      } else {
+        newVal = this.second + this.secondStep - (this.second % this.secondStep);
+      }
 
       if (newVal > 59) {
         this.incrementMinute(true);

@@ -68,7 +68,7 @@
          * @return {String} Value of selected date as ISO8601 string
          */
         rv_getValue: function(){
-            return this.get('Value').format();
+            return this.get('Value').format('YYYY-MM-DD HH:mm:ss.SSS');
         },
         /**
          * @method
