@@ -1,0 +1,128 @@
+---
+layout: demo
+title: Demo page
+---
+<h1>Stress test for widgets</h1>
+
+<div id="measuredunit">
+    <h2>Measured Unit</h2>
+
+    <div class="control-group">
+        <label class="control-label">Number of widgets</label>
+        <div class="controls">
+            <input type="text" name="num" value="500">
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <label class="control-label checkbox">
+                <input type="checkbox" name="bind">
+                Bind to same value
+            </label>
+        </div>
+    </div>
+    <div class="form-actions">
+        <button class="btn generate">Generate!</button>
+    </div>
+</div>
+
+<div id="datetime">
+    <h2>Datetime Picker</h2>
+
+    <div class="control-group">
+        <label class="control-label">Number of widgets</label>
+        <div class="controls">
+            <input type="text" name="num" value="500">
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <label class="control-label checkbox">
+                <input type="checkbox" name="bind">
+                Bind to same value
+            </label>
+        </div>
+    </div>
+    <div class="form-actions">
+        <button class="btn generate">Generate!</button>
+    </div>
+</div>
+
+<script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/templates/measuredunit-tmpl.js"></script>
+<script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/measuredunit.js"></script>
+<script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/moment.js"></script>
+<script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/bootstrap-timepicker.js"></script>
+<script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/templates/datetimepicker-tmpl.js"></script>
+<script type="text/javascript" src="https://raw.github.com/ilizunov/SiberianEhr/master/js/datetimepicker.js"></script>
+<script type="text/javascript">
+    $(function(){
+        var measuredUnitOptions = {
+                    DefaultValue: {
+                        Value: 0,
+                        Unit: 'mm Hg'
+                    },
+                    Required : false,
+                    Units: {
+                        'mm Hg' : {
+                            precision: 0
+                        },
+                        'Pa' : {
+                            precision: 1
+                        }
+                    },
+                    PropertyName : 'pressure',
+                    getValueConverter: function (property, fromUnit, toUnit){
+                        switch(property){
+                            case 'pressure':
+                                if (fromUnit === 'mm Hg'  && toUnit === 'Pa'){
+                                    return function (value) {
+                                        return (value * 51.715);
+                                    };
+                                }
+                                if (fromUnit === 'Pa'  && toUnit === 'mm Hg'){
+                                    return function (value) {
+                                        return (value / 51.715);
+                                    }
+                                }
+                        }
+                    }
+                },
+            dateTimePickerOptions = {
+                format: 'YYYY-??-XXTXX:XX:XX',
+                localDateFormat: 'DD-MM-YYYY',
+                Magnitude: 63494389149.55
+            };
+
+        generate = function(options, $container, widget) {
+            var num = parseInt($container.find('input[name=num]').val()),
+                bindSame = $container.find('input[name=bind]').prop('checked'),
+                el;
+
+            for (var i = 0; i < num; i++) {
+                if (bindSame) {
+                    el = $('<div class="widget"/>');
+                } else {
+                    el = $('<div />')[widget](options);
+                }
+                $container.append(el);
+            }
+            if (bindSame) {
+                $container.find('.widget')[widget](options);
+            }
+        };
+
+        $('#measuredunit')
+            .find('button.generate')
+            .on('click', function() {
+                generate(measuredUnitOptions, $('#measuredunit'), 'measuredUnit');
+            });
+
+        $('#datetime')
+            .find('button.generate')
+            .on('click', function() {
+                generate(dateTimePickerOptions, $('#datetime'), 'dateTimePicker');
+            });
+    });
+</script>
+
