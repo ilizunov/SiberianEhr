@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: BindingView</title>
+    <title>JSDoc: Class: CodedTextModel</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Class: BindingView</h1>
+    <h1 class="page-title">Class: CodedTextModel</h1>
     
     
 
@@ -27,10 +27,10 @@
     
 <header>
     <h2>
-    BindingView
-    </h2>
+        <span class="ancestors"><a href="SiberianEHR.html">SiberianEHR</a><a href="SiberianEHR.CodedText.html">.CodedText</a>.</span>
     
-        <div class="class-description">Root class for all SiberianEHR views with bindings</div>
+    CodedTextModel
+    </h2>
     
 </header>  
 
@@ -41,12 +41,16 @@
     
         
 <dt>
-    <h4 class="name" id="BindingView"><span class="type-signature"></span>new BindingView<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="CodedTextModel"><span class="type-signature"></span>new CodedTextModel<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
     
+    
+    <div class="description">
+        Model of DVCodedText
+    </div>
     
 
     
@@ -78,7 +82,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="siberianehr.js.html">siberianehr.js</a>, line 13
+        <a href="codedtext.js.html">codedtext.js</a>, line 11
     </li></ul></dd>
     
     
@@ -120,7 +124,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="blockWidget"><span class="type-signature"></span>blockWidget<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="initialize"><span class="type-signature"></span>initialize<span class="signature">(options)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -128,7 +132,7 @@
     
     
     <div class="description">
-        Blocks widget from user's editing
+        Backbone model initialization method
     </div>
     
 
@@ -136,6 +140,54 @@
     
     
     
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">options which are passed from plugin call, like $('#ct1').codedText({options})</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
     
     
     
@@ -161,7 +213,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="siberianehr.js.html">siberianehr.js</a>, line 76
+        <a href="codedtext.js.html">codedtext.js</a>, line 16
     </li></ul></dd>
     
     
@@ -185,16 +237,12 @@
         
             
 <dt>
-    <h4 class="name" id="getContext"><span class="type-signature"></span>getContext<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="preValidate"><span class="type-signature"></span>preValidate<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
     
-    
-    <div class="description">
-        Return model (if a view has an own one) as JSON
-    </div>
     
 
     
@@ -226,157 +274,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="siberianehr.js.html">siberianehr.js</a>, line 51
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    model's JSON data
-</div>
-
-
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="getTemplate"><span class="type-signature"></span>getTemplate<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Returns handlebars compiled template
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="siberianehr.js.html">siberianehr.js</a>, line 40
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    Template function, ready to compile context to HTML
-</div>
-
-
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="render"><span class="type-signature"></span>render<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Renders HTML content into element.
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="siberianehr.js.html">siberianehr.js</a>, line 30
+        <a href="codedtext.js.html">codedtext.js</a>, line 64
     </li></ul></dd>
     
     
@@ -400,7 +298,7 @@
         
             
 <dt>
-    <h4 class="name" id="setupBindings"><span class="type-signature"></span>setupBindings<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="setupComputed"><span class="type-signature"></span>setupComputed<span class="signature">(options)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -408,7 +306,7 @@
     
     
     <div class="description">
-        Bind rivets.js bindings to ready DOMSave Rivets view in rivets attribute.
+        Setup model computed properties.
     </div>
     
 
@@ -416,6 +314,54 @@
     
     
     
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">the same options as passed in <a href="SiberianEHR.CodedText.CodedTextModel.html#initialize">SiberianEHR.CodedText.CodedTextModel#initialize</a></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
     
     
     
@@ -441,7 +387,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="siberianehr.js.html">siberianehr.js</a>, line 65
+        <a href="codedtext.js.html">codedtext.js</a>, line 30
     </li></ul></dd>
     
     
@@ -465,7 +411,7 @@
         
             
 <dt>
-    <h4 class="name" id="unblockWidget"><span class="type-signature"></span>unblockWidget<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="validate"><span class="type-signature"></span>validate<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -473,7 +419,7 @@
     
     
     <div class="description">
-        Unblock widget from user's editing
+        Validates model. If model is not valid - triggers 'invalid' event, otherwise 'valid' event
     </div>
     
 
@@ -506,7 +452,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="siberianehr.js.html">siberianehr.js</a>, line 86
+        <a href="codedtext.js.html">codedtext.js</a>, line 71
     </li></ul></dd>
     
     

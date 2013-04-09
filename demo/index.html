@@ -379,5 +379,72 @@ $('#datetime-picker5').dateTimePicker({
 	</tr>
 </table>
 
+<h2 id="datetimepicker">Coded text</h2>
 
+<script src="https://raw.github.com/ilizunov/SiberianEhr/master/js/vendor/select2.js"></script>
+<script src="https://raw.github.com/ilizunov/SiberianEhr/master/js/templates/codedtext-tmpl.js"></script>
+<script src="https://raw.github.com/ilizunov/SiberianEhr/master/js/codedtext.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $('#coded-text-1').codedText(
+            {
+                Dictionary: [{text:'Item1',id:'Value1'},
+                             {text:'Item2',id:'Value2'},
+                             {text:'Item3',id:'Value3'}],
+                Value: 'Value2',
+                AssumedValue: 'Value3',
+                Required: false
+            }
+        );
+        $('#coded-text-2').codedText(
+            {
+                Dictionary: [{text:'Item1',id:'Value1'},
+                    {text:'Item2',id:'Value2'},
+                    {text:'Item3',id:'Value3'},
+                    {text:'Item4',id:'Value4'}],
+                AssumedValue: 'Value3',
+                Required: true
+            }
+        );
+    });
+</script>
 
+<table>
+    <tr>
+        <td>
+            <h4>Coded text exapmle</h4>
+            <div id="coded-text-1"></div>
+            <span class="help-inline">Value selected, required - false</span>
+        </td>
+        <td>
+{% highlight javascript %}
+$('#coded-text-1').codedText({
+        Dictionary: [{text:'Item1',id:'Value1'},
+                     {text:'Item2',id:'Value2'},
+                     {text:'Item3',id:'Value3'}],
+        Value: 'Value2',
+        AssumedValue: 'Value3',
+        Required: false
+});
+{% endhighlight %}
+        </td>
+    </tr>
+	<tr>
+		<td><h4>Coded text exapmle</h4>
+            <div id="coded-text-1"></div>
+            <span class="help-inline">No value selected, required - true</span>
+		</td>
+		<td>
+{% highlight javascript %}
+$('#coded-text-2').codedText({
+        Dictionary: [{text:'Item1',id:'Value1'},
+            {text:'Item2',id:'Value2'},
+            {text:'Item3',id:'Value3'},
+            {text:'Item4',id:'Value4'}],
+        AssumedValue: 'Value3',
+        Required: true
+});
+{% endhighlight %}
+		</td>
+	</tr>
+</table>
