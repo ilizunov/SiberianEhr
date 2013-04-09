@@ -15,10 +15,11 @@
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/datepicker.css">
     <link rel="stylesheet" href="css/bootstrap-timepicker.css">
+    <link rel="stylesheet" href="css/select2.css">
 </head>
 <body>
 
-<div class="hero-unit"><h1>DateTime Picker</h1>
+<div class="hero-unit"><h1>Coded text</h1>
     <form action=".">
         <h4>Coded text example</h4>
         <div id="coded-text-1"></div>
@@ -39,6 +40,7 @@
 <script src="js/vendor/moment.js"></script>
 <script src="js/vendor/bootstrap-datepicker.js"></script>
 <script src="js/vendor/bootstrap-timepicker.js"></script>
+<script src="js/vendor/select2.js"></script>
 <!--Application-->
 <script src="js/siberianehr.js"></script>
 <script src="js/templates/datetimepicker-tmpl.js"></script>
@@ -50,17 +52,22 @@
     $(function(){
         $('#coded-text-1').codedText(
                 {
-                    PossibleValues: [{text:'Item1',value:'Value1'},
-                                     {text:'Item2',value:'Value2'},
-                                     {text:'Item3',value:'Value3'}],
-                    Value: 'Value2'
+                    Dictionary: [{text:'Item1',id:'Value1'},
+                                 {text:'Item2',id:'Value2'},
+                                 {text:'Item3',id:'Value3'}],
+                    Value: 'Value2',
+                    AssumedValue: 'Value3',
+                    Required: false
                 }
         );
         $('#coded-text-2').codedText(
                 {
-                    PossibleValues: [{text:'Item1',value:'Value1'},
-                        {text:'Item2',value:'Value2'},
-                        {text:'Item3',value:'Value3'}]
+                    Dictionary: [{text:'Item1',id:'Value1'},
+                        {text:'Item2',id:'Value2'},
+                        {text:'Item3',id:'Value3'},
+                        {text:'Item4',id:'Value4'}],
+                    AssumedValue: 'Value3',
+                    Required: true
                 }
         );
     });

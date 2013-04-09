@@ -32,7 +32,7 @@
             var formatReader = new SiberianEHR.DateTimeFormatReader();
             var format = formatReader.readDateFormat(options.format);
             _.defaults(options, {
-                localDateFormat : 'DD-MM-YYYY', //russian date format
+                localDateFormat : 'DD-MM-YYYY' //russian date format
             });
             _.extend(settings,
                 format,
@@ -258,12 +258,6 @@
          * @property {string} name of the Handlebars JST template {@link JST}
          */
         templateName: 'datetime-picker',
-        /**
-         * Events to be handled in view
-         */
-        events: {
-            //'change input': 'onInputChange'
-        },
         /**
          * Initializes a view.
          * @param {Object} options Contains 'el' - element, where to render view and 'model' - corresponding model

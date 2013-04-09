@@ -17,13 +17,15 @@
          * Backbone model initialization method
          * @method
          * @name SiberianEHR.CodedText.CodedTextModel#initialize
-         * @param {Object} options - options which are passed from plugin call, like $('#mu1').codedText({options})
+         * @param {Object} options - options which are passed from plugin call, like $('#ct1').codedText({options})
          */
         initialize: function(options) {
             var settings = _.defaults(options, {
-                PossibleValues : {}
+                Dictionary: {},
+                Required: false
             });
             this.set(settings);
+            this.on('change:Value', this.preValidate, this);
         },
         /**
          * Setup model computed properties.
@@ -34,6 +36,25 @@
          */
         setupComputed: function(options){
 
+        },
+        getTextById:function(value){
+            var json = this.toJSON(), result;
+            if (_.isUndefined(value))
+                value = json.Value;
+            result = _.findWhere(json.Dictionary, {id: value});
+            return result.text;
+        },
+        clearValue:function(){
+            var json = this.toJSON();
+            if (_.isUndefined(json.AssumedValue)){
+                this.set({
+                    Value: json.AssumedValue
+                });
+            }else{
+                this.set({
+                    Value: ''
+                });
+            }
         },
         /**
          * @method
@@ -50,8 +71,10 @@
          * @name SiberianEHR.CodedText.CodedTextModel#validate
          */
         validate:function(){
+            debugger;
             var json = this.toJSON();
-            return this.trigger('invalid', this, 'Error text');
+            if ((json.Required === true) && (json.Value === ''))
+                return this.trigger('invalid', this, 'Value should be specified');
             return this.trigger('valid');
         }
     });
@@ -66,6 +89,17 @@
          * @property {string} name of the Handlebars JST template {@link JST}
          */
         templateName: 'coded-text',
+
+        events: {
+            'click a.remove': 'onClearValue'
+            //'change input': 'onInputChange'
+        },
+
+        onClearValue: function(){
+            this.model.clearValue();
+            this.$el.find('.select2').select2('val', '');
+        },
+
         /**
          * Initializes a view. Attaches widget blocking to 'isBusy' model property.
          * @param {Object} options Contains 'el' - element, where to render view and 'model' - corresponding model
@@ -76,6 +110,7 @@
             this.model.on('change',  this.blockWidgetIfModelIsBusy, this); // Block UI while the model is busy
             //call parent initialization method
             SiberianEHR.BindingView.prototype.initialize.call(this,options);
+            this.initializeWidget();
         },
         /**
          * Clears the validation error state
@@ -112,6 +147,45 @@
                 this.render();
             }else //serialize
                 return SiberianEHR.CodedText.serialize(this.model);
+        },
+        /**
+         * Initializes select2 element
+         * @name SiberianEHR.CodedText.CodedTextView#initializeWidget
+         * @method
+         * @private
+         */
+        initializeWidget:function(){
+            var json = this.model.toJSON(),
+                preload_data = json.Dictionary,
+                settings = {
+                    width: 'off',
+                    query: function (query){
+                        var data = {results: []};
+                        $.each(preload_data, function(){
+                            if(query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0 ){
+                                data.results.push({id: this.id, text: this.text});
+                            }
+                        });
+                        if (query.term.length > 0)
+                            data.results.push({id: query.term, text: query.term});
+                        query.callback(data);
+                    },
+                    data: preload_data,
+                    initSelection : function (element, callback) {
+                        var data = _.findWhere(preload_data, {id: element.val()});
+                        callback(data);
+                    }
+                };
+            if (!_.isUndefined(json.AssumedValue)){
+                settings.placeholder = this.model.getTextById(json.AssumedValue);
+            }
+            this.$el.find('.select2').select2(settings).on('change', {model: this.model}, this.onValueChanged);
+            if (!_.isUndefined(json.Value)){
+                this.$el.find('.select2').select2('val', json.Value);
+            }
+        },
+        onValueChanged:function(e){
+            e.data.model.set('Value', e.val);
         }
     });
 
