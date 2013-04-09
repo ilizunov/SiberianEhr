@@ -295,6 +295,7 @@ describe("Measured Unit widget", function () {
             var json = element.measuredUnit('value');
             json.Value = 200;
             element.measuredUnit('value', json);
+            json = element.measuredUnit('value');
             expect(json.Value).toEqual(200);
             expect(json.Unit).toEqual('cm');
         });
@@ -328,6 +329,7 @@ describe("Measured Unit widget", function () {
             var json = widget.value();
             json.Value = 200;
             widget.value(json);
+            json = widget.value();
             expect(json.Value).toEqual(200);
             expect(json.Unit).toEqual('cm');
         });

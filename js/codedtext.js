@@ -37,6 +37,11 @@
         setupComputed: function(options){
 
         },
+        /**
+         * TODO doc
+         * @param value
+         * @returns {*|Function|text|text|tags.text|text|.createSearchChoice.text|Function|Function|jQuery.ajaxSettings.accepts.text|jQuery.ajaxSettings.responseFields.text|*|*|string|string|string|string|string|string|jQuery.text|disableScript.text|text}
+         */
         getTextById:function(value){
             var json = this.toJSON(), result;
             if (_.isUndefined(value))
@@ -61,8 +66,6 @@
          * @name SiberianEHR.CodedText.CodedTextModel#preValidate
          */
         preValidate: function(){
-            var json = this.toJSON();
-            // if pre-validation passed - go to validation
             this.validate();
         },
         /**
@@ -71,7 +74,6 @@
          * @name SiberianEHR.CodedText.CodedTextModel#validate
          */
         validate:function(){
-            debugger;
             var json = this.toJSON();
             if ((json.Required === true) && (json.Value === ''))
                 return this.trigger('invalid', this, 'Value should be specified');
@@ -90,12 +92,15 @@
          */
         templateName: 'coded-text',
 
+        /**
+         * @name SiberianEHR.CodedText.CodedTextView#templateName
+         * @property {object} key-value pairs to attach events
+         */
         events: {
-            'click a.remove': 'onClearValue'
-            //'change input': 'onInputChange'
+            'click a.remove': 'clearValue'
         },
 
-        onClearValue: function(){
+        clearValue: function(){
             this.model.clearValue();
             this.$el.find('.select2').select2('val', '');
         },
@@ -112,6 +117,7 @@
             SiberianEHR.BindingView.prototype.initialize.call(this,options);
             this.initializeWidget();
         },
+
         /**
          * Clears the validation error state
          * @method
@@ -121,6 +127,7 @@
             this.$el.find('.help-inline').text('');// clear error text
             this.$el.children('.control-group').removeClass('error');
         },
+
         /**
          * Show validation error
          * @param {SiberianEHR.CodedText} model - Model
@@ -132,6 +139,7 @@
             this.$el.find('.help-inline').text(error);
             this.$el.children('.control-group').addClass('error');
         },
+
         /**
          * Gets (if nothing passed) or sets model using provided json
          * @param json
@@ -148,6 +156,7 @@
             }else //serialize
                 return SiberianEHR.CodedText.serialize(this.model);
         },
+
         /**
          * Initializes select2 element
          * @name SiberianEHR.CodedText.CodedTextView#initializeWidget
@@ -199,7 +208,10 @@
     SiberianEHR.CodedText.serialize = function(model){
         var json = model.toJSON();
         return {
-            //TODO
+            Value: json.Value,
+            Dictionary: json.Dictionary,
+            AssumedValue: json.AssumedValue,
+            Required: json.Required
         };
     };
 
@@ -211,7 +223,7 @@
      * @function
      */
     SiberianEHR.CodedText.deserialize = function(json){
-        return new SiberianEHR.CodedText.CodedTextModel( { DefaultValue: json } );
+        return new SiberianEHR.CodedText.CodedTextModel(json);
     };
 
     /**
