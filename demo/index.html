@@ -377,6 +377,21 @@ $('#datetime-picker5').dateTimePicker({
 			{% endhighlight %}
 		</td>
 	</tr>
+	<tr>
+		<td>
+			<h4>All datetime parts picker Picker</h4>
+			<div id="datetime-picker6"></div>
+			<span class="help-inline">format: <strong>YYYY-MM-DDTHH:MM:SS.sss</strong> everything is required</span>
+		</td>
+		<td>
+			{% highlight javascript %}
+$('#datetime-picker6').dateTimePicker({
+	format: 'YYYY-MM-DDTHH:MM:SS.sss',
+	Value: '0001-01-01T01:23:45.678'
+});
+			{% endhighlight %}
+		</td>
+	</tr>
 </table>
 
 <h2 id="codedtext">Coded text</h2>

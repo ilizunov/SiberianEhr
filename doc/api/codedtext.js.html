@@ -55,19 +55,11 @@
             this.on('change:Value', this.preValidate, this);
         },
         /**
-         * Setup model computed properties.
-         *
+         * Gets text for current value by its ID
          * @method
-         * @name SiberianEHR.CodedText.CodedTextModel#setupComputed
-         * @param {Object} options - the same options as passed in {@link SiberianEHR.CodedText.CodedTextModel#initialize}
-         */
-        setupComputed: function(options){
-
-        },
-        /**
-         * TODO doc
+         * @name SiberianEHR.CodedText.CodedTextModel#getTextById
          * @param value
-         * @returns {*|Function|text|text|tags.text|text|.createSearchChoice.text|Function|Function|jQuery.ajaxSettings.accepts.text|jQuery.ajaxSettings.responseFields.text|*|*|string|string|string|string|string|string|jQuery.text|disableScript.text|text}
+         * @returns {string} Text corresponding to selected value
          */
         getTextById:function(value){
             var json = this.toJSON(), result;
@@ -76,19 +68,21 @@
             result = _.findWhere(json.Dictionary, {id: value});
             return result.text;
         },
+        /**
+         * Clears model stored value
+         * @method
+         * @name SiberianEHR.CodedText.CodedTextModel#clearValue
+         */
         clearValue:function(){
             var json = this.toJSON();
-            if (_.isUndefined(json.AssumedValue)){
-                this.set({
-                    Value: json.AssumedValue
-                });
+            if (!_.isUndefined(json.AssumedValue)){
+                this.set({Value: json.AssumedValue});
             }else{
-                this.set({
-                    Value: ''
-                });
+                this.set({Value: null});
             }
         },
         /**
+         * Pre-validates model. Here we can pre-modify stored value (remove some characters etc.)
          * @method
          * @name SiberianEHR.CodedText.CodedTextModel#preValidate
          */
@@ -120,16 +114,20 @@
         templateName: 'coded-text',
 
         /**
-         * @name SiberianEHR.CodedText.CodedTextView#templateName
+         * @name SiberianEHR.CodedText.CodedTextView#events
          * @property {object} key-value pairs to attach events
          */
         events: {
             'click a.remove': 'clearValue'
         },
-
+        /**
+         * Event handler for clearing value. Triggers when clear button is pressed.
+         * @name SiberianEHR.CodedText.CodedTextView#clearValue
+         * @method
+         */
         clearValue: function(){
             this.model.clearValue();
-            this.$el.find('.select2').select2('val', '');
+            this.$el.find('.select2').select2('val', null);
         },
 
         /**
@@ -323,13 +321,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="BindingView.html">BindingView</a></li><li><a href="DateTimeFormatReader.html">DateTimeFormatReader</a></li><li><a href="SiberianEHR.CodedText.CodedTextModel.html">CodedTextModel</a></li><li><a href="SiberianEHR.CodedText.CodedTextView.html">CodedTextView</a></li><li><a href="SiberianEHR.DateTimePicker.DateTimePickerModel.html">DateTimePickerModel</a></li><li><a href="SiberianEHR.DateTimePicker.DateTimePickerView.html">DateTimePickerView</a></li><li><a href="SiberianEHR.MeasuredUnit.MeasuredUnitModel.html">MeasuredUnitModel</a></li><li><a href="SiberianEHR.MeasuredUnit.MeasuredUnitView.html">MeasuredUnitView</a></li></ul><h3>Namespaces</h3><ul><li><a href="JST.html">JST</a></li><li><a href="SiberianEHR.html">SiberianEHR</a></li><li><a href="SiberianEHR.CodedText.html">CodedText</a></li><li><a href="SiberianEHR.DateTimePicker.html">DateTimePicker</a></li><li><a href="SiberianEHR.MeasuredUnit.html">MeasuredUnit</a></li></ul><h3>Global</h3><ul><li><a href="global.html#codedText">codedText</a></li><li><a href="global.html#dateTimePicker">dateTimePicker</a></li><li><a href="global.html#getTextById">getTextById</a></li><li><a href="global.html#measuredUnit">measuredUnit</a></li><li><a href="global.html#onTimeChanged">onTimeChanged</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="BindingView.html">BindingView</a></li><li><a href="DateTimeFormatReader.html">DateTimeFormatReader</a></li><li><a href="SiberianEHR.CodedText.CodedTextModel.html">CodedTextModel</a></li><li><a href="SiberianEHR.CodedText.CodedTextView.html">CodedTextView</a></li><li><a href="SiberianEHR.DateTimePicker.DateTimePickerModel.html">DateTimePickerModel</a></li><li><a href="SiberianEHR.DateTimePicker.DateTimePickerView.html">DateTimePickerView</a></li><li><a href="SiberianEHR.MeasuredUnit.MeasuredUnitModel.html">MeasuredUnitModel</a></li><li><a href="SiberianEHR.MeasuredUnit.MeasuredUnitView.html">MeasuredUnitView</a></li></ul><h3>Namespaces</h3><ul><li><a href="JST.html">JST</a></li><li><a href="SiberianEHR.html">SiberianEHR</a></li><li><a href="SiberianEHR.CodedText.html">CodedText</a></li><li><a href="SiberianEHR.DateTimePicker.html">DateTimePicker</a></li><li><a href="SiberianEHR.MeasuredUnit.html">MeasuredUnit</a></li></ul><h3>Global</h3><ul><li><a href="global.html#codedText">codedText</a></li><li><a href="global.html#dateTimePicker">dateTimePicker</a></li><li><a href="global.html#measuredUnit">measuredUnit</a></li><li><a href="global.html#onTimeChanged">onTimeChanged</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Tue Apr 09 2013 14:48:03 GMT+0600 (YEKT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Apr 21 2013 17:57:13 GMT+0600 (YEKT)
 </footer>
 
 <script> prettyPrint(); </script>

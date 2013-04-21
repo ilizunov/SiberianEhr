@@ -125,6 +125,10 @@
                     format += el.toUpperCase();
                 }
             });
+            if (format === ''){
+                //if source (format of manually input) is empty - return empty string
+                return null;
+            }
             return this.get('Value').format(format);
         },
         /**
@@ -194,7 +198,7 @@
         /**
          * Triggers 'valid' or 'invalid' events
          * @method
-         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#
+         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#validate
          * @return {null}
          */
         validate: function(){
@@ -229,6 +233,34 @@
                 }
             }
             return this.trigger('valid');
+        },
+        /**
+         * Clears model stored value
+         * @method
+         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#clearValue
+         */
+        clearValue:function(){
+            var json = this.toJSON();
+            if (json.hasYear){
+                //having had year specified, we have date picker
+                this.setDate(SiberianEHR.DateTimePicker.Consts._startOfDays,
+                    (function(format){
+                        //TODO duplicating code
+                        var validParts= /dd?|DD?|mm?|MM?|yy(?:yy)?|YY(?:YY)/g;
+                        // IE treats \0 as a string end in inputs (truncating the value),
+                        // so it's a bad format delimiter, anyway
+                        var separators = format.replace(validParts, '\0').split('\0'),
+                            parts = format.match(validParts);
+                        if (!separators || !separators.length || !parts || parts.length === 0){
+                            throw new Error("Invalid date format.");
+                        }
+                        return {separators: separators, parts: parts};
+                    })(json.dateFormat)
+                );
+            }
+            if (json.hasHour) {
+                this.setTime(SiberianEHR.DateTimePicker.Consts._startOfDays);
+            }
         }
     });
 
@@ -285,6 +317,21 @@
          * @property {string} name of the Handlebars JST template {@link JST}
          */
         templateName: 'datetime-picker',
+        /**
+         * @name SiberianEHR.DateTimePicker.DateTimePickerView#events
+         * @property {object} key-value pairs to attach events
+         */
+        events: {
+            'click a.remove': 'clearValue'
+        },
+        /**
+         * Event handler for clearing value. Triggers when clear button is pressed.
+         * @name SiberianEHR.DateTimePicker.DateTimePickerView#clearValue
+         * @method
+         */
+        clearValue: function(){
+            this.model.clearValue();
+        },
         /**
          * Initializes a view.
          * @param {Object} options Contains 'el' - element, where to render view and 'model' - corresponding model
@@ -447,13 +494,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="BindingView.html">BindingView</a></li><li><a href="DateTimeFormatReader.html">DateTimeFormatReader</a></li><li><a href="SiberianEHR.CodedText.CodedTextModel.html">CodedTextModel</a></li><li><a href="SiberianEHR.CodedText.CodedTextView.html">CodedTextView</a></li><li><a href="SiberianEHR.DateTimePicker.DateTimePickerModel.html">DateTimePickerModel</a></li><li><a href="SiberianEHR.DateTimePicker.DateTimePickerView.html">DateTimePickerView</a></li><li><a href="SiberianEHR.MeasuredUnit.MeasuredUnitModel.html">MeasuredUnitModel</a></li><li><a href="SiberianEHR.MeasuredUnit.MeasuredUnitView.html">MeasuredUnitView</a></li></ul><h3>Namespaces</h3><ul><li><a href="JST.html">JST</a></li><li><a href="SiberianEHR.html">SiberianEHR</a></li><li><a href="SiberianEHR.CodedText.html">CodedText</a></li><li><a href="SiberianEHR.DateTimePicker.html">DateTimePicker</a></li><li><a href="SiberianEHR.MeasuredUnit.html">MeasuredUnit</a></li></ul><h3>Global</h3><ul><li><a href="global.html#codedText">codedText</a></li><li><a href="global.html#dateTimePicker">dateTimePicker</a></li><li><a href="global.html#getTextById">getTextById</a></li><li><a href="global.html#measuredUnit">measuredUnit</a></li><li><a href="global.html#onTimeChanged">onTimeChanged</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="BindingView.html">BindingView</a></li><li><a href="DateTimeFormatReader.html">DateTimeFormatReader</a></li><li><a href="SiberianEHR.CodedText.CodedTextModel.html">CodedTextModel</a></li><li><a href="SiberianEHR.CodedText.CodedTextView.html">CodedTextView</a></li><li><a href="SiberianEHR.DateTimePicker.DateTimePickerModel.html">DateTimePickerModel</a></li><li><a href="SiberianEHR.DateTimePicker.DateTimePickerView.html">DateTimePickerView</a></li><li><a href="SiberianEHR.MeasuredUnit.MeasuredUnitModel.html">MeasuredUnitModel</a></li><li><a href="SiberianEHR.MeasuredUnit.MeasuredUnitView.html">MeasuredUnitView</a></li></ul><h3>Namespaces</h3><ul><li><a href="JST.html">JST</a></li><li><a href="SiberianEHR.html">SiberianEHR</a></li><li><a href="SiberianEHR.CodedText.html">CodedText</a></li><li><a href="SiberianEHR.DateTimePicker.html">DateTimePicker</a></li><li><a href="SiberianEHR.MeasuredUnit.html">MeasuredUnit</a></li></ul><h3>Global</h3><ul><li><a href="global.html#codedText">codedText</a></li><li><a href="global.html#dateTimePicker">dateTimePicker</a></li><li><a href="global.html#measuredUnit">measuredUnit</a></li><li><a href="global.html#onTimeChanged">onTimeChanged</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Tue Apr 09 2013 14:48:03 GMT+0600 (YEKT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Apr 21 2013 17:57:13 GMT+0600 (YEKT)
 </footer>
 
 <script> prettyPrint(); </script>
