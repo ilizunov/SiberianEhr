@@ -243,4 +243,10 @@ describe("Variate Date-time Picker Widget", function () {
             });
         })
     });
+
+    describe("Clear value test", function(){
+        it("Model should set its values to null", function(){
+            //TODO
+        })
+    });
 });

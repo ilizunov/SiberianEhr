@@ -16,6 +16,9 @@ JST['datetime-picker'] = '' +
             '</div>' +
         '</div>'+
     '</div>' +
+    '<div class="row control-group clear">'+
+        '<a class="btn remove"><i class="icon-remove"></i></a>' +
+    '</div>' +
     '<div class="control-group">' +
         '<span class="label" data-text="model:rv_getValue < .Year .Month .Day .Hour .Minute .Second .Millisecond"></span>' +
         '<span class="label" data-text="model.Magnitude  < .Year .Month .Day .Hour .Minute .Second .Millisecond"></span>' +

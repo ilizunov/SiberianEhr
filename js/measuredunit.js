@@ -94,6 +94,8 @@
              */
             if (_.isNull(previous.Unit)) return;
             var json        = this.toJSON();
+            /** In case we clear values */
+            if (_.isNull(json.Value) && _.isNull(json.Unit)) return;
             var oldValue    = json.Value;
             // Blocking the widget during recalculating a value
             this.set('isBusy', true );
@@ -226,6 +228,15 @@
             var newValue = convertFunction(assumedValue.Value),
                 precision = json.Units[json.Unit].precision;
             return this.toPrecision(newValue, json.Units[json.Unit].precision);
+        },
+        /**
+         * Clears model stored value
+         * @method
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitModel#clearValue
+         */
+        clearValue:function(){
+            var json = this.toJSON();
+            this.set({Value: null, Unit: null});
         }
     });
 
@@ -239,6 +250,21 @@
          * @property {string} name of the Handlebars JST template {@link JST}
          */
         templateName: 'measured-unit',
+        /**
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitView#events
+         * @property {object} key-value pairs to attach events
+         */
+        events: {
+            'click a.remove': 'clearValue'
+        },
+        /**
+         * Event handler for clearing value. Triggers when clear button is pressed.
+         * @name SiberianEHR.MeasuredUnit.MeasuredUnitView#clearValue
+         * @method
+         */
+        clearValue: function(){
+            this.model.clearValue();
+        },
         /**
          * Initializes a view. Attaches widget blocking to 'isBusy' model property.
          * @param {Object} options Contains 'el' - element, where to render view and 'model' - corresponding model

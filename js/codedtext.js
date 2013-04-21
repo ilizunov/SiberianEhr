@@ -28,19 +28,11 @@
             this.on('change:Value', this.preValidate, this);
         },
         /**
-         * Setup model computed properties.
-         *
+         * Gets text for current value by its ID
          * @method
-         * @name SiberianEHR.CodedText.CodedTextModel#setupComputed
-         * @param {Object} options - the same options as passed in {@link SiberianEHR.CodedText.CodedTextModel#initialize}
-         */
-        setupComputed: function(options){
-
-        },
-        /**
-         * TODO doc
+         * @name SiberianEHR.CodedText.CodedTextModel#getTextById
          * @param value
-         * @returns {*|Function|text|text|tags.text|text|.createSearchChoice.text|Function|Function|jQuery.ajaxSettings.accepts.text|jQuery.ajaxSettings.responseFields.text|*|*|string|string|string|string|string|string|jQuery.text|disableScript.text|text}
+         * @returns {string} Text corresponding to selected value
          */
         getTextById:function(value){
             var json = this.toJSON(), result;
@@ -49,19 +41,21 @@
             result = _.findWhere(json.Dictionary, {id: value});
             return result.text;
         },
+        /**
+         * Clears model stored value
+         * @method
+         * @name SiberianEHR.CodedText.CodedTextModel#clearValue
+         */
         clearValue:function(){
             var json = this.toJSON();
-            if (_.isUndefined(json.AssumedValue)){
-                this.set({
-                    Value: json.AssumedValue
-                });
+            if (!_.isUndefined(json.AssumedValue)){
+                this.set({Value: json.AssumedValue});
             }else{
-                this.set({
-                    Value: ''
-                });
+                this.set({Value: null});
             }
         },
         /**
+         * Pre-validates model. Here we can pre-modify stored value (remove some characters etc.)
          * @method
          * @name SiberianEHR.CodedText.CodedTextModel#preValidate
          */
@@ -93,16 +87,20 @@
         templateName: 'coded-text',
 
         /**
-         * @name SiberianEHR.CodedText.CodedTextView#templateName
+         * @name SiberianEHR.CodedText.CodedTextView#events
          * @property {object} key-value pairs to attach events
          */
         events: {
             'click a.remove': 'clearValue'
         },
-
+        /**
+         * Event handler for clearing value. Triggers when clear button is pressed.
+         * @name SiberianEHR.CodedText.CodedTextView#clearValue
+         * @method
+         */
         clearValue: function(){
             this.model.clearValue();
-            this.$el.find('.select2').select2('val', '');
+            this.$el.find('.select2').select2('val', null);
         },
 
         /**

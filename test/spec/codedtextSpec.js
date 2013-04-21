@@ -164,4 +164,16 @@ describe("Coded text widget", function () {
             expect(json.Value).toEqual('id1');
         });
     });
+
+    describe("Clear value test", function(){
+        it("Model should set its values to null", function(){
+            var model = new SiberianEHR.CodedText.CodedTextModel({
+                Dictionary: [{id:'id1', text:'text1'},{id:'id2', text:'text2'}],
+                Value: 'id2'
+            });
+            expect(model.get('Value')).toEqual('id2');
+            model.clearValue();
+            expect(model.get('Value')).toBeNull();
+        })
+    });
 });

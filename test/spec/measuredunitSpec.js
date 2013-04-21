@@ -334,4 +334,17 @@ describe("Measured Unit widget", function () {
             expect(json.Unit).toEqual('cm');
         });
     });
+
+    describe("Clear value test", function(){
+        it("Model should set its values to null", function(){
+            var model = new SiberianEHR.MeasuredUnit.MeasuredUnitModel({
+                PropertyName : 'weight',
+                DefaultValue: {Value: 10, Unit: 'kg'},
+                Units:{'kg':{},'t':{}}
+            });
+            expect(model.get('Value')).toEqual(10);
+            model.clearValue();
+            expect(model.get('Value')).toBeNull();
+        })
+    });
 });
