@@ -49,7 +49,11 @@
         <script type="text/javascript">
             $(function(){
                 $('#measured-input1').measuredUnit({
-                    AssumedValue: { Value: 36.6, Unit: 'C' },  // assumed value - the value set to the control if user has not touched it
+                    AssumedValue: new SiberianEHR.Types.DV_Quantity({
+                        magnitude: 36.6,
+                        units: 'C',
+                        precision: 1
+                    }),  // assumed value - the value set to the control if user has not touched it
                     /** Array of possible measurement units
                      *  Unit structure - object. Key is measure
                      *  {
@@ -86,27 +90,14 @@
                      *
                      * @return {function} Value, measured in new units
                      */
-                    getValueConverter: function (property, fromUnit, toUnit){
-                        switch(property){
-                            case 'temperature':
-                                if (fromUnit === 'C'  && toUnit === 'F'){
-                                    return function (value) {
-                                        return (value * 9 / 5 + 32);
-                                    };
-                                }
-                                if (fromUnit === 'F'  && toUnit === 'C'){
-                                    return function (value) {
-                                        return ((value - 32) * 5 / 9);
-                                    }
-                                }
-                        }
-                    }
+                    getValueConverter: SiberianEHR.Types.DV_Quantity_UnitsConverter
                 });
                 $('#measured-input2').measuredUnit({
-                    DefaultValue: {
-                        Value: 0,
-                        Unit: 'mm Hg'
-                    },
+                    DefaultValue: new SiberianEHR.Types.DV_Quantity({
+                        magnitude: 0,
+                        units: 'mm Hg',
+                        precision: 1
+                    }),
                     Required : false,
                     Units: {
                         'mm Hg' : {
@@ -117,35 +108,21 @@
                         }
                     },
                     PropertyName : 'pressure',
-                    getValueConverter: function (property, fromUnit, toUnit){
-                        switch(property){
-                            case 'pressure':
-                                if (fromUnit === 'mm Hg'  && toUnit === 'Pa'){
-                                    return function (value) {
-                                        return (value * 51.715);
-                                    };
-                                }
-                                if (fromUnit === 'Pa'  && toUnit === 'mm Hg'){
-                                    return function (value) {
-                                        return (value / 51.715);
-                                    }
-                                }
-                        }
-                    }
+                    getValueConverter: SiberianEHR.Types.DV_Quantity_UnitsConverter
                 });
                 $('#measured-input3').measuredUnit({
-                    DefaultValue: {
-                        Value: 160,
-                        Unit: 'cm'
-                    },
+                    DefaultValue: new SiberianEHR.Types.DV_Quantity({
+                        magnitude: 160,
+                        units: 'cm'
+                    }),
                     Required : true,
                     PropertyName : 'height'
                 });
                 $('#measured-input4').measuredUnit({
-                    AssumedValue: {
-                        Value: 160,
-                        Unit: 'cm'
-                    },
+                    AssumedValue: new SiberianEHR.Types.DV_Quantity({
+                        magnitude: 160,
+                        units: 'cm'
+                    }),
                     Units: {'cm':{}},
                     Required : true,
                     PropertyName : 'height'

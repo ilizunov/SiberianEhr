@@ -5,6 +5,73 @@
 var SiberianEHR = {};
 
 /**
+ * Namespace for SiberianEHR [types]{@link http://www.openehr.org/wiki/display/spec/openEHR+1.0.2+UML+resources}.
+ * @namespace SiberianEHR.Types
+ */
+SiberianEHR.Types = {
+    Data_Value : function(){},
+    DV_Quantity : function(obj){
+        if (!_.isUndefined(obj)){
+            this.magnitude = obj.magnitude;
+            this.precision = obj.precision;
+            this.units = obj.units;
+        }
+    },
+    DV_Quantity_UnitsConverter: function(measureType, fromUnits, toUnits){
+        switch(measureType){
+            case 'temperature':
+                if (fromUnits === 'C'  && toUnits === 'F'){
+                    return function (value) {
+                        return (value * 9 / 5 + 32);
+                    };
+                }
+                if (fromUnits === 'F'  && toUnits === 'C'){
+                    return function (value) {
+                        return ((value - 32) * 5 / 9);
+                    }
+                }
+                break;
+            case 'pressure':
+                if (fromUnits === 'mm Hg'  && toUnits === 'Pa'){
+                    return function (value) {
+                        return (value * 51.715);
+                    };
+                }
+                if (fromUnits === 'Pa'  && toUnits === 'mm Hg'){
+                    return function (value) {
+                        return (value / 51.715);
+                    }
+                }
+                break;
+        }
+    }
+};
+
+/**
+ * Setting a prototype for root data class
+ */
+SiberianEHR.Types.Data_Value.prototype = {
+
+};
+
+/**
+ * DV_Quantity type.
+ * Type description at [OpenEHR Spec]{@link http://www.openehr.org/local/releases/1.0.1/uml/Browsable/_9_0_76d0249_1109068140850_45254_4163Report.html}
+ * @type {SiberianEHR.Types.DV_Quantity}
+ */
+SiberianEHR.Types.DV_Quantity.prototype = new SiberianEHR.Types.Data_Value();
+_.extend(SiberianEHR.Types.DV_Quantity.prototype, {
+    magnitude: null,
+    units: null,
+    precision: null,
+    is_integral: function(){
+        return this.precision === 0;
+    },
+    constructor: SiberianEHR.Types.DV_Quantity
+});
+
+
+/**
  * Root namespace for SiberianEHR templates
  * @namespace JST
  */

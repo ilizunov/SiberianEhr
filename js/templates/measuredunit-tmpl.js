@@ -5,7 +5,6 @@ JST['measured-unit'] = '' +
             '<select data-value="model.Unit" class="span1">' +
                 '<option data-each-unit="model.rv_unitsAsArray" data-value="unit:measure" data-text="unit:measure"></option>' +
             '</select>' +
-            '<a class="btn remove"><i class="icon-remove"></i></a>' +
             '<span class="help-inline"></span>'+
             '<div>' +
                 '<span class="label" data-show="model.Value">' +

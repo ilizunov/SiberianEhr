@@ -25,20 +25,19 @@
                     //if not implemented in options - when called there will be an exception
                     throw new Error('Not implemented');
                 },
-                isBusy : false, //Field indicates busy model state (e.g. server calculation or validation). When Model is busy it is supposed to be disabled for user's input
-                Required: false, // Field indicates whether this quantity is required (cannot be null)
-                AssumedValue: null, //By defaults no assuming value is specified
-                DefaultValue: {Value: '', Unit: null}, //Default value, passed from widget call
-                Units: null, //By defaults no units specified as array
+                Required: false,    // Field indicates whether this quantity is required (cannot be null)
+                AssumedValue: new SiberianEHR.Types.DV_Quantity(), //By defaults no assuming value is specified
+                DefaultValue: new SiberianEHR.Types.DV_Quantity(), //Default value, passed from widget call
+                Units: null,        //By defaults no units specified as array
                 PropertyName: null, //Default property name
-                isError: false //indicates whether there is error or not
+                isBusy : false      //Field indicates busy model state (e.g. server calculation or validation). When Model is busy it is supposed to be disabled for user's input
             });
             /**
              * Modify Units collection if not set
              */
             if (_.isNull(settings.Units)){
                 settings.Units = {};
-                settings.Units[settings.DefaultValue.Unit] = {};
+                settings.Units[settings.DefaultValue.units] = {};
             }
             /**
              * Add precision to every Unit measure in Units collection
@@ -50,8 +49,8 @@
             this.set({
                 PropertyName : settings.PropertyName,
                 Units: settings.Units,
-                Value: settings.DefaultValue.Value,
-                Unit:  settings.DefaultValue.Unit,
+                Value: settings.DefaultValue.magnitude, //current value
+                Unit:  settings.DefaultValue.units,     //current unit value
                 AssumedValue: settings.AssumedValue,
                 getValueConverter : settings.getValueConverter,
                 Required: settings.Required
@@ -92,7 +91,7 @@
              *
              * This occurs if during the initialization of model there were no Value & Unit passing
              */
-            if (_.isNull(previous.Unit)) return;
+            if (_.isNull(previous.Unit) || _.isNull(previous.Value)) return;
             var json        = this.toJSON();
             /** In case we clear values */
             if (_.isNull(json.Value) && _.isNull(json.Unit)) return;
@@ -217,26 +216,17 @@
         getAssumedValue: function(){
             var json = this.toJSON(),
                 assumedValue = json.AssumedValue;
-            if (_.isNull(assumedValue)) return null; //if no value is set - just exit
+            if (_.isNull(assumedValue.units)) return null; //if no value is set - just exit
             //if no default value is provided, but assumed value is specified - return assumed value
-            if (_.isNull(json.Unit)) return assumedValue.Value;
+            if (_.isNull(json.Unit) || (json.Unit==='')) return assumedValue.magnitude;
             //if current unit measure is the same as assumed unit measure
-            if (json.Unit == assumedValue.Unit)
-                return assumedValue.Value;
+            if (json.Unit == assumedValue.units)
+                return assumedValue.magnitude;
             var convertFunction = json.getValueConverter(
-                json.PropertyName, assumedValue.Unit, json.Unit);
-            var newValue = convertFunction(assumedValue.Value),
+                json.PropertyName, assumedValue.units, json.Unit);
+            var newValue = convertFunction(assumedValue.magnitude),
                 precision = json.Units[json.Unit].precision;
             return this.toPrecision(newValue, json.Units[json.Unit].precision);
-        },
-        /**
-         * Clears model stored value
-         * @method
-         * @name SiberianEHR.MeasuredUnit.MeasuredUnitModel#clearValue
-         */
-        clearValue:function(){
-            var json = this.toJSON();
-            this.set({Value: null, Unit: null});
         }
     });
 
@@ -250,21 +240,6 @@
          * @property {string} name of the Handlebars JST template {@link JST}
          */
         templateName: 'measured-unit',
-        /**
-         * @name SiberianEHR.MeasuredUnit.MeasuredUnitView#events
-         * @property {object} key-value pairs to attach events
-         */
-        events: {
-            'click a.remove': 'clearValue'
-        },
-        /**
-         * Event handler for clearing value. Triggers when clear button is pressed.
-         * @name SiberianEHR.MeasuredUnit.MeasuredUnitView#clearValue
-         * @method
-         */
-        clearValue: function(){
-            this.model.clearValue();
-        },
         /**
          * Initializes a view. Attaches widget blocking to 'isBusy' model property.
          * @param {Object} options Contains 'el' - element, where to render view and 'model' - corresponding model
@@ -334,10 +309,13 @@
      */
     SiberianEHR.MeasuredUnit.serialize = function(model){
         var json = model.toJSON();
-        return {
-            Value: json.Value,
-            Unit: json.Unit
-        };
+        if (json.Value === '')
+            json.Value = json.Unit = null;
+        return new SiberianEHR.Types.DV_Quantity({
+            magnitude: json.Value,
+            units: json.Unit,
+            precision: json.precision
+        });
     };
 
     /**
@@ -347,8 +325,8 @@
      * @name SiberianEHR.MeasuredUnit.deserialize
      * @function
      */
-    SiberianEHR.MeasuredUnit.deserialize = function(json){
-        return new SiberianEHR.MeasuredUnit.MeasuredUnitModel( { DefaultValue: json } );
+    SiberianEHR.MeasuredUnit.deserialize = function(dvQuantity){
+        return new SiberianEHR.MeasuredUnit.MeasuredUnitModel( { DefaultValue: dvQuantity } );
     };
 
     /**
