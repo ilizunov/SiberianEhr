@@ -46,17 +46,18 @@ describe("Measured Unit widget", function () {
     });
 
     describe('data model serialization-deserialization',function(){
-        var model;
+        var model, dvQuantity;
         beforeEach(function(){
-            model = SiberianEHR.MeasuredUnit.deserialize({Value: 5, Unit: 'kg'});
+            model = SiberianEHR.MeasuredUnit.deserialize(new SiberianEHR.Types.DV_Quantity({magnitude: 5,units: 'kg'}));
         });
         it('should create a model with specified values', function(){
             expect(model.get('Value')).toEqual(5);
         });
         it('should deserialize model with current value',function(){
             model.set({Value: 6});
-            expect(model.get('Value')).toEqual(SiberianEHR.MeasuredUnit.serialize(model).Value);
-            expect(model.get('Unit')).toEqual(SiberianEHR.MeasuredUnit.serialize(model).Unit);
+            dvQuantity = SiberianEHR.MeasuredUnit.serialize(model);
+            expect(model.get('Value')).toEqual(dvQuantity.magnitude);
+            expect(model.get('Unit')).toEqual(dvQuantity.units);
         });
     });
 
@@ -65,13 +66,10 @@ describe("Measured Unit widget", function () {
         beforeEach(function(){
             view = new SiberianEHR.MeasuredUnit.MeasuredUnitView({
                 model: new SiberianEHR.MeasuredUnit.MeasuredUnitModel({
-                    DefaultValue: {
-                        Value: 30,
-                        Unit: 'kg'
-                    },
-                    Units:{
-                        'kg' : {}
-                    }
+                    DefaultValue: new SiberianEHR.Types.DV_Quantity({
+                        magnitude: 30,
+                        units: 'kg'
+                    })
                 })
             })
         });
@@ -94,10 +92,10 @@ describe("Measured Unit widget", function () {
 
         beforeEach(function(){
             widget = $(element).measuredUnit({
-                DefaultValue: {
-                    Value: 1,
-                    Unit: 'unit'
-                }
+                DefaultValue: new SiberianEHR.Types.DV_Quantity({
+                    magnitude: 1,
+                    unit: 'unit'
+                })
             });
         });
 
@@ -138,29 +136,15 @@ describe("Measured Unit widget", function () {
         beforeEach(function () {
             model = new SiberianEHR.MeasuredUnit.MeasuredUnitModel({
                 PropertyName : 'weight',
-                getValueConverter: function (property, fromUnit, toUnit){
-                    switch(property){
-                        case 'weight':
-                            if (fromUnit === 'kg'  && toUnit === 't'){
-                                return function (value) {
-                                    return value / 1000;
-                                };
-                            }
-                            if (fromUnit === 't'  && toUnit === 'kg'){
-                                return function (value) {
-                                    return value * 1000;
-                                }
-                            }
-                    }
-                },
+                getValueConverter: SiberianEHR.Types.DV_Quantity_UnitsConverter,
                 Units:{
                     'kg':{precision: 0},
                     't':{precision: 2}
                 },
-                DefaultValue: {
-                    Value: 10,
-                    Unit: 'kg'
-                }
+                DefaultValue: new SiberianEHR.Types.DV_Quantity({
+                    magnitude: 10,
+                    units: 'kg'
+                })
             });
         });
 
@@ -182,10 +166,10 @@ describe("Measured Unit widget", function () {
 
         beforeEach(function(){
             options = {
-                DefaultValue: {
-                    Value: 1,
-                    Unit: 'unit1x'
-                },
+                DefaultValue: new SiberianEHR.Types.DV_Quantity({
+                    magnitude: 1,
+                    units: 'unit1x'
+                }),
                 Units:{
                     'unit1x':{},
                     'unit2x':{}
@@ -206,10 +190,10 @@ describe("Measured Unit widget", function () {
         });
 
         it("should fill in the placeholder with 5 (assumed value is 10 in different untis) on specifying empty value, whilst model value should be ''",function(){
-            options.AssumedValue = {
-                Value: 10,
-                Unit: 'unit2x'
-            };
+            options.AssumedValue = new SiberianEHR.Types.DV_Quantity({
+                magnitude: 10,
+                units: 'unit2x'
+            });
             widget = $(element).measuredUnit(options);
             $(element).find('input[name=Value]').val('');
             expect(parseFloat($(element).find('input[name=Value]').attr('placeholder'))).toEqual(5);
@@ -217,10 +201,10 @@ describe("Measured Unit widget", function () {
         });
 
         it("should fill in the placeholder with 10 (assumed value is in the same units) on specifying empty value, whilst model value should be ''",function(){
-            options.AssumedValue = {
-                Value: 10,
-                Unit: 'unit1x'
-            };
+            options.AssumedValue = new SiberianEHR.Types.DV_Quantity({
+                magnitude: 10,
+                units: 'unit1x'
+            });
             widget = $(element).measuredUnit(options);
             $(element).find('input[name=Value]').val('');
             expect(parseFloat($(element).find('input[name=Value]').attr('placeholder'))).toEqual(10);
@@ -232,10 +216,10 @@ describe("Measured Unit widget", function () {
         var model, foo;
         beforeEach(function () {
             model = new SiberianEHR.MeasuredUnit.MeasuredUnitModel({
-                DefaultValue: {
-                    Value: 10,
-                    Unit: 'kg'
-                },
+                DefaultValue: new SiberianEHR.Types.DV_Quantity({
+                    magnitude: 10,
+                    units: 'kg'
+                }),
                 Units:{
                     'kg': {minValue: 1, maxValue: 250, precision: 0}
                 },
@@ -274,10 +258,10 @@ describe("Measured Unit widget", function () {
 
         beforeEach(function(){
             options = {
-                DefaultValue: {
-                    Value: 160,
-                    Unit: 'cm'
-                },
+                DefaultValue: new SiberianEHR.Types.DV_Quantity({
+                    magnitude: 160,
+                    units: 'cm'
+                }),
                 Units: {'cm':{}},
                 Required : true,
                 PropertyName : 'height'
@@ -287,17 +271,17 @@ describe("Measured Unit widget", function () {
 
         it("should read value of widget as json",function(){
             var json = element.measuredUnit('value');
-            expect(json.Value).toEqual(160);
-            expect(json.Unit).toEqual('cm');
+            expect(json.magnitude).toEqual(160);
+            expect(json.units).toEqual('cm');
         });
 
         it("should write value (json) to widget",function(){
             var json = element.measuredUnit('value');
-            json.Value = 200;
+            json.magnitude = 200;
             element.measuredUnit('value', json);
             json = element.measuredUnit('value');
-            expect(json.Value).toEqual(200);
-            expect(json.Unit).toEqual('cm');
+            expect(json.magnitude).toEqual(200);
+            expect(json.units).toEqual('cm');
         });
     });
 
@@ -307,11 +291,10 @@ describe("Measured Unit widget", function () {
 
         beforeEach(function(){
             options = {
-                DefaultValue: {
-                    Value: 160,
-                    Unit: 'cm'
-                },
-                Units: {'cm':{}},
+                DefaultValue: new SiberianEHR.Types.DV_Quantity({
+                    magnitude: 160,
+                    units: 'cm'
+                }),
                 Required : true,
                 PropertyName : 'height'
             };
@@ -321,30 +304,17 @@ describe("Measured Unit widget", function () {
 
         it("should read value of widget as json",function(){
             var json = widget.value();
-            expect(json.Value).toEqual(160);
-            expect(json.Unit).toEqual('cm');
+            expect(json.magnitude).toEqual(160);
+            expect(json.units).toEqual('cm');
         });
 
         it("should write value (json) to widget",function(){
             var json = widget.value();
-            json.Value = 200;
+            json.magnitude = 200;
             widget.value(json);
             json = widget.value();
-            expect(json.Value).toEqual(200);
-            expect(json.Unit).toEqual('cm');
+            expect(json.magnitude).toEqual(200);
+            expect(json.units).toEqual('cm');
         });
-    });
-
-    describe("Clear value test", function(){
-        it("Model should set its values to null", function(){
-            var model = new SiberianEHR.MeasuredUnit.MeasuredUnitModel({
-                PropertyName : 'weight',
-                DefaultValue: {Value: 10, Unit: 'kg'},
-                Units:{'kg':{},'t':{}}
-            });
-            expect(model.get('Value')).toEqual(10);
-            model.clearValue();
-            expect(model.get('Value')).toBeNull();
-        })
     });
 });

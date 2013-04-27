@@ -43,6 +43,18 @@ SiberianEHR.Types = {
                     }
                 }
                 break;
+            case 'weight':
+                if (fromUnits === 'kg'  && toUnits === 't'){
+                    return function (value) {
+                        return value / 1000;
+                    };
+                }
+                if (fromUnits === 't'  && toUnits === 'kg'){
+                    return function (value) {
+                        return value * 1000;
+                    }
+                }
+                break;
         }
     }
 };
