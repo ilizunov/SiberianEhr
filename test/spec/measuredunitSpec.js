@@ -318,10 +318,9 @@ describe("Measured Unit widget", function () {
         });
     });
 
-    describe("Should initialize widget via Widget constructor", function(){
+    describe("Widget constructor", function(){
         var el = $('<div/>'), w;
-
-        it("111",function(){
+        it("Should initialize widget via constructor and return reference to a view",function(){
             w = SiberianEHR.MeasuredUnit.Widget({
                 el: el,
                 DefaultValue: new SiberianEHR.Types.DV_Quantity({

@@ -10,6 +10,10 @@ var SiberianEHR = {};
  */
 SiberianEHR.Types = {
     Data_Value : function(){},
+    /**
+     *
+     * @constructor
+     */
     DV_Quantity : function(obj){
         if (!_.isUndefined(obj)){
             this.magnitude = obj.magnitude;
@@ -56,7 +60,12 @@ SiberianEHR.Types = {
                 }
                 break;
         }
-    }
+    },
+    /**
+     *
+     * @constructor
+     */
+    DV_Date_Time: function(){}
 };
 
 /**
@@ -82,6 +91,16 @@ _.extend(SiberianEHR.Types.DV_Quantity.prototype, {
     constructor: SiberianEHR.Types.DV_Quantity
 });
 
+SiberianEHR.Types.DV_Date_Time.prototype = new SiberianEHR.Types.Data_Value();
+_.extend(SiberianEHR.Types.DV_Date_Time.prototype, {
+    value: null,
+    magnitude: function(){
+        //TODO
+    },
+    Parse: function (iso8601string){
+        //TODO
+    }
+});
 
 /**
  * Root namespace for SiberianEHR templates

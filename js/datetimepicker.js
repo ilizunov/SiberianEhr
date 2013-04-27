@@ -206,34 +206,6 @@
                 }
             }
             return this.trigger('valid');
-        },
-        /**
-         * Clears model stored value
-         * @method
-         * @name SiberianEHR.DateTimePicker.DateTimePickerModel#clearValue
-         */
-        clearValue:function(){
-            var json = this.toJSON();
-            if (json.hasYear){
-                //having had year specified, we have date picker
-                this.setDate(SiberianEHR.DateTimePicker.Consts._startOfDays,
-                    (function(format){
-                        //TODO duplicating code
-                        var validParts= /dd?|DD?|mm?|MM?|yy(?:yy)?|YY(?:YY)/g;
-                        // IE treats \0 as a string end in inputs (truncating the value),
-                        // so it's a bad format delimiter, anyway
-                        var separators = format.replace(validParts, '\0').split('\0'),
-                            parts = format.match(validParts);
-                        if (!separators || !separators.length || !parts || parts.length === 0){
-                            throw new Error("Invalid date format.");
-                        }
-                        return {separators: separators, parts: parts};
-                    })(json.dateFormat)
-                );
-            }
-            if (json.hasHour) {
-                this.setTime(SiberianEHR.DateTimePicker.Consts._startOfDays);
-            }
         }
     });
 
@@ -290,21 +262,6 @@
          * @property {string} name of the Handlebars JST template {@link JST}
          */
         templateName: 'datetime-picker',
-        /**
-         * @name SiberianEHR.DateTimePicker.DateTimePickerView#events
-         * @property {object} key-value pairs to attach events
-         */
-        events: {
-            'click a.remove': 'clearValue'
-        },
-        /**
-         * Event handler for clearing value. Triggers when clear button is pressed.
-         * @name SiberianEHR.DateTimePicker.DateTimePickerView#clearValue
-         * @method
-         */
-        clearValue: function(){
-            this.model.clearValue();
-        },
         /**
          * Initializes a view.
          * @param {Object} options Contains 'el' - element, where to render view and 'model' - corresponding model
