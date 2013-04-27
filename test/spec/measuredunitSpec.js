@@ -317,4 +317,21 @@ describe("Measured Unit widget", function () {
             expect(json.units).toEqual('cm');
         });
     });
+
+    describe("Should initialize widget via Widget constructor", function(){
+        var el = $('<div/>'), w;
+
+        it("111",function(){
+            w = SiberianEHR.MeasuredUnit.Widget({
+                el: el,
+                DefaultValue: new SiberianEHR.Types.DV_Quantity({
+                    magnitude: 160,
+                    units: 'cm'
+                })
+            });
+            var dvQuantity = w.value();
+            expect(dvQuantity.magnitude).toEqual(160);
+            expect(dvQuantity.units).toEqual('cm');
+        });
+    });
 });

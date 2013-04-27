@@ -374,6 +374,17 @@
     };
 
     /**
+     * @name SiberianEHR.MeasuredUnit.Widget
+     * @param {Object} options {el: jQuery element, other options to be passed to widget}
+     * @returns {SiberianEHR.MeasuredUnit.MeasuredUnitView}
+     * @constructor
+     */
+    SiberianEHR.MeasuredUnit.Widget = function(options){
+        options.el.measuredUnit(options);
+        return options.el.measuredUnit('widget');
+    }
+
+    /**
      * @function
      * @name measuredUnit
      * @param {Object|string} options
